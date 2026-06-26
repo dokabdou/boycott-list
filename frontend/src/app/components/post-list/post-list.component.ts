@@ -46,7 +46,14 @@ export class PostListComponent implements OnInit {
   }
 
   loadPosts(): void {
-    this.postService.getApprovedPosts().subscribe((posts) => this.posts.set(posts));
+    this.postService.getApprovedPosts().subscribe((posts) => {
+      const sorted = posts.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA; // descending = newest first
+      });
+      this.posts.set(sorted);
+    });
   }
 
   isLoggedIn(): boolean {

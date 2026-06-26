@@ -2,7 +2,13 @@
   <h2>Admin Dashboard</h2>
 
   <!-- Pending Submissions Section -->
-  <h3>Pending Submissions ({{ pendingPosts().length }})</h3>
+  <div class="pending-header">
+	<h3>Pending Submissions ({{ pendingPosts().length }})</h3>
+	<button mat-icon-button color="primary" (click)="refreshPendingPosts()"
+			matTooltip="Refresh pending posts">
+		<mat-icon>refresh</mat-icon>
+	</button>
+  </div>
   <mat-accordion>
     <mat-expansion-panel *ngFor="let post of pendingPosts()">
       <mat-expansion-panel-header>
@@ -16,6 +22,25 @@
 
       <p><strong>Full description:</strong><br> {{ post.description }}</p>
 
+	  <!-- Tags Section -->
+	  <div *ngIf="post.tags?.length">
+		<strong>Tags:</strong>
+		<mat-chip-listbox>
+		  <mat-chip *ngFor="let tag of post.tags">{{ tag }}</mat-chip>
+		</mat-chip-listbox>
+	  </div>
+
+	  <!-- Highlights Section -->
+	  <div *ngIf="post.highlights?.length">
+		<strong>Highlights:</strong>
+		<div *ngFor="let box of post.highlights; let i = index" class="highlight-box">
+		  <strong>Box {{ i + 1 }}:</strong>
+		  <ul>
+			<li *ngFor="let item of box">{{ item }}</li>
+		  </ul>
+		</div>
+	  </div>
+
       <div *ngIf="post.sourceLinks?.length">
         <strong>Sources:</strong>
         <ul>
@@ -24,10 +49,6 @@
           </li>
         </ul>
       </div>
-
-      <mat-chip-listbox *ngIf="post.tags?.length">
-        <mat-chip *ngFor="let tag of post.tags">{{ tag }}</mat-chip>
-      </mat-chip-listbox>
 
       <div class="actions">
         <button mat-raised-button color="primary" (click)="approve(post.id!)">

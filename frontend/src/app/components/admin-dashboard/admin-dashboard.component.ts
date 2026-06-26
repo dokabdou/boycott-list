@@ -150,9 +150,17 @@ export class AdminDashboardComponent implements OnInit {
 
   loadPendingPosts() {
     this.postService.getPendingPosts().subscribe((posts) => {
-      this.pendingPosts.set(posts); // ✅ signal update triggers change detection
-      console.log('Loaded pending posts:', posts);
+	  const sorted = posts.sort((a, b) => {
+		const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+		const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+		return dateB - dateA; // descending = newest first
+	  });
+      this.pendingPosts.set(sorted);
     });
+  }
+
+  refreshPendingPosts() {
+	this.loadPendingPosts();
   }
 
   approve(id: string) {
