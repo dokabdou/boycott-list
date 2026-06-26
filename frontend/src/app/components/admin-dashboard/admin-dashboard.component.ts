@@ -43,15 +43,16 @@ import { Post } from '../../models/post.model';
   styleUrls: ['./admin-dashboard.component.css'],
 })
 export class AdminDashboardComponent implements OnInit {
-  pendingPosts: WritableSignal<Post[]> = signal([]); // signal
+  pendingPosts: WritableSignal<Post[]> = signal([]);
   adminForm!: FormGroup;
 
-  // Tag management for admin create form
   selectedTags: string[] = [];
   allTags: string[] = [];
   filteredTags!: Observable<string[]>;
-  // Highlights: same as submit form
   highlightBoxes: string[][] = [];
+
+  // Unified banner signal
+  banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
@@ -150,25 +151,56 @@ export class AdminDashboardComponent implements OnInit {
 
   loadPendingPosts() {
     this.postService.getPendingPosts().subscribe((posts) => {
-	  const sorted = posts.sort((a, b) => {
-		const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-		const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-		return dateB - dateA; // descending = newest first
-	  });
+      const sorted = posts.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA; // descending = newest first
+      });
       this.pendingPosts.set(sorted);
     });
   }
 
   refreshPendingPosts() {
-	this.loadPendingPosts();
+    this.loadPendingPosts();
   }
 
   approve(id: string) {
-    this.postService.approvePost(id).subscribe(() => this.loadPendingPosts());
+    const post = this.pendingPosts().find((p) => p.id === id);
+    const companyName = post?.companyName || 'Unknown';
+
+    this.postService.approvePost(id).subscribe({
+      next: () => {
+        this.loadPendingPosts();
+        this.banner.set({ type: 'success', message: `Approved: ${companyName}` });
+        console.log('Banner set to success');
+        setTimeout(() => this.banner.set(null), 5000);
+      },
+      error: (err) => {
+        console.error('Approval failed', err);
+        // Optionally show an error banner
+        this.banner.set({ type: 'error', message: 'Approval failed. Check console.' });
+        setTimeout(() => this.banner.set(null), 5000);
+      },
+    });
   }
 
   reject(id: string) {
-    this.postService.rejectPost(id).subscribe(() => this.loadPendingPosts());
+    const post = this.pendingPosts().find((p) => p.id === id);
+    const companyName = post?.companyName || 'Unknown';
+
+    this.postService.rejectPost(id).subscribe({
+      next: () => {
+        this.loadPendingPosts();
+        this.banner.set({ type: 'error', message: `Rejected: ${companyName}` });
+        console.log('Banner set to error');
+        setTimeout(() => this.banner.set(null), 5000);
+      },
+      error: (err) => {
+        console.error('Rejection failed', err);
+        this.banner.set({ type: 'error', message: 'Rejection failed. Check console.' });
+        setTimeout(() => this.banner.set(null), 5000);
+      },
+    });
   }
 
   createAdminPost() {

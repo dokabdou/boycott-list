@@ -118,3 +118,34 @@ button[mat-raised-button][type="submit"] {
   margin: 0;
   border-bottom: none;
 }
+
+.banner-fixed {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.success-banner {
+  background-color: #2e7d32;
+}
+
+.failure-banner {
+  background-color: #d32f2f;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}

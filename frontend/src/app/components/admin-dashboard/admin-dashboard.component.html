@@ -1,4 +1,11 @@
 <div class="container">
+	@if (banner(); as b) {
+	<div class="banner-fixed" [class.success-banner]="b.type === 'success'" [class.failure-banner]="b.type === 'error'">
+		<span>{{ b.message }}</span>
+		<button class="close-btn" (click)="banner.set(null)">✕</button>
+	</div>
+	}
+
   <h2>Admin Dashboard</h2>
 
   <!-- Pending Submissions Section -->
