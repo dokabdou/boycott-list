@@ -1,0 +1,110 @@
+<div class="container">
+  <h1>Boycott List</h1>
+  <div class="intro-toggle" (click)="toggleDescription()">
+  <div class="toggle-header">
+    <span>About this list</span>
+    <span class="arrow" [class.open]="showDescription()">▼</span>
+  </div>
+  <div class="toggle-body" [class.collapsed]="!showDescription()">
+    <p>Welcome to the Boycott List! I got this idea because I always see and hear about companies that are doing harm to the environment or society. I sometimes forget which companies are on the list and why, so I created this simple tool to keep track of them. I will add the companies as I find them, and you can contribute as well! I provide information about companies that are engaging in unethical practices. I also provide sources of course.</p>
+  </div>
+</div>
+
+  <mat-card *ngFor="let post of posts()" class="post-card">
+    <mat-card-header>
+      <mat-card-title>
+        <a *ngIf="editingPostId() !== post.id"
+           [routerLink]="['/post', post.id]"
+           style="color: inherit; text-decoration: none;">
+           {{ post.companyName }}
+        </a>
+        <span *ngIf="editingPostId() === post.id">Editing: {{ post.companyName }}</span>
+      </mat-card-title>
+      <mat-card-subtitle>
+        <!-- Show tags if not editing -->
+        <mat-chip-listbox *ngIf="editingPostId() !== post.id">
+          <mat-chip *ngFor="let tag of post.tags">{{ tag }}</mat-chip>
+        </mat-chip-listbox>
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- DISPLAY MODE -->
+      <div *ngIf="editingPostId() !== post.id">
+        <p>{{ post.description }}</p>
+        <div *ngIf="post.sourceLinks?.length">
+          <strong>Sources:</strong>
+          <ul>
+            <li *ngFor="let link of post.sourceLinks">
+              <a [href]="link" target="_blank">{{ link }}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- EDIT MODE -->
+      <div *ngIf="editingPostId() === post.id && editForm">
+        <form [formGroup]="editForm">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Company Name</mat-label>
+            <input matInput formControlName="companyName" required>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3" required></textarea>
+          </mat-form-field>
+
+          <div formArrayName="sourceLinks">
+            <div *ngFor="let link of sourceLinksArray.controls; let i = index"
+                 style="display: flex; align-items: center; gap: 8px;">
+              <mat-form-field appearance="fill" class="full-width">
+                <mat-label>Source Link {{ i + 1 }}</mat-label>
+                <input matInput [formControlName]="i" placeholder="https://...">
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button"
+                      (click)="removeLink(i)"
+                      *ngIf="sourceLinksArray.length > 1">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <button mat-stroked-button type="button" (click)="addLink()">Add link</button>
+          </div>
+
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Tags (comma separated)</mat-label>
+            <input matInput formControlName="tags" placeholder="environment, labor, ...">
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Highlights</mat-label>
+            <textarea matInput formControlName="highlights" rows="4"
+                      placeholder="Each line = one box, items separated by |&#10;e.g.&#10;Item 1|Item 2|Item 3&#10;Other|Box items"></textarea>
+          </mat-form-field>
+
+          <div class="edit-actions">
+            <button mat-raised-button color="primary" (click)="saveEdit(post.id!)">Save</button>
+            <button mat-button (click)="cancelEdit()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </mat-card-content>
+
+    <!-- Admin buttons (only for logged‑in admins, only when not editing) -->
+    <mat-card-actions *ngIf="isLoggedIn() && editingPostId() !== post.id">
+      <button mat-button color="primary" (click)="startEdit(post)">
+        <mat-icon>edit</mat-icon> Edit
+      </button>
+      <button mat-button color="warn" (click)="deletePost(post.id!)">
+        <mat-icon>delete</mat-icon> Delete
+      </button>
+    </mat-card-actions>
+
+    <mat-card-footer *ngIf="post.submittedBy && !post.anonymous && editingPostId() !== post.id">
+      <small>Posted by {{ post.submittedBy }}</small>
+    </mat-card-footer>
+	<mat-card-footer *ngIf="post.submittedBy && post.anonymous && editingPostId() !== post.id">
+      <small>Posted by anonymous</small>
+    </mat-card-footer>
+  </mat-card>
+</div>

@@ -1,0 +1,12 @@
+<nav style="padding: 16px; background: #3f51b5; color: white; display: flex; gap: 24px; align-items: center;">
+  <a routerLink="/" style="color: white; text-decoration: none; font-weight: 500;">Boycott List</a>
+  <a routerLink="/submit" style="color: white; text-decoration: none;">Submit</a>
+
+  @if (isLoggedIn()) {
+    <a routerLink="/admin" style="color: white; text-decoration: none;">Admin</a>
+    <a (click)="logout()" style="color: white; cursor: pointer; text-decoration: none;">Logout</a>
+  } @else {
+    <a routerLink="/login" style="color: white; text-decoration: none;">Admin Login</a>
+  }
+</nav>
+<router-outlet />

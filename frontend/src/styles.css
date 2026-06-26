@@ -1,0 +1,28 @@
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: #f9f9fb;
+  color: #333;
+}
+
+/* .container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.post-card {
+  margin-bottom: 20px;
+}
+.full-width {
+  width: 100%;
+} */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better mat-card spacing */
+.mat-mdc-card {
+  border-radius: 12px !important;
+}

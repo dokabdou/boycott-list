@@ -1,0 +1,48 @@
+<div *ngIf="post() as p; else loading">
+  <!-- Use 'p' (the resolved post) everywhere -->
+  <h1 class="company-name">{{ p.companyName }}</h1>
+
+  <mat-chip-listbox class="tags">
+    <mat-chip *ngFor="let tag of p.tags">{{ tag }}</mat-chip>
+  </mat-chip-listbox>
+
+  <div class="content-row">
+    <div class="description-box">
+      <mat-card>
+        <mat-card-content>
+          <p>{{ p.description }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Highlights -->
+      <div class="highlights" *ngIf="p.highlights && p.highlights.length">
+        <h3>Highlights</h3>
+        <div class="highlight-boxes">
+          <div *ngFor="let box of p.highlights" class="highlight-box">
+            <ul>
+              <li *ngFor="let item of box">{{ item }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Source Links -->
+      <div class="sources" *ngIf="p.sourceLinks?.length">
+        <h3>Sources</h3>
+        <ul>
+          <li *ngFor="let link of p.sourceLinks">
+            <a [href]="link" target="_blank">{{ link }}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="comment-box">
+      <app-comment-section [postId]="p.id!"></app-comment-section>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <p>Loading post...</p>
+</ng-template>

@@ -1,0 +1,107 @@
+.container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #3f51b5;
+  margin-bottom: 20px;
+}
+
+h3 {
+  margin-top: 30px;
+  border-bottom: 2px solid #3f51b5;
+  padding-bottom: 6px;
+}
+
+mat-expansion-panel {
+  margin-bottom: 16px;
+  border-left: 4px solid #ff9800;   /* orange for pending */
+}
+
+mat-panel-description {
+  color: #666;
+  font-style: italic;
+}
+
+.actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.actions button {
+  flex: 1;
+}
+
+hr {
+  margin: 40px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+/* Admin create form (same style as submit form) */
+.full-width {
+  width: 100%;
+}
+
+mat-form-field {
+  margin-bottom: 16px;
+}
+
+button[mat-stroked-button] {
+  margin-bottom: 16px;
+}
+
+mat-chip-row {
+  background-color: #e8eaf6 !important;
+  color: #1a237e !important;
+}
+
+button[mat-raised-button][type="submit"] {
+  margin-top: 16px;
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+}
+
+.highlights-section {
+  margin-bottom: 24px;
+}
+
+.highlight-box {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.highlight-box ul {
+  list-style: none;
+  padding-left: 8px;
+}
+
+.highlight-box li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.add-item {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.add-item input {
+  flex: 1;
+  padding: 4px;
+}
