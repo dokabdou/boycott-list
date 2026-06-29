@@ -1,12 +1,41 @@
-<nav style="padding: 16px; background: #3f51b5; color: white; display: flex; gap: 24px; align-items: center;">
-  <a routerLink="/" style="color: white; text-decoration: none; font-weight: 500;">Boycott List</a>
-  <a routerLink="/submit" style="color: white; text-decoration: none;">Submit</a>
+<nav class="navbar">
+  <div class="nav-links">
+    <a routerLink="/" class="nav-brand">Boycott List</a>
+    <a routerLink="/submit" class="nav-link">Submit</a>
 
-  @if (isLoggedIn()) {
-    <a routerLink="/admin" style="color: white; text-decoration: none;">Admin</a>
-    <a (click)="logout()" style="color: white; cursor: pointer; text-decoration: none;">Logout</a>
-  } @else {
-    <a routerLink="/login" style="color: white; text-decoration: none;">Admin Login</a>
-  }
+    @if (isLoggedIn()) {
+      <a routerLink="/admin" class="nav-link">Admin</a>
+      <a (click)="logout()" class="nav-link logout-link">Logout</a>
+    } @else {
+      <a routerLink="/login" class="nav-link">Admin Login</a>
+    }
+  </div>
+
+  <!-- Search bar pushed to the right -->
+  <div class="search-container">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      placeholder="Search by name, tag, category, poster…"
+      [(ngModel)]="searchTerm"
+      (input)="onSearchInput(searchTerm)"
+      class="search-input"
+    />
+    @if (searchTerm) {
+      <button class="clear-btn" (click)="clearSearch()">✕</button>
+    }
+  </div>
 </nav>
+
 <router-outlet />
+
+<!-- Scroll to top button -->
+<button class="scroll-to-top-btn" (click)="scrollToTop()" title="Back to top">↑</button>
+
+<!-- Optional: your toast message -->
+@if (toastMessage) {
+  <div class="toast">
+    {{ toastMessage }}
+    <button (click)="closeToast()">✕</button>
+  </div>
+}

@@ -20,7 +20,7 @@ import { AuthService } from '../../services/auth.service';
     MatCardModule,
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  styleUrls: ['./login.component.css', '../../../styles.css'],
 })
 export class LoginComponent {
   username = '';

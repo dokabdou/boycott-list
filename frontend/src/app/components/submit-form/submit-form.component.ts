@@ -37,7 +37,7 @@ import { TagService } from '../../services/tag.service';
     MatIconModule,
   ],
   templateUrl: './submit-form.component.html',
-  styleUrls: ['./submit-form.component.css'],
+  styleUrls: ['./submit-form.component.css', '../../../styles.css'],
 })
 export class SubmitFormComponent implements OnInit {
   submitForm!: FormGroup;

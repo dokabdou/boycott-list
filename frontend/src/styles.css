@@ -26,3 +26,34 @@ html {
 .mat-mdc-card {
   border-radius: 12px !important;
 }
+
+
+/* .scroll-to-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 48px;
+  height: 48px;
+  background-color: #3f51b5;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.4);
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.scroll-to-top-btn:hover {
+  background-color: #303f9f;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(63, 81, 181, 0.5);
+} */
+
+.scroll-to-top-btn { position: fixed; bottom: 40px; right: 40px; width: 50px; height: 50px; background-color: rgba(60, 42, 33, 0.5); color: var(--white); border: none; border-radius: 50%; font-size: 1.5rem; font-weight: bold; cursor: pointer; z-index: 9999; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease, transform 0.2s ease; }
+.scroll-to-top-btn:hover { background-color: var(--brand-brown); transform: translateY(-3px); }

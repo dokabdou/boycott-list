@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +11,7 @@ import { PostService } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
 import { Post } from '../../models/post.model';
 import { RouterLink } from '@angular/router';
+import { SearchService } from '../../services/search.service';
 
 @Component({
   selector: 'app-post-list',
@@ -27,7 +28,7 @@ import { RouterLink } from '@angular/router';
     RouterLink,
   ],
   templateUrl: './post-list.component.html',
-  styleUrls: ['./post-list.component.css'],
+  styleUrls: ['./post-list.component.css', '../../../styles.css'],
 })
 export class PostListComponent implements OnInit {
   posts: WritableSignal<Post[]> = signal([]);
@@ -38,12 +39,27 @@ export class PostListComponent implements OnInit {
   constructor(
     private postService: PostService,
     private authService: AuthService,
+    private searchService: SearchService,
     private fb: FormBuilder,
   ) {}
 
   ngOnInit(): void {
     this.loadPosts();
   }
+
+  filteredPosts = computed(() => {
+    const term = this.searchService.searchTerm();
+    const allPosts = this.posts();
+    if (!term) {
+      return allPosts;
+    }
+    return allPosts.filter(
+      (post) =>
+        post.companyName?.toLowerCase().includes(term) ||
+        post.tags?.some((tag) => tag.toLowerCase().includes(term)) ||
+        post.submittedBy?.toLowerCase().includes(term),
+    );
+  });
 
   loadPosts(): void {
     this.postService.getApprovedPosts().subscribe((posts) => {

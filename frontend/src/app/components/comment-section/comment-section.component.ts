@@ -22,7 +22,7 @@ import { Comment } from '../../models/comment.model';
     MatIconModule,
   ],
   templateUrl: './comment-section.component.html',
-  styleUrls: ['./comment-section.component.css'],
+  styleUrls: ['./comment-section.component.css', '../../../styles.css'],
 })
 export class CommentSectionComponent implements OnInit {
   @Input() postId!: string;

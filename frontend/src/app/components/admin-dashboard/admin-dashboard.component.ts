@@ -40,7 +40,7 @@ import { Post } from '../../models/post.model';
     MatExpansionModule,
   ],
   templateUrl: './admin-dashboard.component.html',
-  styleUrls: ['./admin-dashboard.component.css'],
+  styleUrls: ['./admin-dashboard.component.css', '../../../styles.css'],
 })
 export class AdminDashboardComponent implements OnInit {
   pendingPosts: WritableSignal<Post[]> = signal([]);

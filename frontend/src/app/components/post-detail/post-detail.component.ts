@@ -22,7 +22,7 @@ import { CommentSectionComponent } from '../comment-section/comment-section.comp
     RouterLink,
   ],
   templateUrl: './post-detail.component.html',
-  styleUrls: ['./post-detail.component.css'],
+  styleUrls: ['./post-detail.component.css', '../../../styles.css'],
 })
 export class PostDetailComponent implements OnInit {
   post: WritableSignal<Post | null> = signal(null);
