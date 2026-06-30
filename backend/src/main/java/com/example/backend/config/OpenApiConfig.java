@@ -17,7 +17,7 @@ public class OpenApiConfig {
     public OpenAPI boycottListOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Boycott List API")
+                        .title("The BoyCott List API")
                         .description("API for managing boycott posts, comments, suggestions, tags, and categories.")
                         .version("1.0.0"))
                 .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))

@@ -95,12 +95,33 @@
 		</mat-autocomplete>
 		</mat-form-field>
 
+		<!-- Tags (same as before) -->
 		<mat-form-field appearance="fill" class="full-width">
-		<mat-label>Description / Reason</mat-label>
-		<textarea matInput formControlName="description" rows="5" required></textarea>
-		<mat-error *ngIf="adminForm.get('description')?.hasError('required')">
-			Description is required
-		</mat-error>
+		<mat-label>Tags</mat-label>
+		<mat-chip-grid #chipGrid aria-label="Tag selection">
+			<mat-chip-row *ngFor="let tag of selectedTags" (removed)="removeTag(tag)">
+			{{ tag }}
+			<button matChipRemove><mat-icon>cancel</mat-icon></button>
+			</mat-chip-row>
+		</mat-chip-grid>
+		<input #tagInput
+				placeholder="New tag..."
+				[matChipInputFor]="chipGrid"
+				[matAutocomplete]="auto"
+				(matChipInputTokenEnd)="addTag($event)"/>
+		<mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedTag($event)">
+			<mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
+			{{ tag }}
+			</mat-option>
+		</mat-autocomplete>
+		</mat-form-field>
+
+		<mat-form-field appearance="fill" class="full-width">
+			<mat-label>Description / Reason</mat-label>
+			<textarea matInput formControlName="description" rows="5" required></textarea>
+			<mat-error *ngIf="adminForm.get('description')?.hasError('required')">
+				Description is required
+			</mat-error>
 		</mat-form-field>
 
 		<!-- Highlights Section (same as submit form) -->
@@ -145,27 +166,7 @@
 			<mat-icon>add</mat-icon> Add another source link
 		</button>
 		</div>
-
-		<mat-form-field appearance="fill" class="full-width">
-		<mat-label>Tags</mat-label>
-		<mat-chip-grid #chipGrid aria-label="Tag selection">
-			<mat-chip-row *ngFor="let tag of selectedTags" (removed)="removeTag(tag)">
-			{{ tag }}
-			<button matChipRemove><mat-icon>cancel</mat-icon></button>
-			</mat-chip-row>
-		</mat-chip-grid>
-		<input #tagInput
-				placeholder="New tag..."
-				[matChipInputFor]="chipGrid"
-				[matAutocomplete]="auto"
-				(matChipInputTokenEnd)="addTag($event)"/>
-		<mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedTag($event)">
-			<mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
-			{{ tag }}
-			</mat-option>
-		</mat-autocomplete>
-		</mat-form-field>
-
+		
 		<button mat-raised-button color="accent" type="submit" [disabled]="adminForm.invalid">
 		<mat-icon>publish</mat-icon> Publish as Admin
 		</button>
