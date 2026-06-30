@@ -163,7 +163,7 @@ export class PostListComponent implements OnInit {
   }
 
   private showBanner(type: 'success' | 'error', message: string) {
-	const formattedMessage = message.replace(/"(.*?)"/, '<strong>"$1"</strong>');
+	const formattedMessage = message.replace(/"(.*?)"/, '<strong>$1</strong>');
 	this.banner.set({ type, message: formattedMessage });
 	setTimeout(() => this.banner.set(null), 5000);
   }
