@@ -19,7 +19,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/BoyCott_List_Logo.ico",
+              "src/BoyCott_List_Logo.png",
+			  "src/assets"
             ],
             "styles": [
               "src/custom-theme.scss",
@@ -81,7 +84,10 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/BoyCott_List_Logo.ico",
+              "src/BoyCott_List_Logo.png",
+              "src/assets"
             ],
             "styles": [
               "src/styles.css"
