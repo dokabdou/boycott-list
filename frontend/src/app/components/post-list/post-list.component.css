@@ -89,3 +89,15 @@ mat-card-footer {
   margin-top: 0;
   border-top: none;
 }
+
+.category-badge {
+  display: inline-block;
+  background-color: #ff9800;
+  color: white;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-right: 8px;
+  vertical-align: middle;
+  margin-bottom: 5px;
+}

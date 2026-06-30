@@ -12,6 +12,7 @@ import { AuthService } from '../../services/auth.service';
 import { Post } from '../../models/post.model';
 import { RouterLink } from '@angular/router';
 import { SearchService } from '../../services/search.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-post-list',
@@ -34,13 +35,14 @@ export class PostListComponent implements OnInit {
   posts: WritableSignal<Post[]> = signal([]);
   editingPostId: WritableSignal<string | null> = signal(null);
   editForm: FormGroup | null = null;
-  showDescription: WritableSignal<boolean> = signal(true); // start open
+  showDescription: WritableSignal<boolean> = signal(true);
 
   constructor(
     private postService: PostService,
     private authService: AuthService,
     private searchService: SearchService,
     private fb: FormBuilder,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -48,14 +50,14 @@ export class PostListComponent implements OnInit {
   }
 
   filteredPosts = computed(() => {
-    const term = this.searchService.searchTerm();
+    const term = this.searchService.searchTerm().toLowerCase();
     const allPosts = this.posts();
-    if (!term) {
-      return allPosts;
-    }
+    if (!term) return allPosts;
+
     return allPosts.filter(
       (post) =>
         post.companyName?.toLowerCase().includes(term) ||
+        post.category?.toLowerCase().includes(term) ||
         post.tags?.some((tag) => tag.toLowerCase().includes(term)) ||
         post.submittedBy?.toLowerCase().includes(term),
     );
@@ -66,7 +68,7 @@ export class PostListComponent implements OnInit {
       const sorted = posts.sort((a, b) => {
         const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return dateB - dateA; // descending = newest first
+        return dateB - dateA;
       });
       this.posts.set(sorted);
     });
@@ -80,11 +82,22 @@ export class PostListComponent implements OnInit {
     this.showDescription.update((v) => !v);
   }
 
+  openPost(postId: string | undefined, event: Event) {
+    if (!postId) return;
+    if (this.editingPostId()) return;
+    const target = event.target as HTMLElement;
+    if (target.closest('button, a, mat-icon, input, textarea, mat-chip')) {
+      return;
+    }
+    this.router.navigate(['/post', postId]);
+  }
+
   // -------- EDIT ----------
   startEdit(post: Post): void {
     this.editingPostId.set(post.id!);
     this.editForm = this.fb.group({
       companyName: [post.companyName, Validators.required],
+      category: [post.category || ''],
       description: [post.description, Validators.required],
       sourceLinks: this.fb.array(
         post.sourceLinks?.length
@@ -103,30 +116,7 @@ export class PostListComponent implements OnInit {
 
   saveEdit(postId: string): void {
     if (!this.editForm?.valid) return;
-
-    const formVal = this.editForm.value;
-    const updated: Post = {
-      id: postId,
-      companyName: formVal.companyName,
-      description: formVal.description,
-      sourceLinks: formVal.sourceLinks,
-      tags: formVal.tags
-        .split(',')
-        .map((t: string) => t.trim())
-        .filter((t: string) => t.length > 0),
-      highlights: formVal.highlights
-        ? formVal.highlights
-            .split('\n')
-            .map((line: string) =>
-              line
-                .split('|')
-                .map((item: string) => item.trim())
-                .filter((item: string) => item.length > 0),
-            )
-            .filter((box: string[]) => box.length > 0)
-        : [],
-    };
-
+    const updated = this.postService.buildEditPayload(this.editForm.value, postId);
     this.postService.editPost(postId, updated).subscribe(() => {
       this.loadPosts();
       this.cancelEdit();

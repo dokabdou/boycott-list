@@ -2,12 +2,11 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
-  private loggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
+  private loggedInSubject = new BehaviorSubject<boolean>(false); // start with false
 
   loggedIn$: Observable<boolean> = this.loggedInSubject.asObservable();
 
@@ -15,6 +14,17 @@ export class AuthService {
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object,
   ) {}
+
+  /**
+   * Call this once after the app is running in the browser.
+   * It will check localStorage and update the login state.
+   */
+  initAuth(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const hasToken = !!localStorage.getItem(this.TOKEN_KEY);
+      this.loggedInSubject.next(hasToken);
+    }
+  }
 
   private hasToken(): boolean {
     if (isPlatformBrowser(this.platformId)) {
@@ -29,7 +39,7 @@ export class AuthService {
         if (isPlatformBrowser(this.platformId)) {
           localStorage.setItem(this.TOKEN_KEY, res.token);
         }
-        this.loggedInSubject.next(true); // notify subscribers
+        this.loggedInSubject.next(true);
       }),
     );
   }
@@ -42,7 +52,7 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return this.loggedInSubject.value; // synchronous, can still be used in guards
+    return this.loggedInSubject.value;
   }
 
   getToken(): string | null {

@@ -15,6 +15,7 @@ public class Post {
     private String id;
 
     private String companyName;
+	private String category; 
     private String description;
     private List<String> sourceLinks;        // mandatory links to sources
     private List<String> tags;               // e.g. ["environment", "labor"]

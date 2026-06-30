@@ -1,159 +1,174 @@
-<div class="container">
-	@if (banner(); as b) {
-	<div class="banner-fixed" [class.success-banner]="b.type === 'success'" [class.failure-banner]="b.type === 'error'">
-		<span>{{ b.message }}</span>
-		<button class="close-btn" (click)="banner.set(null)">✕</button>
-	</div>
-	}
-
-  <h2>Admin Dashboard</h2>
-
-  <!-- Pending Submissions Section -->
-  <div class="pending-header">
-	<h3>Pending Submissions ({{ pendingPosts().length }})</h3>
-	<button mat-icon-button color="primary" (click)="refreshPendingPosts()"
-			matTooltip="Refresh pending posts">
-		<mat-icon>refresh</mat-icon>
-	</button>
-  </div>
-  <mat-accordion>
-    <mat-expansion-panel *ngFor="let post of pendingPosts()">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          {{ post.companyName }}
-        </mat-panel-title>
-        <mat-panel-description>
-          {{ post.description | slice:0:60 }}...
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-
-      <p><strong>Full description:</strong><br> {{ post.description }}</p>
-
-	  <!-- Tags Section -->
-	  <div *ngIf="post.tags?.length">
-		<strong>Tags:</strong>
-		<mat-chip-listbox>
-		  <mat-chip *ngFor="let tag of post.tags">{{ tag }}</mat-chip>
-		</mat-chip-listbox>
-	  </div>
-
-	  <!-- Highlights Section -->
-	  <div *ngIf="post.highlights?.length">
-		<strong>Highlights:</strong>
-		<div *ngFor="let box of post.highlights; let i = index" class="highlight-box">
-		  <strong>Box {{ i + 1 }}:</strong>
-		  <ul>
-			<li *ngFor="let item of box">{{ item }}</li>
-		  </ul>
+<div class="page-content">
+	<div class="container">
+		@if (banner(); as b) {
+		<div class="banner-fixed" [class.success-banner]="b.type === 'success'" [class.failure-banner]="b.type === 'error'">
+			<span>{{ b.message }}</span>
+			<button class="close-btn" (click)="banner.set(null)">✕</button>
 		</div>
-	  </div>
+		}
 
-      <div *ngIf="post.sourceLinks?.length">
-        <strong>Sources:</strong>
-        <ul>
-          <li *ngFor="let link of post.sourceLinks">
-            <a [href]="link" target="_blank" rel="noopener">{{ link }}</a>
-          </li>
-        </ul>
-      </div>
+	<h2>Admin Dashboard</h2>
 
-      <div class="actions">
-        <button mat-raised-button color="primary" (click)="approve(post.id!)">
-          <mat-icon>check</mat-icon> Approve
-        </button>
-        <button mat-raised-button color="warn" (click)="reject(post.id!)">
-          <mat-icon>close</mat-icon> Reject
-        </button>
-      </div>
-    </mat-expansion-panel>
-  </mat-accordion>
+	<!-- Pending Submissions Section -->
+	<div class="pending-header">
+		<h3>Pending Submissions ({{ pendingPosts().length }})</h3>
+		<button mat-icon-button color="primary" (click)="refreshPendingPosts()"
+				matTooltip="Refresh pending posts">
+			<mat-icon>refresh</mat-icon>
+		</button>
+	</div>
+	<mat-accordion>
+		<mat-expansion-panel *ngFor="let post of pendingPosts()">
+		<mat-expansion-panel-header>
+			<mat-panel-title>
+			{{ post.companyName }}
+			</mat-panel-title>
+			<mat-panel-description>
+			{{ post.description | slice:0:60 }}...
+			</mat-panel-description>
+		</mat-expansion-panel-header>
 
-  <hr>
+		<p><strong>Full description:</strong><br> {{ post.description }}</p>
 
-  <!-- Admin Create Post Form -->
-  <h3>Create a Post (as Admin)</h3>
-  <form [formGroup]="adminForm" (ngSubmit)="createAdminPost()">
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Company Name</mat-label>
-      <input matInput formControlName="companyName" required>
-      <mat-error *ngIf="adminForm.get('companyName')?.hasError('required')">
-        Company name is required
-      </mat-error>
-    </mat-form-field>
+		<!-- Tags Section -->
+		<div *ngIf="post.tags?.length">
+			<strong>Tags:</strong>
+			<mat-chip-listbox>
+			<mat-chip *ngFor="let tag of post.tags">{{ tag }}</mat-chip>
+			</mat-chip-listbox>
+		</div>
 
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Description / Reason</mat-label>
-      <textarea matInput formControlName="description" rows="5" required></textarea>
-      <mat-error *ngIf="adminForm.get('description')?.hasError('required')">
-        Description is required
-      </mat-error>
-    </mat-form-field>
+		<!-- Highlights Section -->
+		<div *ngIf="post.highlights?.length">
+			<strong>Highlights:</strong>
+			<div *ngFor="let box of post.highlights; let i = index" class="highlight-box">
+			<strong>Box {{ i + 1 }}:</strong>
+			<ul>
+				<li *ngFor="let item of box">{{ item }}</li>
+			</ul>
+			</div>
+		</div>
 
-	<!-- Highlights Section (same as submit form) -->
-	<div class="highlights-section">
-	<h3>Highlights (up to 3 boxes, 4 items each)</h3>
-	<div *ngFor="let box of highlightBoxes; let i = index" class="highlight-box">
-		<div class="box-header">
-		<strong>Box {{ i + 1 }}</strong>
-		<button mat-icon-button color="warn" type="button" (click)="removeHighlightBox(i)">
-			<mat-icon>delete</mat-icon>
+		<div *ngIf="post.sourceLinks?.length">
+			<strong>Sources:</strong>
+			<ul>
+			<li *ngFor="let link of post.sourceLinks">
+				<a [href]="link" target="_blank" rel="noopener">{{ link }}</a>
+			</li>
+			</ul>
+		</div>
+
+		<div class="actions">
+			<button mat-raised-button color="primary" (click)="approve(post.id!)">
+			<mat-icon>check</mat-icon> Approve
+			</button>
+			<button mat-raised-button color="warn" (click)="reject(post.id!)">
+			<mat-icon>close</mat-icon> Reject
+			</button>
+		</div>
+		</mat-expansion-panel>
+	</mat-accordion>
+
+	<hr>
+
+	<!-- Admin Create Post Form -->
+	<h3>Create a Post (as Admin)</h3>
+	<form [formGroup]="adminForm" (ngSubmit)="createAdminPost()">
+		<mat-form-field appearance="fill" class="full-width">
+		<mat-label>Company Name</mat-label>
+		<input matInput formControlName="companyName" required>
+		<mat-error *ngIf="adminForm.get('companyName')?.hasError('required')">
+			Company name is required
+		</mat-error>
+		</mat-form-field>
+
+		<!-- Category -->
+		<mat-form-field appearance="fill" class="full-width">
+		<mat-label>Category (e.g., Technology, Media, Online Shopping)</mat-label>
+		<input matInput formControlName="category"
+			[matAutocomplete]="categoryAuto"
+			placeholder="Enter or select a category">
+		<mat-autocomplete #categoryAuto="matAutocomplete">
+			<mat-option *ngFor="let cat of allCategories" [value]="cat">
+			{{ cat }}
+			</mat-option>
+		</mat-autocomplete>
+		</mat-form-field>
+
+		<mat-form-field appearance="fill" class="full-width">
+		<mat-label>Description / Reason</mat-label>
+		<textarea matInput formControlName="description" rows="5" required></textarea>
+		<mat-error *ngIf="adminForm.get('description')?.hasError('required')">
+			Description is required
+		</mat-error>
+		</mat-form-field>
+
+		<!-- Highlights Section (same as submit form) -->
+		<div class="highlights-section">
+		<h3>Highlights (up to 3 boxes, 4 items each)</h3>
+		<div *ngFor="let box of highlightBoxes; let i = index" class="highlight-box">
+			<div class="box-header">
+			<strong>Box {{ i + 1 }}</strong>
+			<button mat-icon-button color="warn" type="button" (click)="removeHighlightBox(i)">
+				<mat-icon>delete</mat-icon>
+			</button>
+			</div>
+			<ul>
+			<li *ngFor="let item of box; let j = index">
+				{{ item }}
+				<button mat-icon-button color="warn" type="button" (click)="removeHighlightItem(i, j)">
+				<mat-icon>close</mat-icon>
+				</button>
+			</li>
+			</ul>
+			<div class="add-item" *ngIf="box.length < 4">
+			<input #newItem placeholder="Add item" (keyup.enter)="addHighlightItem(i, newItem)">
+			<button mat-stroked-button type="button" (click)="addHighlightItem(i, newItem)">Add</button>
+			</div>
+		</div>
+		<button mat-stroked-button type="button" *ngIf="highlightBoxes.length < 3" (click)="addHighlightBox()">
+			Add Highlight Box
 		</button>
 		</div>
-		<ul>
-		<li *ngFor="let item of box; let j = index">
-			{{ item }}
-			<button mat-icon-button color="warn" type="button" (click)="removeHighlightItem(i, j)">
-			<mat-icon>close</mat-icon>
+
+		<div formArrayName="sourceLinks">
+		<div *ngFor="let link of sourceLinks.controls; let i = index" style="display: flex; align-items: center; gap: 8px;">
+			<mat-form-field appearance="fill" class="full-width">
+			<mat-label>Source Link {{ i + 1 }}</mat-label>
+			<input matInput [formControlName]="i" placeholder="https://...">
+			</mat-form-field>
+			<button mat-icon-button color="warn" type="button" (click)="removeLink(i)" *ngIf="sourceLinks.length > 1">
+			<mat-icon>delete</mat-icon>
 			</button>
-		</li>
-		</ul>
-		<div class="add-item" *ngIf="box.length < 4">
-		<input #newItem placeholder="Add item" (keyup.enter)="addHighlightItem(i, newItem)">
-		<button mat-stroked-button type="button" (click)="addHighlightItem(i, newItem)">Add</button>
 		</div>
+		<button mat-stroked-button type="button" (click)="addLink()">
+			<mat-icon>add</mat-icon> Add another source link
+		</button>
+		</div>
+
+		<mat-form-field appearance="fill" class="full-width">
+		<mat-label>Tags</mat-label>
+		<mat-chip-grid #chipGrid aria-label="Tag selection">
+			<mat-chip-row *ngFor="let tag of selectedTags" (removed)="removeTag(tag)">
+			{{ tag }}
+			<button matChipRemove><mat-icon>cancel</mat-icon></button>
+			</mat-chip-row>
+		</mat-chip-grid>
+		<input #tagInput
+				placeholder="New tag..."
+				[matChipInputFor]="chipGrid"
+				[matAutocomplete]="auto"
+				(matChipInputTokenEnd)="addTag($event)"/>
+		<mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedTag($event)">
+			<mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
+			{{ tag }}
+			</mat-option>
+		</mat-autocomplete>
+		</mat-form-field>
+
+		<button mat-raised-button color="accent" type="submit" [disabled]="adminForm.invalid">
+		<mat-icon>publish</mat-icon> Publish as Admin
+		</button>
+	</form>
 	</div>
-	<button mat-stroked-button type="button" *ngIf="highlightBoxes.length < 3" (click)="addHighlightBox()">
-		Add Highlight Box
-	</button>
-	</div>
-
-    <div formArrayName="sourceLinks">
-      <div *ngFor="let link of sourceLinks.controls; let i = index" style="display: flex; align-items: center; gap: 8px;">
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Source Link {{ i + 1 }}</mat-label>
-          <input matInput [formControlName]="i" placeholder="https://...">
-        </mat-form-field>
-        <button mat-icon-button color="warn" type="button" (click)="removeLink(i)" *ngIf="sourceLinks.length > 1">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-      <button mat-stroked-button type="button" (click)="addLink()">
-        <mat-icon>add</mat-icon> Add another source link
-      </button>
-    </div>
-
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Tags</mat-label>
-      <mat-chip-grid #chipGrid aria-label="Tag selection">
-        <mat-chip-row *ngFor="let tag of selectedTags" (removed)="removeTag(tag)">
-          {{ tag }}
-          <button matChipRemove><mat-icon>cancel</mat-icon></button>
-        </mat-chip-row>
-      </mat-chip-grid>
-      <input #tagInput
-             placeholder="New tag..."
-             [matChipInputFor]="chipGrid"
-             [matAutocomplete]="auto"
-             (matChipInputTokenEnd)="addTag($event)"/>
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedTag($event)">
-        <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
-          {{ tag }}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
-
-    <button mat-raised-button color="accent" type="submit" [disabled]="adminForm.invalid">
-      <mat-icon>publish</mat-icon> Publish as Admin
-    </button>
-  </form>
 </div>

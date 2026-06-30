@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Post;
+import com.example.backend.model.Suggestion;
 import com.example.backend.service.CommentService;
 import com.example.backend.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.backend.model.Comment;
-import com.example.backend.service.CommentService;
+import com.example.backend.service.SuggestionService;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.List;
 
 @RestController
@@ -19,6 +21,7 @@ public class PublicPostController {
 
     private final PostService postService;
 	private final CommentService commentService;
+	private final SuggestionService suggestionService;
 
     @PostMapping("/submit")
     public Post submitAnonymous(@RequestBody Post post) {
@@ -56,5 +59,28 @@ public class PublicPostController {
 		return postService.getPostById(id)
 				.map(ResponseEntity::ok)
 				.orElse(ResponseEntity.notFound().build());
+	}
+
+	@GetMapping("/posts/search")
+	public List<Post> searchByTag(@RequestParam String tag) {
+		return postService.searchByTag(tag);
+	}
+
+	@GetMapping("/categories")
+	public List<String> getCategories() {
+		return postService.getAllCategories();
+	}
+
+	@GetMapping("/posts/{postId}/suggestions")
+	public List<Suggestion> getSuggestions(@PathVariable String postId) {
+		return suggestionService.getSuggestionsForPost(postId);
+	}
+
+	@PostMapping("/posts/{postId}/suggestions")
+	public Suggestion addSuggestion(@PathVariable String postId,
+									@RequestBody Map<String, String> body) {
+		String author = body.get("author");   // always "anon wolf"
+		String content = body.get("content");
+		return suggestionService.addSuggestion(postId, author, content);
 	}
 }

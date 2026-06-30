@@ -5,6 +5,13 @@ body {
   color: #333;
 }
 
+.page-content {
+  padding: 10px 10px;          /* vertical + horizontal padding */
+  max-width: 1200px;           /* optional – keeps content from being too wide */
+  margin: 0 auto;              /* center the content */
+  box-sizing: border-box;
+}
+
 /* .container {
   max-width: 800px;
   margin: 0 auto;

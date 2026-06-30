@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -98,6 +99,7 @@ public class PostService {
 		Post post = postRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Post not found"));
 		post.setCompanyName(updatedPost.getCompanyName());
+		post.setCategory(updatedPost.getCategory());
 		post.setDescription(updatedPost.getDescription());
 		post.setSourceLinks(updatedPost.getSourceLinks());
 		post.setTags(updatedPost.getTags());
@@ -109,5 +111,26 @@ public class PostService {
 
 	public void deletePost(String id) {
 		postRepository.deleteById(id);
+	}
+
+	public List<Post> getApprovedPostsByCategory(String category) {
+		return postRepository.findByCategory(category).stream()
+				.filter(p -> p.getStatus() == Post.PostStatus.APPROVED)
+				.collect(Collectors.toList());
+	}
+
+	public List<Post> searchByTag(String tag) {
+		return postRepository.findByTagsContaining(tag).stream()
+				.filter(p -> p.getStatus() == Post.PostStatus.APPROVED)
+				.collect(Collectors.toList());
+	}
+
+	public List<String> getAllCategories() {
+		return postRepository.findAll().stream()
+				.map(Post::getCategory)
+				.filter(Objects::nonNull)
+				.distinct()
+				.sorted()
+				.collect(Collectors.toList());
 	}
 }

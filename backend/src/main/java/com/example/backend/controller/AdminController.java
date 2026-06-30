@@ -1,7 +1,11 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Post;
+import com.example.backend.model.Comment;
+import com.example.backend.model.Suggestion;
 import com.example.backend.service.PostService;
+import com.example.backend.service.SuggestionService;
+import com.example.backend.service.CommentService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -9,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -16,7 +21,8 @@ import java.util.List;
 public class AdminController {
 
     private final PostService postService;
-
+    private final SuggestionService suggestionService;
+    private final CommentService commentService;
     @GetMapping("/pending")
     public List<Post> getPendingPosts() {
 		System.out.println("AdminController: Fetching pending posts");
@@ -51,6 +57,46 @@ public class AdminController {
 	public ResponseEntity<?> deletePost(@PathVariable String id, Authentication auth) {
 		System.out.println("AdminController: Deleting post " + id + " by " + auth.getName());
 		postService.deletePost(id);
+		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/suggestions")
+	public List<Suggestion> getAllSuggestions() {
+		return suggestionService.getAllSuggestions();
+	}
+
+
+	@PutMapping("/suggestions/{id}")
+	public Suggestion updateSuggestion(@PathVariable String id,
+									@RequestBody Map<String, String> body,
+									Authentication auth) {
+		String newContent = body.get("content");
+		System.out.println("Admin " + auth.getName() + " updating suggestion " + id);
+		return suggestionService.updateSuggestion(id, newContent);
+	}
+
+	@DeleteMapping("/suggestions/{id}")
+	public ResponseEntity<?> deleteSuggestion(@PathVariable String id,
+											Authentication auth) {
+		System.out.println("Admin " + auth.getName() + " deleting suggestion " + id);
+		suggestionService.deleteSuggestion(id);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/comments/{id}")
+	public Comment updateComment(@PathVariable String id,
+								@RequestBody Map<String, String> body,
+								Authentication auth) {
+		String newContent = body.get("content");
+		System.out.println("Admin " + auth.getName() + " updating comment " + id);
+		return commentService.updateComment(id, newContent);
+	}
+
+	@DeleteMapping("/comments/{id}")
+	public ResponseEntity<?> deleteComment(@PathVariable String id,
+										Authentication auth) {
+		System.out.println("Admin " + auth.getName() + " deleting comment " + id);
+		commentService.deleteComment(id);
 		return ResponseEntity.ok().build();
 	}
 }

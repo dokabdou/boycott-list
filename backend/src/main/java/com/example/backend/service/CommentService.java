@@ -27,4 +27,15 @@ public class CommentService {
         comment.setCreatedAt(Instant.now());
         return commentRepository.save(comment);
     }
+
+	public Comment updateComment(String id, String newContent) {
+		Comment comment = commentRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Comment not found"));
+		comment.setContent(newContent);
+		return commentRepository.save(comment);
+	}
+
+	public void deleteComment(String id) {
+		commentRepository.deleteById(id);
+	}
 }

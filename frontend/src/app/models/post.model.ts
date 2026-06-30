@@ -1,6 +1,7 @@
 export interface Post {
   id?: string;
   companyName: string;
+  category?: string;
   description: string;
   sourceLinks: string[];
   tags: string[];

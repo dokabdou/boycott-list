@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    // Your existing init logic
+    this.authService.initAuth();
   }
 
   /* @HostListener('window:scroll', [])

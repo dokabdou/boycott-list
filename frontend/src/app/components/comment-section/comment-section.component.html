@@ -1,63 +1,88 @@
-<div class="comment-section">
-  <h3>Comments</h3>
+<div class="page-content">
+	<div class="comment-section">
+	<!-- Toggle header -->
+	<div class="comment-toggle-header" (click)="toggleCollapse()">
+		<h3>Comments</h3>
+		<span class="arrow" [class.open]="!collapsed()">▼</span>
+	</div>
 
-  <!-- New comment form -->
-  <div class="new-comment">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Your name</mat-label>
-      <input matInput [(ngModel)]="newComment.author">
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Write a comment...</mat-label>
-      <textarea matInput rows="2" [(ngModel)]="newComment.content"></textarea>
-    </mat-form-field>
-    <button mat-raised-button color="primary" (click)="addTopLevelComment()"
-            [disabled]="!newComment.author.trim() || !newComment.content.trim()">
-      Post Comment
-    </button>
-  </div>
+	<div class="comment-body" *ngIf="!collapsed()">
+		<!-- New comment form (no name field) -->
+		<div class="new-comment">
+		<mat-form-field appearance="outline" class="full-width">
+			<mat-label>Write a comment...</mat-label>
+			<textarea matInput rows="2"
+					[ngModel]="newContent()"
+					(ngModelChange)="newContent.set($event)"></textarea>
+		</mat-form-field>
+		<button mat-raised-button color="primary"
+				(click)="addTopLevelComment()"
+				[disabled]="!newContent().trim()">
+			Post Comment
+		</button>
+		</div>
 
-  <!-- Comments list -->
-  <div class="comments-list" *ngIf="topLevelComments.length">
-    <div *ngFor="let comment of topLevelComments" class="comment-thread">
-      <div class="comment-card">
-        <div class="comment-header">
-          <strong>{{ comment.author }}</strong>
-          <span class="comment-date">{{ comment.createdAt | date:'short' }}</span>
-        </div>
-        <p>{{ comment.content }}</p>
-        <button mat-button color="accent" (click)="startReply(comment.id)">
-          Reply
-        </button>
+		<!-- Comments list -->
+		<div class="comments-list" *ngIf="topLevelComments.length">
+		<div *ngFor="let comment of topLevelComments" class="comment-thread">
+			<div class="comment-card">
+			<div class="comment-header">
+				<strong>{{ comment.author }}</strong>
+				<span class="comment-date">{{ comment.createdAt | date:'short' }}</span>
+			</div>
+			<p>{{ comment.content }}</p>
+			<div class="comment-admin-actions" *ngIf="isAdmin && editingCommentId() !== comment.id">
+				<button mat-icon-button color="primary" (click)="startEditComment(comment)">
+					<mat-icon>edit</mat-icon>
+				</button>
+				<button mat-icon-button color="warn" (click)="deleteComment(comment.id)">
+					<mat-icon>delete</mat-icon>
+				</button>
+				</div>
 
-        <!-- Reply form inline -->
-        <div *ngIf="replyTo === comment.id" class="reply-form">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Your name</mat-label>
-            <input matInput [(ngModel)]="replyAuthor">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Your reply</mat-label>
-            <textarea matInput rows="2" [(ngModel)]="replyContent"></textarea>
-          </mat-form-field>
-          <button mat-raised-button color="primary" (click)="submitReply()"
-                  [disabled]="!replyAuthor.trim() || !replyContent.trim()">
-            Submit Reply
-          </button>
-          <button mat-button (click)="cancelReply()">Cancel</button>
-        </div>
-      </div>
+				<!-- Edit form -->
+				<div *ngIf="editingCommentId() === comment.id" class="edit-form">
+				<mat-form-field appearance="outline" class="full-width">
+					<textarea matInput rows="2" [(ngModel)]="editCommentContent"></textarea>
+				</mat-form-field>
+				<div class="actions">
+					<button mat-raised-button color="primary" (click)="saveEditComment(comment.id)">Save</button>
+					<button mat-button (click)="cancelEditComment()">Cancel</button>
+				</div>
+			</div>
+			<button mat-button color="accent" (click)="startReply(comment.id)">
+				Reply
+			</button>
 
-      <!-- Nested replies -->
-      <div class="replies" *ngIf="getReplies(comment.id).length">
-        <div *ngFor="let reply of getReplies(comment.id)" class="reply-card">
-          <div class="comment-header">
-            <strong>{{ reply.author }}</strong>
-            <span class="comment-date">{{ reply.createdAt | date:'short' }}</span>
-          </div>
-          <p>{{ reply.content }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
+			<!-- Reply form inline (no name field) -->
+			<div *ngIf="replyTo === comment.id" class="reply-form">
+				<mat-form-field appearance="outline" class="full-width">
+				<mat-label>Your reply</mat-label>
+				<textarea matInput rows="2"
+							[ngModel]="replyContent()"
+							(ngModelChange)="replyContent.set($event)"></textarea>
+				</mat-form-field>
+				<button mat-raised-button color="primary"
+						(click)="submitReply()"
+						[disabled]="!replyContent().trim()">
+				Submit Reply
+				</button>
+				<button mat-button (click)="cancelReply()">Cancel</button>
+			</div>
+			</div>
+
+			<!-- Nested replies -->
+			<div class="replies" *ngIf="getReplies(comment.id).length">
+			<div *ngFor="let reply of getReplies(comment.id)" class="reply-card">
+				<div class="comment-header">
+				<strong>{{ reply.author }}</strong>
+				<span class="comment-date">{{ reply.createdAt | date:'short' }}</span>
+				</div>
+				<p>{{ reply.content }}</p>
+			</div>
+			</div>
+		</div>
+		</div>
+	</div>
+	</div>
 </div>

@@ -22,6 +22,8 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { PostService } from '../../services/post.service';
 import { TagService } from '../../services/tag.service';
+import { SuggestionService } from '../../services/suggestion.service';
+import { Suggestion } from '../../models/suggestion.model';
 import { Post } from '../../models/post.model';
 
 @Component({
@@ -51,12 +53,20 @@ export class AdminDashboardComponent implements OnInit {
   filteredTags!: Observable<string[]>;
   highlightBoxes: string[][] = [];
 
+  allCategories: string[] = [];
+
+  suggestions: WritableSignal<Suggestion[]> = signal([]);
+  editingSuggestionId: WritableSignal<string | null> = signal(null);
+  editSuggestionContent = '';
+
   // Unified banner signal
   banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
+  
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
   constructor(
+    private suggestionService: SuggestionService,
     private postService: PostService,
     private tagService: TagService,
     private fb: FormBuilder,
@@ -65,9 +75,9 @@ export class AdminDashboardComponent implements OnInit {
   ngOnInit() {
     console.log('AdminDashboardComponent initialized');
     this.loadPendingPosts();
-
     this.adminForm = this.fb.group({
       companyName: ['', Validators.required],
+      category: [''],
       description: ['', Validators.required],
       sourceLinks: this.fb.array([this.fb.control('', Validators.required)]),
     });
@@ -79,6 +89,10 @@ export class AdminDashboardComponent implements OnInit {
         startWith(''),
         map(() => this.filterTags('')),
       );
+    });
+
+    this.postService.getCategories().subscribe((categories) => {
+      this.allCategories = categories;
     });
   }
 
@@ -204,28 +218,22 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   createAdminPost() {
-    console.log('Creating admin post with form values:', this.adminForm.value);
-    console.log('is adminForm valid?', this.adminForm.valid);
     if (this.adminForm.invalid) return;
 
-    const post: Post = {
-      companyName: this.adminForm.value.companyName,
-      description: this.adminForm.value.description,
-      sourceLinks: this.adminForm.value.sourceLinks,
-      tags: this.selectedTags,
-      highlights: this.highlightBoxes.filter((box) => box.length > 0),
-    };
-
-    console.log('Submitting admin post:', post);
-
-    this.postService.submitAdminPost(post).subscribe(() => {
-      // Reset the form after successful submission
-      this.adminForm.reset();
-      this.sourceLinks.clear();
-      this.sourceLinks.push(this.fb.control('', Validators.required));
-      this.selectedTags = [];
-      this.highlightBoxes = [];
-      // Optionally show a snackbar
-    });
+    this.postService
+      .submitPost(
+        this.adminForm.value,
+        this.selectedTags,
+        this.highlightBoxes,
+        true, // isAdmin = true → auto‑approved, admin endpoint
+      )
+      .subscribe(() => {
+        // Reset form
+        this.adminForm.reset();
+        this.sourceLinks.clear();
+        this.sourceLinks.push(this.fb.control('', Validators.required));
+        this.selectedTags = [];
+        this.highlightBoxes = [];
+      });
   }
 }

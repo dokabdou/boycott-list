@@ -19,4 +19,12 @@ export class CommentService {
   ): Observable<Comment> {
     return this.http.post<Comment>(`${this.publicUrl}/posts/${postId}/comments`, comment);
   }
+
+  updateComment(id: string, content: string): Observable<Comment> {
+    return this.http.put<Comment>(`/api/admin/comments/${id}`, { content });
+  }
+
+  deleteComment(id: string): Observable<void> {
+    return this.http.delete<void>(`/api/admin/comments/${id}`);
+  }
 }

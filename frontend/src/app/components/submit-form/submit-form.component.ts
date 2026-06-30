@@ -45,6 +45,7 @@ export class SubmitFormComponent implements OnInit {
   allTags: string[] = [];
   filteredTags!: Observable<string[]>;
   highlightBoxes: string[][] = [];
+  allCategories: string[] = [];
   showBanner: WritableSignal<boolean> = signal(false); // success banner
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
@@ -59,6 +60,7 @@ export class SubmitFormComponent implements OnInit {
     this.submitForm = this.fb.group({
       companyName: ['', Validators.required],
       description: ['', Validators.required],
+      category: [''],
       sourceLinks: this.fb.array([this.fb.control('', Validators.required)]),
     });
 
@@ -68,6 +70,10 @@ export class SubmitFormComponent implements OnInit {
         startWith(''),
         map(() => this.filterTags('')),
       );
+    });
+
+    this.postService.getCategories().subscribe((categories) => {
+      this.allCategories = categories;
     });
   }
 
@@ -139,24 +145,23 @@ export class SubmitFormComponent implements OnInit {
 
   onSubmit() {
     if (this.submitForm.invalid) return;
-    const post = {
-      companyName: this.submitForm.value.companyName,
-      description: this.submitForm.value.description,
-      sourceLinks: this.submitForm.value.sourceLinks,
-      tags: this.selectedTags,
-      highlights: this.highlightBoxes.filter((box) => box.length > 0),
-    };
-    this.postService.submitAnonymous(post).subscribe(() => {
-      // Clear form and show banner
-      this.submitForm.reset();
-      // Reset source links array to exactly one empty field
-      this.sourceLinks.clear();
-      this.sourceLinks.push(this.fb.control('', Validators.required));
-      this.selectedTags = [];
-      this.highlightBoxes = [];
-      // Show success banner
-      this.showBanner.set(true);
-      setTimeout(() => this.showBanner.set(false), 7000);
-    });
+
+    this.postService
+      .submitPost(
+        this.submitForm.value,
+        this.selectedTags,
+        this.highlightBoxes,
+        false, // isAdmin = false → anonymous submission
+      )
+      .subscribe(() => {
+        // Reset form and show success banner
+        this.submitForm.reset();
+        this.sourceLinks.clear();
+        this.sourceLinks.push(this.fb.control('', Validators.required));
+        this.selectedTags = [];
+        this.highlightBoxes = [];
+        this.showBanner.set(true);
+        setTimeout(() => this.showBanner.set(false), 7000);
+      });
   }
 }

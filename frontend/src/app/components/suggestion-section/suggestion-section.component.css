@@ -1,0 +1,83 @@
+.suggestion-section {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.suggestion-admin-actions {
+  display: flex;
+  gap: 4px;
+}
+.edit-form {
+  margin-top: 8px;
+  margin-left: 20px;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+.toggle-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.arrow {
+  font-size: 14px;
+  transition: transform 0.2s;
+}
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.suggestion-body {
+  margin-top: 12px;
+  max-height: 400px;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+}
+
+.new-suggestion {
+  margin-bottom: 24px;
+}
+
+.suggestions-list {
+  margin-top: 16px;
+}
+
+.suggestion-card {
+  border-left: 3px solid #ff9800;   /* orange for suggestions */
+  padding-left: 12px;
+  margin-bottom: 12px;
+}
+
+.suggestion-card p {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.suggestion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.date {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.full-width {
+  width: 100%;
+}
