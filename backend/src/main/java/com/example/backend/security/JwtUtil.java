@@ -10,7 +10,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private final SecretKey key = Keys.hmacShaKeyFor(
-        "my-32-byte-secret-key-12345678901234".getBytes()   // use a real secret in production
+        "my-32-byte-secret-key-12345678901234".getBytes()   // TODO :: use a real secret in production
     );
     private final long expirationMs = 86_400_000;   // 1 day
 

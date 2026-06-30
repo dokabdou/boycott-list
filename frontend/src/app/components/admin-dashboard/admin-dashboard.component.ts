@@ -59,7 +59,6 @@ export class AdminDashboardComponent implements OnInit {
   editingSuggestionId: WritableSignal<string | null> = signal(null);
   editSuggestionContent = '';
 
-  // Unified banner signal
   banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
   
 
@@ -82,7 +81,6 @@ export class AdminDashboardComponent implements OnInit {
       sourceLinks: this.fb.array([this.fb.control('', Validators.required)]),
     });
 
-    // Load available tags
     this.tagService.getTags().subscribe((tags) => {
       this.allTags = tags;
       this.filteredTags = this.adminForm.valueChanges.pipe(
@@ -108,7 +106,6 @@ export class AdminDashboardComponent implements OnInit {
     this.sourceLinks.removeAt(index);
   }
 
-  // Tag methods
   addTag(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
     if (value && !this.selectedTags.includes(value)) {
@@ -191,7 +188,6 @@ export class AdminDashboardComponent implements OnInit {
       },
       error: (err) => {
         console.error('Approval failed', err);
-        // Optionally show an error banner
         this.banner.set({ type: 'error', message: 'Approval failed. Check console.' });
         setTimeout(() => this.banner.set(null), 5000);
       },

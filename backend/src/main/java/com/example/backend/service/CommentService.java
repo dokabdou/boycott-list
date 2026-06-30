@@ -14,7 +14,6 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     public List<Comment> getCommentsForPost(String postId) {
-        // We’ll return all comments for the post; frontend builds the tree
         return commentRepository.findByPostIdOrderByCreatedAtDesc(postId);
     }
 

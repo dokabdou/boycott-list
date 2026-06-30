@@ -1,4 +1,11 @@
 <div class="page-content">	
+	<!-- Banner -->
+  @if (banner(); as b) {
+    <div class="banner-fixed" [class.success-banner]="b.type === 'success'" [class.failure-banner]="b.type === 'error'">
+      <span [innerHTML]="b.message"></span>
+      <button class="close-btn" (click)="banner.set(null)">✕</button>
+    </div>
+  }
   <div class="container">
     <h1>Boycott List</h1>
     <div class="intro-toggle" (click)="toggleDescription()">

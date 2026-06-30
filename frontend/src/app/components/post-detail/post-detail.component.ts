@@ -43,6 +43,7 @@ export class PostDetailComponent implements OnInit {
   postId: string = '';
   editingPostId: WritableSignal<string | null> = signal(null);
   editForm: FormGroup | null = null;
+  banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
 
   constructor(
     private route: ActivatedRoute,
@@ -89,18 +90,6 @@ export class PostDetailComponent implements OnInit {
     this.editForm = null;
   }
 
-  saveEdit(postId: string): void {
-    if (!this.editForm?.valid) return;
-    const updated = this.postService.buildEditPayload(this.editForm.value, postId);
-    this.postService.editPost(postId, updated).subscribe(() => {
-      const currentPost = this.post();
-      if (currentPost) {
-        this.post.set({ ...currentPost, ...updated });
-      }
-      this.cancelEdit();
-    });
-  }
-
   get sourceLinksArray(): FormArray {
     return this.editForm?.get('sourceLinks') as FormArray;
   }
@@ -113,12 +102,45 @@ export class PostDetailComponent implements OnInit {
     this.sourceLinksArray.removeAt(index);
   }
 
-  // -------- DELETE ----------
+  saveEdit(postId: string): void {
+    if (!this.editForm?.valid) return;
+    const updated = this.postService.buildEditPayload(this.editForm.value, postId);
+    const companyName = updated.companyName;
+
+    this.postService.editPost(postId, updated).subscribe({
+      next: () => {
+        this.showBanner('success', `"${companyName}" updated successfully.`);
+
+        const currentPost = this.post();
+        if (currentPost) {
+          this.post.set({ ...currentPost, ...updated });
+        }
+        this.cancelEdit();
+      },
+      error: () => {
+        this.showBanner('error', `Failed to update "${companyName}".`);
+      },
+    });
+  }
+
   deletePost(): void {
-    if (confirm('Are you sure you want to delete this post?')) {
-      this.postService.deletePost(this.postId).subscribe(() => {
-        this.router.navigate(['/']);
-      });
-    }
+    const companyName = this.post()?.companyName || 'this post';
+    if (!confirm('Are you sure you want to delete this post?')) return;
+
+    this.postService.deletePost(this.postId).subscribe({
+      next: () => {
+        this.showBanner('success', `"${companyName}" deleted successfully.`);
+        setTimeout(() => this.router.navigate(['/']), 800);
+      },
+      error: () => {
+        this.showBanner('error', `Failed to delete "${companyName}".`);
+      },
+    });
+  }
+
+  private showBanner(type: 'success' | 'error', message: string) {
+    const formattedMessage = message.replace(/"(.*?)"/, '<strong>$1</strong>');
+    this.banner.set({ type, message: formattedMessage });
+    setTimeout(() => this.banner.set(null), 5000);
   }
 }

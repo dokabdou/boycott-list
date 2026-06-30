@@ -34,7 +34,6 @@
   cursor: pointer;
 }
 
-/* Search bar */
 .search-container {
   display: flex;
   align-items: center;
@@ -79,7 +78,6 @@
   opacity: 0.8;
 }
 
-/* Responsive */
 @media (max-width: 640px) {
   .navbar {
     flex-direction: column;

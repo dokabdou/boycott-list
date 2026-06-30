@@ -37,6 +37,9 @@ export class PostListComponent implements OnInit {
   editForm: FormGroup | null = null;
   showDescription: WritableSignal<boolean> = signal(true);
 
+  // Banner signal
+  banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
+
   constructor(
     private postService: PostService,
     private authService: AuthService,
@@ -117,9 +120,17 @@ export class PostListComponent implements OnInit {
   saveEdit(postId: string): void {
     if (!this.editForm?.valid) return;
     const updated = this.postService.buildEditPayload(this.editForm.value, postId);
-    this.postService.editPost(postId, updated).subscribe(() => {
-      this.loadPosts();
-      this.cancelEdit();
+    const companyName = updated.companyName;
+
+    this.postService.editPost(postId, updated).subscribe({
+      next: () => {
+        this.showBanner('success', `"${companyName}" updated successfully.`);
+        this.loadPosts();
+        this.cancelEdit();
+      },
+      error: () => {
+        this.showBanner('error', `Failed to update "${companyName}".`);
+      },
     });
   }
 
@@ -135,10 +146,25 @@ export class PostListComponent implements OnInit {
     this.sourceLinksArray.removeAt(index);
   }
 
-  // -------- DELETE ----------
   deletePost(postId: string): void {
+    const post = this.posts().find((p) => p.id === postId);
+    const companyName = post?.companyName || 'this post';
     if (confirm('Are you sure you want to delete this post?')) {
-      this.postService.deletePost(postId).subscribe(() => this.loadPosts());
+      this.postService.deletePost(postId).subscribe({
+        next: () => {
+          this.showBanner('success', `"${companyName}" deleted successfully.`);
+          this.loadPosts();
+        },
+        error: () => {
+          this.showBanner('error', `Failed to delete "${companyName}".`);
+        },
+      });
     }
+  }
+
+  private showBanner(type: 'success' | 'error', message: string) {
+	const formattedMessage = message.replace(/"(.*?)"/, '<strong>"$1"</strong>');
+	this.banner.set({ type, message: formattedMessage });
+	setTimeout(() => this.banner.set(null), 5000);
   }
 }

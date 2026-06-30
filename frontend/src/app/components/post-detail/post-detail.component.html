@@ -1,4 +1,10 @@
 <div class="page-content">
+	<ng-container *ngIf="banner() as b">
+		<div class="banner-fixed" [class.success-banner]="b.type === 'success'" [class.failure-banner]="b.type === 'error'">
+			<span [innerHTML]="b.message"></span>
+			<button class="close-btn" (click)="banner.set(null)">✕</button>
+		</div>
+	</ng-container>
   <div *ngIf="post() as p; else loading">
     <!-- Admin buttons -->
     <div class="admin-post-actions" *ngIf="isLoggedIn() && editingPostId() !== p.id">

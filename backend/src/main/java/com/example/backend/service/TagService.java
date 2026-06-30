@@ -13,7 +13,6 @@ public class TagService {
     private final TagRepository tagRepository;
 
     public List<Tag> getAllApprovedTags() {
-        // For simplicity, we don't filter by approved – all tags are approved once added from an approved post.
         return tagRepository.findAll();
     }
 

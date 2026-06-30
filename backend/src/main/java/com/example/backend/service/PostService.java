@@ -16,14 +16,13 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final TagService tagService;   // we'll create a simple tag service later
+    private final TagService tagService;
 
     public Post submitAnonymous(Post post) {
         post.setAnonymous(true);
         post.setSubmittedBy("anonymous");
         post.setStatus(Post.PostStatus.PENDING);
         post.setCreatedAt(Instant.now());
-        // We'll handle tags later – ensure they exist or are pending
 		//return postRepository.save(post);
 		Post savedPost = postRepository.save(post);
 		System.out.println("PostService ==> Saved anonymous post ID: " + savedPost.getId());   //
@@ -37,10 +36,8 @@ public class PostService {
         post.setCreatedAt(Instant.now());
         post.setReviewedAt(Instant.now());
         post.setReviewedBy(adminUsername);
-        // Process tags – add new tags to the approved tag list
         tagService.addNewTags(post.getTags());
         //return postRepository.save(post);
-
 		 Post savedPost = postRepository.save(post);
 		System.out.println("PostService ==> Saved post ID: " + savedPost.getId());   // ← add this
 		return savedPost;
@@ -65,7 +62,6 @@ public class PostService {
             post.setStatus(Post.PostStatus.APPROVED);
             post.setReviewedAt(Instant.now());
             post.setReviewedBy(adminUsername);
-            // Now add the tags to the global tag list
             tagService.addNewTags(post.getTags());
 			System.out.println("PostService ==> Approved post ID: " + post.getId() + " by admin: " + adminUsername);   // ← add this
             return postRepository.save(post);
@@ -104,7 +100,6 @@ public class PostService {
 		post.setSourceLinks(updatedPost.getSourceLinks());
 		post.setTags(updatedPost.getTags());
 		post.setHighlights(updatedPost.getHighlights());
-		// keep status, submitter, dates unchanged
 		tagService.addNewTags(updatedPost.getTags());   // add any new tags
 		return postRepository.save(post);
 	}

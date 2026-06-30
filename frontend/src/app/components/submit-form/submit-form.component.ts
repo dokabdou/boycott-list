@@ -46,7 +46,7 @@ export class SubmitFormComponent implements OnInit {
   filteredTags!: Observable<string[]>;
   highlightBoxes: string[][] = [];
   allCategories: string[] = [];
-  showBanner: WritableSignal<boolean> = signal(false); // success banner
+  showBanner: WritableSignal<boolean> = signal(false);
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
@@ -154,7 +154,6 @@ export class SubmitFormComponent implements OnInit {
         false, // isAdmin = false → anonymous submission
       )
       .subscribe(() => {
-        // Reset form and show success banner
         this.submitForm.reset();
         this.sourceLinks.clear();
         this.sourceLinks.push(this.fb.control('', Validators.required));

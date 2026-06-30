@@ -28,7 +28,6 @@ export class AppComponent implements OnInit {
   // Scroll‑to‑top button visibility (signal for zoneless reactivity)
   showScrollBtn = signal(false);
 
-  // Toast message logic (keep if you use it)
   toastMessage: string | null = null;
   private timeoutRef: any;
 
@@ -47,7 +46,6 @@ export class AppComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Search methods
   onSearchInput(term: string) {
     this.searchService.setSearchTerm(term);
   }

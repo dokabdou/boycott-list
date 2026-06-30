@@ -41,13 +41,12 @@ export class CommentSectionComponent {
   replyTo: string | null = null;
   replyContent = signal('');
 
-  // Admin edit/delete
   editingCommentId = signal<string | null>(null);
   editCommentContent = '';
   isAdmin: boolean = false;
 
   ngOnInit(): void {
-    this.isAdmin = this.authService.isLoggedIn(); // synchronous check, works because component is only browser
+    this.isAdmin = this.authService.isLoggedIn();
     this.loadComments();
   }
 
@@ -114,7 +113,6 @@ export class CommentSectionComponent {
     const newContent = this.editCommentContent.trim();
     if (!newContent) return;
     this.commentService.updateComment(id, newContent).subscribe((updated) => {
-      // Update local signal
       this.comments.update((comments) =>
         comments.map((c) => (c.id === id ? { ...c, content: updated.content } : c)),
       );

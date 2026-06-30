@@ -17,7 +17,7 @@ h3 {
 
 mat-expansion-panel {
   margin-bottom: 16px;
-  border-left: 4px solid #ff9800;   /* orange for pending */
+  border-left: 4px solid #ff9800;
 }
 
 mat-panel-description {
@@ -41,7 +41,6 @@ hr {
   border-top: 1px solid #ddd;
 }
 
-/* Admin create form (same style as submit form) */
 .full-width {
   width: 100%;
 }
