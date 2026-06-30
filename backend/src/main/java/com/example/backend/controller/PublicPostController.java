@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import com.example.backend.model.Comment;
 import com.example.backend.service.SuggestionService;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.List;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 @RestController
 @RequestMapping("/api/public")
+@Tag(name = "Public", description = "Endpoints available to everyone (anonymous submissions, view posts, etc.)")
 @RequiredArgsConstructor
 public class PublicPostController {
 
@@ -24,28 +28,38 @@ public class PublicPostController {
 	private final SuggestionService suggestionService;
 
     @PostMapping("/submit")
+    @Operation(summary = "Submit a company anonymously",
+               description = "Creates a new boycott post in PENDING status. Requires source links.")
     public Post submitAnonymous(@RequestBody Post post) {
         // Frontend will send companyName, description, sourceLinks, tags
         return postService.submitAnonymous(post);
     }
 
     @GetMapping("/posts")
+    @Operation(summary = "Get approved posts",
+               description = "Retrieves all approved boycott posts.")
     public List<Post> getApprovedPosts() {
         return postService.getApprovedPosts();
     }
 
     @GetMapping("/tags")
+    @Operation(summary = "Get approved tags",
+               description = "Retrieves all approved tags.")
     public List<String> getApprovedTags() {
         // return tag names only
         return postService.getApprovedTags();
     }
 
 	@GetMapping("/posts/{postId}/comments")
+	@Operation(summary = "Get comments for a post",
+			   description = "Retrieves all comments for a specific post.")
 	public List<Comment> getComments(@PathVariable String postId) {
 		return commentService.getCommentsForPost(postId);
 	}
 
 	@PostMapping("/posts/{postId}/comments")
+	@Operation(summary = "Add a comment to a post",
+			   description = "Adds a new comment to a specific post.")
 	public Comment addComment(@PathVariable String postId,
 							@RequestBody Map<String, String> body) {
 		String parentId = body.get("parentId");   // can be null
@@ -55,6 +69,8 @@ public class PublicPostController {
 	}
 
 	@GetMapping("/posts/{id}")
+	@Operation(summary = "Get a post by ID",
+			   description = "Retrieves a specific post by its ID.")
 	public ResponseEntity<Post> getPost(@PathVariable String id) {
 		return postService.getPostById(id)
 				.map(ResponseEntity::ok)
@@ -62,21 +78,29 @@ public class PublicPostController {
 	}
 
 	@GetMapping("/posts/search")
+	@Operation(summary = "Search posts by tag",
+			   description = "Retrieves all posts associated with a specific tag.")
 	public List<Post> searchByTag(@RequestParam String tag) {
 		return postService.searchByTag(tag);
 	}
 
 	@GetMapping("/categories")
+	@Operation(summary = "Get all categories",
+			   description = "Retrieves all available categories.")
 	public List<String> getCategories() {
 		return postService.getAllCategories();
 	}
 
 	@GetMapping("/posts/{postId}/suggestions")
+	@Operation(summary = "Get suggestions for a post",
+			   description = "Retrieves all suggestions for a specific post.")
 	public List<Suggestion> getSuggestions(@PathVariable String postId) {
 		return suggestionService.getSuggestionsForPost(postId);
 	}
 
 	@PostMapping("/posts/{postId}/suggestions")
+	@Operation(summary = "Add a suggestion to a post",
+			   description = "Adds a new suggestion to a specific post.")
 	public Suggestion addSuggestion(@PathVariable String postId,
 									@RequestBody Map<String, String> body) {
 		String author = body.get("author");   // always "anon wolf"
