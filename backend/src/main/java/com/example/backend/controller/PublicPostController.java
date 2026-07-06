@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.example.backend.model.Category;
 import com.example.backend.model.Comment;
 import com.example.backend.service.SuggestionService;
 import java.util.Map;
@@ -27,6 +29,8 @@ public class PublicPostController {
 	private final CommentService commentService;
 	private final SuggestionService suggestionService;
 
+
+	// Post management endpoints
     @PostMapping("/submit")
     @Operation(summary = "Submit a company anonymously",
                description = "Creates a new boycott post in PENDING status. Requires source links.")
@@ -39,34 +43,11 @@ public class PublicPostController {
     @Operation(summary = "Get approved posts",
                description = "Retrieves all approved boycott posts.")
     public List<Post> getApprovedPosts() {
-        return postService.getApprovedPosts();
+		System.out.println("PublicPostController: Fetching approved posts");
+		List<Post> approvedPosts = postService.getApprovedPosts();
+		System.out.println("PublicPostController: Retrieved approved posts count: " + approvedPosts.size());
+        return approvedPosts;
     }
-
-    @GetMapping("/tags")
-    @Operation(summary = "Get approved tags",
-               description = "Retrieves all approved tags.")
-    public List<String> getApprovedTags() {
-        // return tag names only
-        return postService.getApprovedTags();
-    }
-
-	@GetMapping("/posts/{postId}/comments")
-	@Operation(summary = "Get comments for a post",
-			   description = "Retrieves all comments for a specific post.")
-	public List<Comment> getComments(@PathVariable String postId) {
-		return commentService.getCommentsForPost(postId);
-	}
-
-	@PostMapping("/posts/{postId}/comments")
-	@Operation(summary = "Add a comment to a post",
-			   description = "Adds a new comment to a specific post.")
-	public Comment addComment(@PathVariable String postId,
-							@RequestBody Map<String, String> body) {
-		String parentId = body.get("parentId");   // can be null
-		String author = body.get("author");
-		String content = body.get("content");
-		return commentService.addComment(postId, parentId, author, content);
-	}
 
 	@GetMapping("/posts/{id}")
 	@Operation(summary = "Get a post by ID",
@@ -77,19 +58,16 @@ public class PublicPostController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 
-	@GetMapping("/posts/search")
-	@Operation(summary = "Search posts by tag",
-			   description = "Retrieves all posts associated with a specific tag.")
-	public List<Post> searchByTag(@RequestParam String tag) {
-		return postService.searchByTag(tag);
-	}
+	// Tags 
+	/* @GetMapping("/tags")
+    @Operation(summary = "Get approved tags",
+               description = "Retrieves all approved tags.")
+    public List<String> getApprovedTags() {
+        // return tag names only
+        return postService.getApprovedTags();
+    } */
 
-	@GetMapping("/categories")
-	@Operation(summary = "Get all categories",
-			   description = "Retrieves all available categories.")
-	public List<String> getCategories() {
-		return postService.getAllCategories();
-	}
+	// Suggestions management endpoints
 
 	@GetMapping("/posts/{postId}/suggestions")
 	@Operation(summary = "Get suggestions for a post",
@@ -106,5 +84,25 @@ public class PublicPostController {
 		String author = body.get("author");   // always "anon wolf"
 		String content = body.get("content");
 		return suggestionService.addSuggestion(postId, author, content);
+	}
+
+
+	// Comments management endpoints 
+	@GetMapping("/posts/{postId}/comments")
+	@Operation(summary = "Get comments for a post",
+			   description = "Retrieves all comments for a specific post.")
+	public List<Comment> getComments(@PathVariable String postId) {
+		return commentService.getCommentsForPost(postId);
+	}
+
+	@PostMapping("/posts/{postId}/comments")
+	@Operation(summary = "Add a comment to a post",
+			   description = "Adds a new comment to a specific post.")
+	public Comment addComment(@PathVariable String postId,
+							@RequestBody Map<String, String> body) {
+		String parentId = body.get("parentId");   // can be null
+		String author = body.get("author");
+		String content = body.get("content");
+		return commentService.addComment(postId, parentId, author, content);
 	}
 }

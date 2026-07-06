@@ -74,6 +74,7 @@ export class PostListComponent implements OnInit {
         return dateB - dateA;
       });
       this.posts.set(sorted);
+	  console.log('Loaded posts:', this.posts());
     });
   }
 

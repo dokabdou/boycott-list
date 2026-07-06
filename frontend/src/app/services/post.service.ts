@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Post } from '../models/post.model';
 
 @Injectable({ providedIn: 'root' })
@@ -10,51 +11,31 @@ export class PostService {
 
   constructor(private http: HttpClient) {}
 
+  // -------- Helper to convert objects to strings ----------
+  private mapPost(post: Post): Post {
+    // Extract the name from category (if it’s an object) or keep the string
+    const category = (post.category as any)?.name ?? post.category ?? '';
+    // Extract the name from each tag (if they are objects) or keep the string
+    const tags = (post.tags ?? []).map((t: any) => t.name ?? t);
+
+    return { ...post, category, tags };
+  }
+
+  // -------- Public ----------
   submitAnonymous(post: Post): Observable<Post> {
-    console.log('Submitting anonymous post:', post);
-    const postToSubmit = this.http.post<Post>(`${this.publicUrl}/submit`, post);
-    console.log('Post submitted:', postToSubmit);
-    return postToSubmit;
+    return this.http.post<Post>(`${this.publicUrl}/submit`, post);
   }
 
   getApprovedPosts(): Observable<Post[]> {
-    console.log('Fetching approved posts');
-    const approvedPosts = this.http.get<Post[]>(`${this.publicUrl}/posts`);
-    console.log('Approved posts:', approvedPosts);
-    return approvedPosts;
+    return this.http
+      .get<Post[]>(`${this.publicUrl}/posts`)
+      .pipe(map((posts) => posts.map((p) => this.mapPost(p))));
   }
 
-  getPendingPosts(): Observable<Post[]> {
-    const pendingPosts = this.http.get<Post[]>(`${this.adminUrl}/pending`);
-    console.log('Pending posts:', pendingPosts);
-    return pendingPosts;
+  getPostById(id: string): Observable<Post> {
+    return this.http.get<Post>(`${this.publicUrl}/posts/${id}`).pipe(map((p) => this.mapPost(p)));
   }
 
-  approvePost(id: string): Observable<Post> {
-    console.log('Approving post with ID:', id);
-    const postToApprove = this.http.put<Post>(`${this.adminUrl}/approve/${id}`, {});
-    console.log('Post approved:', postToApprove);
-    return postToApprove;
-  }
-
-  rejectPost(id: string): Observable<Post> {
-    console.log('Rejecting post with ID:', id);
-    const postToReject = this.http.put<Post>(`${this.adminUrl}/reject/${id}`, {});
-    console.log('Post rejected:', postToReject);
-    return postToReject;
-  }
-
-  getCategories(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.publicUrl}/categories`);
-  }
-
-  /**
-   * Builds and submits a post.
-   * @param formValue the raw form values (companyName, description, sourceLinks, category)
-   * @param selectedTags extra tags selected by the user
-   * @param highlightBoxes highlights array of arrays
-   * @param isAdmin if true, the post is auto‑approved and sent to admin endpoint
-   */
   submitPost(
     formValue: any,
     selectedTags: string[],
@@ -65,7 +46,6 @@ export class PostService {
     const category = (formValue.category || '').trim();
     const tagsFromInput = [...selectedTags];
 
-    // Helper to add a unique tag (case‑insensitive)
     const addUnique = (tag: string) => {
       if (!tag) return;
       if (!tagsFromInput.some((t) => t.toLowerCase() === tag.toLowerCase())) {
@@ -73,56 +53,61 @@ export class PostService {
       }
     };
 
-    // Ensure company name is the first tag
     const existingIndex = tagsFromInput.findIndex(
       (t) => t.toLowerCase() === companyName.toLowerCase(),
     );
-    if (existingIndex >= 0) {
-      tagsFromInput.splice(existingIndex, 1);
-    }
+    if (existingIndex >= 0) tagsFromInput.splice(existingIndex, 1);
     tagsFromInput.unshift(companyName);
 
-    // Add category as a tag (if not already present and not the company name)
     if (category && category.toLowerCase() !== companyName.toLowerCase()) {
       addUnique(category);
     }
 
     const post: Post = {
       companyName,
-      category,
+      category, // still a string – the backend will deserialize it
       description: formValue.description,
       sourceLinks: formValue.sourceLinks,
       tags: tagsFromInput,
       highlights: highlightBoxes.filter((box) => box.length > 0),
     };
 
-    if (isAdmin) {
-      return this.http.post<Post>(`${this.adminUrl}/posts`, post);
-    }
-    return this.http.post<Post>(`${this.publicUrl}/submit`, post);
+    const url = isAdmin ? `${this.adminUrl}/posts` : `${this.publicUrl}/submit`;
+    return this.http.post<Post>(url, post);
   }
 
-  getPostById(id: string): Observable<Post> {
-    return this.http.get<Post>(`${this.publicUrl}/posts/${id}`);
+  // -------- Admin ----------
+  getPendingPosts(): Observable<Post[]> {
+    return this.http
+      .get<Post[]>(`${this.adminUrl}/pending`)
+      .pipe(map((posts) => posts.map((p) => this.mapPost(p))));
+  }
+
+  approvePost(id: string): Observable<Post> {
+    return this.http.put<Post>(`${this.adminUrl}/approve/${id}`, {});
+  }
+
+  rejectPost(id: string): Observable<Post> {
+    return this.http.put<Post>(`${this.adminUrl}/reject/${id}`, {});
   }
 
   editPost(id: string, post: Post): Observable<Post> {
-    console.log('Editing post with ID:', id, 'New data:', post);
-    return this.http.put<Post>(`${this.adminUrl}/posts/${id}`, post);
+    const result = this.http.put<Post>(`${this.adminUrl}/posts/${id}`, post);
+	console.log('url:', `${this.adminUrl}/posts/${id}`);
+	console.log('Edit Post Request:', { id, post, result });
+    return result;
   }
 
   deletePost(id: string): Observable<void> {
-    console.log('Deleting post with ID:', id);
     return this.http.delete<void>(`${this.adminUrl}/posts/${id}`);
   }
 
-  // editing
   buildEditPayload(formValue: any, postId: string): Post {
     const tags: string[] = formValue.tags
       ? formValue.tags
           .split(',')
           .map((t: string) => t.trim())
-          .filter((t: string) => t.length > 0)
+          .filter((t: string) => t)
       : [];
 
     const highlights: string[][] = formValue.highlights
@@ -132,7 +117,7 @@ export class PostService {
             line
               .split('|')
               .map((item: string) => item.trim())
-              .filter((item: string) => item.length > 0),
+              .filter((item) => item),
           )
           .filter((box: string[]) => box.length > 0)
       : [];

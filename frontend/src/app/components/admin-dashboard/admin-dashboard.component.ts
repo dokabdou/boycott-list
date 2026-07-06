@@ -25,6 +25,8 @@ import { TagService } from '../../services/tag.service';
 import { SuggestionService } from '../../services/suggestion.service';
 import { Suggestion } from '../../models/suggestion.model';
 import { Post } from '../../models/post.model';
+import { CategoryService } from '../../services/category.service';
+import { Tag } from '../../models/tag.model';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -45,6 +47,10 @@ import { Post } from '../../models/post.model';
   styleUrls: ['./admin-dashboard.component.css', '../../../styles.css'],
 })
 export class AdminDashboardComponent implements OnInit {
+  activeTab: 'post' | 'manage' = 'post';
+  categories: WritableSignal<string[]> = signal([]);
+  tags: WritableSignal<Tag[]> = signal([]);
+
   pendingPosts: WritableSignal<Post[]> = signal([]);
   adminForm!: FormGroup;
 
@@ -60,7 +66,6 @@ export class AdminDashboardComponent implements OnInit {
   editSuggestionContent = '';
 
   banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
-  
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
@@ -68,6 +73,7 @@ export class AdminDashboardComponent implements OnInit {
     private suggestionService: SuggestionService,
     private postService: PostService,
     private tagService: TagService,
+    private categoryService: CategoryService,
     private fb: FormBuilder,
   ) {}
 
@@ -89,10 +95,60 @@ export class AdminDashboardComponent implements OnInit {
       );
     });
 
-    this.postService.getCategories().subscribe((categories) => {
+    this.categoryService.getCategories().subscribe((categories) => {
       this.allCategories = categories;
     });
   }
+
+  /* loadCategories() {
+    this.postService.getCategories().subscribe((cats) => this.categories.set(cats));
+  }
+
+  loadTags() {
+    this.tagService.getAdminTags().subscribe((tags) => this.tags.set(tags));
+  }
+
+  addCategory() {
+    // Categories are just strings, we create them by creating a new tag? Actually, categories come from post.category; to add a new one we just need to have it appear in the autocomplete – we can add it via tag creation? But categories are not tags. The best way is to allow the admin to create a new category by directly adding it to the list and persisting it as a "dummy" post or by providing an endpoint to add a category. For simplicity, we'll implement a local add: the admin can type a new category name and we'll add it to the local list; however, it won't be saved until a post uses it. That's acceptable.
+    const name = this.newCategoryName.trim();
+    if (!name) return;
+    // Add locally; will be available in autocomplete next time categories are loaded from existing posts
+    if (!this.categories().includes(name)) {
+      this.categories.update((cats) => [...cats, name].sort());
+    }
+    this.newCategoryName = '';
+  }
+
+  startEditCategory(cat: string) {
+    this.editingCategoryId.set(cat); // use the name as ID for categories
+    this.editCategoryName = cat;
+  }
+
+  saveEditCategory(oldName: string) {
+    const newName = this.editCategoryName.trim();
+    if (!newName || newName === oldName) return;
+    this.categoryService.renameCategory(oldName, newName).subscribe(() => {
+      this.editingCategoryId.set(null);
+      this.loadCategories();
+    });
+  }
+
+  deleteCategory(name: string) {
+    if (confirm('Delete this category?')) {
+      this.categoryService.deleteCategory(name).subscribe(() => this.loadCategories());
+    }
+  }
+
+  refreshData() {
+    // get the tags and categories, edit and update or delete the allTags and allCategories arrays
+  }
+
+  switchTab(tab: 'post' | 'manage') {
+    this.activeTab = tab;
+    if (tab === 'manage') {
+      this.loadSuggestions();
+    }
+  } */
 
   get sourceLinks(): FormArray {
     return this.adminForm.get('sourceLinks') as FormArray;

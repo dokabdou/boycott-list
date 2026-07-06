@@ -3,9 +3,19 @@ package com.example.backend.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.example.backend.config.CategoryDeserializer;
+import com.example.backend.config.PostTagDeserializer;
+import com.example.backend.config.CategorySerializer;
+import com.example.backend.config.PostTagSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Document(collection = "posts")
@@ -19,34 +29,55 @@ public class Post {
 
     @Schema(description = "The name of the company associated with the post.", example = "Spotify")
     private String companyName;
+
 	@Schema(description = "The category to which the post belongs.", example = "Music & Media")
-	private String category; 
+	//@JsonDeserialize(using = CategoryDeserializer.class)
+	private Category category; 
+
     @Schema(description = "A description of why this company should be boycotted.", example = "Spotify ran ICE, and israel prison ads, as well as having their ceo investing in 'Helsing AI' who make AI killbots.")
     private String description;
+
 	@Schema(description = "Mandatory sources from which the user got their information.", example = "https://bdsmovement.net/boycott-spotify")
-    private List<String> sourceLinks;        
+    private List<String> sourceLinks;  
+
 	@Schema(description = "Tags associated with the post", example = "[\"israel\", \"spotify\"]")
-    private List<String> tags;          
+	//@JsonDeserialize(contentUsing = PostTagDeserializer.class)
+    private List<PostTag> tags;          
 
 	@Schema(description = "Highlights organised in boxes (max 3 boxes, up to 4 items each)")
     private List<List<String>> highlights;   // up to 3 boxes, each with up to 4 items
 
 	@Schema(description = "Anonymized username of the user who submitted this comment.", example = "anonymous")
     private String submittedBy;              // anonymous or admin username
+
 	@Schema(description = "Checks if a user or admin posted.")
     private boolean anonymous;               // true if submitted anonymously
 
 	@Schema(description = "After submitting a post, it is in a pending state until the sources are verified, only then is the posted approved or rejected.")
     private PostStatus status;               // PENDING, APPROVED, REJECTED
+	
 	@Schema(description = "When the post was created.")
     private Instant createdAt;
+	
 	@Schema(description = "When the admin reviewed the post.")
     private Instant reviewedAt;
+	
 	@Schema(description = "Admin who reviewed")
     private String reviewedBy;               // admin who reviewed
 
     public enum PostStatus {
         PENDING, APPROVED, REJECTED
+    }
+
+    @JsonProperty("category")
+    public void setCategoryFromString(String categoryName) {
+        this.category = categoryName == null ? null : new Category(categoryName);
+    }
+
+    @JsonProperty("tags")
+    public void setTagsFromStrings(List<String> tagNames) {
+        this.tags = tagNames == null ? null :
+            tagNames.stream().map(PostTag::new).collect(Collectors.toList());
     }
 
 	public String info() {

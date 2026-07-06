@@ -1,14 +1,21 @@
 package com.example.backend.controller;
 
 import com.example.backend.model.Post;
+import com.example.backend.model.PostTag;
 import com.example.backend.model.Comment;
+import com.example.backend.model.Category;
 import com.example.backend.model.Suggestion;
+
+
 import com.example.backend.service.PostService;
 import com.example.backend.service.SuggestionService;
 import com.example.backend.service.CommentService;
-import lombok.RequiredArgsConstructor;
+import com.example.backend.service.PostTagService;
+import com.example.backend.service.CategoryService;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +28,20 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/admin")
-@Tag(name = "Admin", description = "Endpoints for admin users to manage posts, suggestions, and comments")
+@Tag(name = "Admin", description = "Endpoints for admin users to manage posts, suggestions, tags, categories, and comments")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     private final PostService postService;
     private final SuggestionService suggestionService;
     private final CommentService commentService;
+	private final PostTagService postTagService;
+	private final CategoryService categoryService;
+	
+
+	// Post management endpoints for admins
+
     @GetMapping("/pending")
     @Operation(summary = "Get pending posts",
                description = "Retrieves all pending boycott posts.")	
@@ -37,6 +51,15 @@ public class AdminController {
 		System.out.println("AdminController: Retrieved pending posts count: " + pendingPosts.size());
         return pendingPosts;
     }
+
+	@PostMapping("/posts")
+	@Operation(summary = "Create a post",
+			   description = "Creates a new boycott post. Admins can create posts directly without going through the pending state.")
+    public Post createPost(@RequestBody Post post, Authentication auth) {
+		System.out.println("AdminController: Creating post with info: " + post.info() + " by user: " + auth.getName());
+        return postService.submitByAdmin(post, auth.getName());
+    }
+	
 
     @PutMapping("/approve/{id}")
     @Operation(summary = "Approve a post",
@@ -50,14 +73,6 @@ public class AdminController {
 			   description = "Rejects a pending boycott post.")
     public Post reject(@PathVariable String id, Authentication auth) {
         return postService.rejectPost(id, auth.getName());
-    }
-
-    @PostMapping("/posts")
-	@Operation(summary = "Create a post",
-			   description = "Creates a new boycott post. Admins can create posts directly without going through the pending state.")
-    public Post createPost(@RequestBody Post post, Authentication auth) {
-		System.out.println("AdminController: Creating post with info: " + post.info() + " by user: " + auth.getName());
-        return postService.submitByAdmin(post, auth.getName());
     }
 
 	@PutMapping("/posts/{id}")
@@ -76,6 +91,9 @@ public class AdminController {
 		postService.deletePost(id);
 		return ResponseEntity.ok().build();
 	}
+
+
+	// Suggestion management endpoints for admins
 
 	@GetMapping("/suggestions")
 	@Operation(summary = "Get all suggestions",
@@ -106,6 +124,9 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 
+
+	// Comments management endpoints for admins
+
 	@PutMapping("/comments/{id}")	
 	@Operation(summary = "Update a comment",
 			   description = "Updates an existing comment.")
@@ -124,6 +145,96 @@ public class AdminController {
 										Authentication auth) {
 		System.out.println("Admin " + auth.getName() + " deleting comment " + id);
 		commentService.deleteComment(id);
+		return ResponseEntity.ok().build();
+	}
+
+
+	// Tags management endpoints for admins
+
+	@PostMapping("/tags/create")
+	@Operation(summary = "Create a new tag",
+			   description = "Creates a new tag. Only called after vetting.")
+	public PostTag createTag(@RequestBody PostTag tag) {
+		return postTagService.create(tag);
+	}
+	
+	@PostMapping("/tags/create-multiple")
+	@Operation(summary = "Add new tags",
+			   description = "Adds new tags to the system. Only called after vetting.")
+	public ResponseEntity<?> addNewTags(@RequestBody List<PostTag> tags) {
+		postTagService.createAll(tags);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/tags/{id}")
+	@Operation(summary = "Update a tag")
+	public PostTag updateTag(@PathVariable String id, @RequestBody String newNameString) {
+		return postTagService.updateById(id, newNameString);
+	}
+
+	@DeleteMapping("/tags/{id}")
+	@Operation(summary = "Delete a tag",
+			   description = "Deletes an existing tag. Only called after vetting.")
+	public ResponseEntity<?> deleteTag(@PathVariable String id) {
+		postTagService.deleteById(id);
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/tags/deleteSelected")
+	@Operation(summary = "Delete all the tags")
+	public ResponseEntity<?> deleteSelectedTags(List<String> tagIds) {
+		postTagService.deleteSelected(tagIds);
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/tags/deleteAll")
+	@Operation(summary = "Delete all the tags")
+	public ResponseEntity<?> deleteAllTags() {
+		postTagService.deleteAll();
+		return ResponseEntity.ok().build();
+	}
+
+	// Categories management endpoints for admins
+
+	@PostMapping("/categories/create")
+	@Operation(summary = "Create a new category",
+			   description = "Creates a new category. Only called after vetting.")
+	public Category createCategory(@RequestBody Category category) {
+		return categoryService.create(category);
+	}
+	
+	@PostMapping("/categories/create-multiple")
+	@Operation(summary = "Add new categories",
+			   description = "Adds new categories to the system. Only called after vetting.")
+	public ResponseEntity<?> addNewCategories(@RequestBody List<Category> categories) {
+		categoryService.createAll(categories);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/categories/{id}")
+	@Operation(summary = "Update a category")
+	public Category updateCategory(@PathVariable String id, @RequestBody String newNameString) {
+		return categoryService.updateById(id, newNameString);
+	}
+
+	@DeleteMapping("/categories/{id}")
+	@Operation(summary = "Delete a category")
+	public ResponseEntity<?> deleteCategory(@PathVariable String id) {
+		categoryService.deleteById(id);
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/categories/deleteSelected")
+	@Operation(summary = "Delete all selected categories")
+	public ResponseEntity<?> deleteSelectedCategories(List<String> categoryIds) {
+		categoryService.deleteSelected(categoryIds);
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/categories/deleteAll")
+	@Operation(summary = "Delete all categories")
+	public ResponseEntity<?> deleteAllCategories() {
+		categoryService.deleteAll();
 		return ResponseEntity.ok().build();
 	}
 }

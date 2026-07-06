@@ -21,6 +21,7 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { PostService } from '../../services/post.service';
 import { TagService } from '../../services/tag.service';
+import { CategoryService } from '../../services/category.service';
 
 @Component({
   selector: 'app-submit-form',
@@ -54,6 +55,7 @@ export class SubmitFormComponent implements OnInit {
     private fb: FormBuilder,
     private postService: PostService,
     private tagService: TagService,
+	private categoryService: CategoryService,
   ) {}
 
   ngOnInit() {
@@ -72,7 +74,7 @@ export class SubmitFormComponent implements OnInit {
       );
     });
 
-    this.postService.getCategories().subscribe((categories) => {
+    this.categoryService.getCategories().subscribe((categories) => {
       this.allCategories = categories;
     });
   }

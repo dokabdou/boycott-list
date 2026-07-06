@@ -1,7 +1,8 @@
 package com.example.backend.service;
 
 import com.example.backend.model.Post;
-import com.example.backend.model.Tag;
+import com.example.backend.model.PostTag;
+import com.example.backend.model.Category;
 import com.example.backend.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,8 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final TagService tagService;
+    private final PostTagService tagService;
+	private final CategoryService categoryService;
 
     public Post submitAnonymous(Post post) {
         post.setAnonymous(true);
@@ -32,13 +34,14 @@ public class PostService {
     public Post submitByAdmin(Post post, String adminUsername) {
         post.setAnonymous(false);
         post.setSubmittedBy(adminUsername);
+		post.setCategory(categoryService.create(post.getCategory()));
         post.setStatus(Post.PostStatus.APPROVED);  // auto‑approved
         post.setCreatedAt(Instant.now());
         post.setReviewedAt(Instant.now());
         post.setReviewedBy(adminUsername);
-        tagService.addNewTags(post.getTags());
+        post.setTags(tagService.createAll(post.getTags()));
         //return postRepository.save(post);
-		 Post savedPost = postRepository.save(post);
+		Post savedPost = postRepository.save(post);
 		System.out.println("PostService ==> Saved post ID: " + savedPost.getId());   // ← add this
 		return savedPost;
     }
@@ -60,9 +63,10 @@ public class PostService {
         if (opt.isPresent()) {
             Post post = opt.get();
             post.setStatus(Post.PostStatus.APPROVED);
+			post.setCategory(categoryService.create(post.getCategory()));
             post.setReviewedAt(Instant.now());
             post.setReviewedBy(adminUsername);
-            tagService.addNewTags(post.getTags());
+            post.setTags(tagService.createAll(post.getTags()));
 			System.out.println("PostService ==> Approved post ID: " + post.getId() + " by admin: " + adminUsername);   // ← add this
             return postRepository.save(post);
         }
@@ -82,8 +86,8 @@ public class PostService {
     }
 
 	public List<String> getApprovedTags() {
-		return tagService.getAllApprovedTags().stream()
-				.map(Tag::getName)
+		return tagService.getAll().stream()
+				.map(PostTag::getName)
 				.collect(Collectors.toList());
 	}
 
@@ -100,7 +104,7 @@ public class PostService {
 		post.setSourceLinks(updatedPost.getSourceLinks());
 		post.setTags(updatedPost.getTags());
 		post.setHighlights(updatedPost.getHighlights());
-		tagService.addNewTags(updatedPost.getTags());   // add any new tags
+		post.setTags(tagService.createAll(updatedPost.getTags()));   // add any new tags
 		return postRepository.save(post);
 	}
 
@@ -111,21 +115,6 @@ public class PostService {
 	public List<Post> getApprovedPostsByCategory(String category) {
 		return postRepository.findByCategory(category).stream()
 				.filter(p -> p.getStatus() == Post.PostStatus.APPROVED)
-				.collect(Collectors.toList());
-	}
-
-	public List<Post> searchByTag(String tag) {
-		return postRepository.findByTagsContaining(tag).stream()
-				.filter(p -> p.getStatus() == Post.PostStatus.APPROVED)
-				.collect(Collectors.toList());
-	}
-
-	public List<String> getAllCategories() {
-		return postRepository.findAll().stream()
-				.map(Post::getCategory)
-				.filter(Objects::nonNull)
-				.distinct()
-				.sorted()
 				.collect(Collectors.toList());
 	}
 }
