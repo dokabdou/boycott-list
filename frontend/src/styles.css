@@ -2,24 +2,49 @@
    CSS Custom Properties (Modern Palette)
    ============================================================ */
 :root {
-  --primary: #1E293B;           /* Slate 800 – main headers / borders */
-  --primary-light: #334155;     /* Slate 700 – hover states */
-  --accent: #3B82F6;            /* Blue 500 – interactive elements, links */
-  --accent-light: #93C5FD;      /* Blue 300 – light hover backgrounds */
-  --accent-warning: #F59E0B;    /* Amber 500 – category / highlights */
-  --success: #10B981;           /* Emerald 500 – success banners */
-  --error: #EF4444;             /* Red 500 – error / reject */
-  --bg: #F8FAFC;                /* Slate 50 – page background */
-  --surface: #FFFFFF;           /* White – cards */
-  --surface-alt: #F1F5F9;      /* Slate 100 – subtle backgrounds */
-  --border: #E2E8F0;            /* Slate 200 – borders */
-  --text: #0F172A;              /* Slate 900 – main text */
-  --text-secondary: #64748B;    /* Slate 500 – secondary text */
-  --radius: 12px;               /* Border‑radius for cards */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
-  --transition: 0.2s ease;
+  /* ---- New Core Palette ---- */
+  --primary: #0B1E33;            /* deep ink blue */
+  --primary-light: #1E3A5F;      /* lighter navy for hover */
+  --accent: #FF6B35;             /* bold orange – call to action */
+  --accent-light: #FFD2B8;       /* soft peach background */
+  --accent-warning: #FFC107;     /* amber for badges */
+  --success: #2E7D32;            /* green */
+  --error: #C62828;              /* red */
+  --bg: #F4F6F9;                 /* cool light grey */
+  --surface: #FFFFFF;
+  --surface-alt: #EDF0F5;        /* subtle grey for secondary backgrounds */
+  --border: #D1D9E6;             /* soft border */
+  --text: #0B1E33;               /* same as primary for readability */
+  --text-secondary: #5F6B7A;     /* muted */
+  --radius: 16px;                /* slightly rounder */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-md: 0 6px 20px rgba(0,0,0,0.07);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.1);
+  --transition: 0.25s ease;
+}
+
+
+/* ============================================================
+   Dark Theme Overrides
+   ============================================================ */
+[data-theme="dark"] {
+  --primary: #E2E8F0;        /* light grey for headings */
+  --primary-light: #94A3B8;
+  --accent: #FF6B35;         /* keep orange */
+  --accent-light: #3B2E2A;   /* dark peach background */
+  --accent-warning: #F59E0B;
+  --success: #4ADE80;
+  --error: #F87171;
+  --bg: #0F172A;             /* dark slate background */
+  --surface: #1E293B;        /* card surfaces */
+  --surface-alt: #334155;    /* subtle backgrounds */
+  --border: #475569;
+  --text: #F1F5F9;           /* ✅ LIGHT text */
+  --text-secondary: #94A3B8; /* muted text */
+  --radius: 12px;            /* keep same */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.6);
 }
 
 /* ============================================================
@@ -30,11 +55,19 @@ html {
 }
 
 body {
+  font-size: 16px;
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  line-height: 1.6;
   background: var(--bg);
   color: var(--text);
+  background-image: radial-gradient(circle at 25% 25%, rgba(255,107,53,0.03) 0%, transparent 50%);
 }
+
+
+h1 { font-size: 2.2rem; font-weight: 600; }
+h2 { font-size: 1.6rem; font-weight: 600; }
+h3 { font-size: 1.25rem; font-weight: 600; }
 
 .page-content {
   padding: 16px;
@@ -50,10 +83,35 @@ body {
   width: 100%;
 }
 
+.container {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 32px;
+  max-width: 700px;
+  margin: 40px auto;
+}
+
+
 /* Buttons */
 button[mat-raised-button],
 button[mat-stroked-button] {
   border-radius: 8px;
+}
+
+button[mat-raised-button] {
+  border-radius: 30px;
+  padding: 12px 24px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button {
+  transition: transform 0.1s ease;
+}
+button:active {
+  transform: scale(0.97);
 }
 
 /* Chips (global override) */
@@ -89,6 +147,12 @@ a {
 /* ============================================================
    Banners (global fixed notifications)
    ============================================================ */
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 .banner-fixed {
   position: fixed;
   top: 20px;
@@ -101,7 +165,7 @@ a {
   gap: 16px;
   box-shadow: var(--shadow-md);
   z-index: 1000;
-  animation: fadeIn 0.3s ease;
+  animation: slideInRight 0.3s ease forwards;
 }
 
 .success-banner {
@@ -224,7 +288,7 @@ a {
    Common Form Layout
    ============================================================ */
 mat-form-field {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 button[mat-stroked-button] {
@@ -259,4 +323,26 @@ button[mat-stroked-button] {
   padding-top: 0;
   margin-top: 0;
   border-top: none;
+}
+
+
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* For Material buttons that have a built‑in ripple, we can keep their focus but ensure contrast */
+button[mat-raised-button]:focus-visible {
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

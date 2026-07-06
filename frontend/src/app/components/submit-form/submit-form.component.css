@@ -1,8 +1,11 @@
-.container {
+/* .container {
   max-width: 700px;
-  margin: 30px auto;
-  padding: 20px;
-}
+  margin: 40px auto;
+  padding: 32px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+} */
 
 h2 {
   margin-bottom: 24px;

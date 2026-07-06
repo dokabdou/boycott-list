@@ -1,9 +1,9 @@
 .suggestion-section {
-  background: var(--surface-alt);
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 16px;
-  width: 100%;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+  margin-top: 32px;
 }
 
 .suggestion-body {
@@ -24,8 +24,10 @@
 }
 
 .suggestion-card {
-  border-left: 3px solid var(--accent-warning);
-  padding-left: 12px;
+  border-left: 3px solid var(--primary-light);
+  background: var(--surface-alt);
+  border-radius: 8px;
+  padding: 12px 16px;
   margin-bottom: 12px;
 }
 
@@ -53,4 +55,9 @@
 .edit-form {
   margin-top: 8px;
   margin-left: 20px;
+}
+
+.reply-card {
+  border-left: 2px solid var(--border);
+  margin-left: 40px;
 }

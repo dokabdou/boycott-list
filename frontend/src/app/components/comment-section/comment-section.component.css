@@ -1,9 +1,9 @@
 .comment-section {
-  background: var(--surface-alt);
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 0;
-  width: 100%;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+  margin-top: 32px;
 }
 
 .comment-body {
@@ -29,15 +29,16 @@
 }
 
 .comment-card {
-  border-left: 3px solid var(--primary);
-  padding-left: 12px;
-  margin-bottom: 8px;
+  border-left: 3px solid var(--primary-light);
+  background: var(--surface-alt);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
 }
 
 .reply-card {
   border-left: 2px solid var(--border);
-  padding-left: 12px;
-  margin-bottom: 8px;
+  margin-left: 40px;
 }
 
 .comment-card p, .reply-card p {

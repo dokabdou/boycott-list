@@ -7,7 +7,11 @@
     </div>
   }
   <div class="container">
-    <h1>The BoyCott List</h1>
+    <div class="hero">
+		<h1>Companies that harm <span class="highlight">our world.</span></h1>
+		<p>Let's stay informed, make conscious choices, and raise awareness together.</p>
+		<button mat-raised-button color="accent" routerLink="/submit">Add a Company</button>
+	</div>
     <div class="intro-toggle" (click)="toggleDescription()">
       <div class="toggle-header">
         <span>About this list</span>
@@ -17,6 +21,13 @@
         <p>Welcome to The Boycott List! I got this idea because I always see and hear about companies that are doing harm to the environment or society. I sometimes forget which companies are on the list and why, so I created this simple tool to keep track of them. I will add the companies as I find them, and you can contribute as well! I provide information about companies that are engaging in unethical practices. <u>I also provide sources of course</u>. Some of the things on this list will be hard to boycott because we might not be able to properly live without them, so for those it will be about raising awareness. Ultimately, this website is mainly for me, to help me stay informed and make conscious choices.</p>
       </div>
     </div>
+
+
+	<div class="empty-state" *ngIf="filteredPosts().length === 0">
+		<span class="emoji">🔍</span>
+		<h3>No companies match your search</h3>
+		<p>Try different keywords or browse all.</p>
+	</div>
 
     <mat-card *ngFor="let post of filteredPosts()" class="post-card" (click)="openPost(post.id, $event)">
       <mat-card-header>

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
 import { SearchService } from './services/search.service';
 import { CommonModule } from '@angular/common';
-import { Subscription, Observable } from 'rxjs';
+//import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -31,7 +31,11 @@ export class AppComponent implements OnInit {
   toastMessage: string | null = null;
   private timeoutRef: any;
 
-  constructor() {}
+  constructor(/* public themeService: ThemeService */) {}
+
+  /* toggleTheme() {
+    this.themeService.toggle();
+  } */
 
   ngOnInit() {
     this.authService.initAuth();

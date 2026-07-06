@@ -5,7 +5,7 @@
 			<button class="close-btn" (click)="banner.set(null)">✕</button>
 		</div>
 	</ng-container>
-  <div *ngIf="post() as p; else loading">
+  <div *ngIf="post() as p">
     <!-- Admin buttons -->
     <div class="admin-post-actions" *ngIf="isLoggedIn() && editingPostId() !== p.id">
       <button mat-raised-button color="primary" (click)="startEdit(p)">
@@ -129,7 +129,8 @@
 	</div>
   </div>
 
-  <ng-template #loading>
-    <p>Loading post...</p>
-  </ng-template>
+  <!-- <div class="skeleton-card" *ngIf="loading">
+	<div class="skeleton-line"></div>
+	<div class="skeleton-line short"></div>
+  </div> -->
 </div>

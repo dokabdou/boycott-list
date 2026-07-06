@@ -45,6 +45,7 @@ export class PostDetailComponent implements OnInit {
   editForm: FormGroup | null = null;
   banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
 
+
   constructor(
     private route: ActivatedRoute,
     private postService: PostService,
