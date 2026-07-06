@@ -125,12 +125,12 @@ export class PostListComponent implements OnInit {
 
     this.postService.editPost(postId, updated).subscribe({
       next: () => {
-        this.showBanner('success', `"${companyName}" updated successfully.`);
+        this.showBanner('success', `"${updated.companyName}" updated successfully.`);
         this.loadPosts();
         this.cancelEdit();
       },
       error: () => {
-        this.showBanner('error', `Failed to update "${companyName}".`);
+        this.showBanner('error', `Failed to update "${updated.companyName}".`);
       },
     });
   }

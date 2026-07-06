@@ -1,11 +1,11 @@
 <div class="page-content">
-	<div class="container">
 	@if (showBanner()) {
-		<div class="success-banner">
+		<div class="banner-fixed success-banner">
 		<span>Thank you for your post, it will be added shortly.</span>
 		<button class="close-btn" (click)="showBanner.set(false)">✕</button>
 		</div>
 	}
+	<div class="container">
 	<h2>Submit a Company to Boycott</h2>
 	<form [formGroup]="submitForm" (ngSubmit)="onSubmit()" (keydown.enter)="onEnter($event)">
 		<!-- Company Name -->

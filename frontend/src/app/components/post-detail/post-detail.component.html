@@ -26,40 +26,42 @@
         <mat-chip *ngFor="let tag of p.tags">{{ tag }}</mat-chip>
       </mat-chip-listbox>
 
-      <div class="content-row">
-        <div class="description-box">
-          <mat-card>
-            <mat-card-content>
-              <p>{{ p.description }}</p>
-            </mat-card-content>
-          </mat-card>
+      <!-- Description & Highlights (full width) -->
+      <div class="description-section">
+        <mat-card>
+          <mat-card-content>
+            <p>{{ p.description }}</p>
+          </mat-card-content>
+        </mat-card>
 
-          <div class="highlights" *ngIf="p.highlights && p.highlights.length">
-            <h3>Highlights</h3>
-            <div class="highlight-boxes">
-              <div *ngFor="let box of p.highlights" class="highlight-box">
-                <ul>
-                  <li *ngFor="let item of box">{{ item }}</li>
-                </ul>
-              </div>
+        <!-- Highlights -->
+        <div class="highlights" *ngIf="p.highlights && p.highlights.length">
+          <h3>Highlights</h3>
+          <div class="highlight-boxes">
+            <div *ngFor="let box of p.highlights" class="highlight-box">
+              <ul>
+                <li *ngFor="let item of box">{{ item }}</li>
+              </ul>
             </div>
           </div>
-
-          <div class="sources" *ngIf="p.sourceLinks?.length">
-            <h3>Sources</h3>
-            <ul>
-              <li *ngFor="let link of p.sourceLinks">
-                <a [href]="link" target="_blank">{{ link }}</a>
-              </li>
-            </ul>
-          </div>
         </div>
 
-        <div class="comment-box">
-          <app-comment-section [postId]="p.id!"></app-comment-section>
+        <!-- Source Links -->
+        <div class="sources" *ngIf="p.sourceLinks?.length">
+          <h3>Sources</h3>
+          <ul>
+            <li *ngFor="let link of p.sourceLinks">
+              <a [href]="link" target="_blank">{{ link }}</a>
+            </li>
+          </ul>
         </div>
       </div>
-      <app-suggestion-section [postId]="p.id!"></app-suggestion-section>
+
+      <!-- Comments Section (full width) -->
+      <app-comment-section [postId]="p.id!" class="full-width-section"></app-comment-section>
+
+      <!-- Suggestions Section (full width) -->
+      <!-- <app-suggestion-section [postId]="p.id!" class="full-width-section"></app-suggestion-section> -->
     </div>
 
     <!-- Edit mode -->
@@ -80,6 +82,12 @@
 			<mat-form-field appearance="fill" class="full-width">
 			<mat-label>Category</mat-label>
 			<input matInput formControlName="category">
+			</mat-form-field>
+
+			<!-- Tags -->
+			<mat-form-field appearance="fill" class="full-width">
+			<mat-label>Tags (comma separated)</mat-label>
+			<input matInput formControlName="tags" placeholder="environment, labor, ...">
 			</mat-form-field>
 
 			<!-- Description -->
@@ -104,12 +112,6 @@
 			</div>
 			<button mat-stroked-button type="button" (click)="addLink()" style="margin-bottom: 5px;">Add link</button>
 			</div>
-
-			<!-- Tags -->
-			<mat-form-field appearance="fill" class="full-width">
-			<mat-label>Tags (comma separated)</mat-label>
-			<input matInput formControlName="tags" placeholder="environment, labor, ...">
-			</mat-form-field>
 
 			<!-- Highlights -->
 			<mat-form-field appearance="fill" class="full-width">

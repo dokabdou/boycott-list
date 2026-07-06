@@ -92,7 +92,9 @@ export class PostService {
   }
 
   editPost(id: string, post: Post): Observable<Post> {
-    const result = this.http.put<Post>(`${this.adminUrl}/posts/${id}`, post);
+    const result = this.http.put<Post>(`${this.adminUrl}/posts/${id}`, post).pipe(
+		map(p => this.mapPost(p)) // convert objects to strings
+	);
 	console.log('url:', `${this.adminUrl}/posts/${id}`);
 	console.log('Edit Post Request:', { id, post, result });
     return result;

@@ -25,6 +25,8 @@
   align-items: start;
 }
 
+.description-section { margin: 24px 0; }
+
 .description-box {
   flex: 2;
   min-width: 300px;
@@ -36,16 +38,23 @@
   max-width: 300px;
 }
 
+.highlights { margin-top: 20px; }
+
 .highlight-box {
   background: var(--surface);
   border-radius: var(--radius);
   padding: 16px;
   border-left: 4px solid var(--accent);
   box-shadow: var(--shadow-sm);
+  border-radius: 8px;
+  flex: 1; 
+  min-width: 200px;
 }
 
 .highlight-boxes {
-  display: grid;
+  /*display: grid;*/
+  display: flex; 
+  flex-wrap: wrap;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
 }
@@ -66,6 +75,7 @@
   color: var(--accent);
   font-weight: 500;
   text-decoration: underline;
+  word-break: break-all;
 }
 
 .category-chip {
@@ -100,6 +110,12 @@
   display: flex;
   gap: 8px;
   margin-top: 16px;
+}
+
+
+.full-width-section { 
+	display: block; 
+	margin-top: 30px; 
 }
 
 .skeleton-line {

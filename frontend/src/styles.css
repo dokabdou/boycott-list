@@ -346,3 +346,52 @@ button[mat-raised-button]:focus-visible {
     scroll-behavior: auto !important;
   }
 }
+
+@media (max-width: 768px) {
+  .page-content {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 2rem !important;
+  }
+
+  .post-detail-container,
+  .container {
+    max-width: 100% !important;
+    margin: 10px 0 !important;
+    padding: 10px !important;
+  }
+
+  .content-row {
+    flex-direction: column !important;
+  }
+
+  .description-box,
+  .comment-box {
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .admin-post-actions {
+    text-align: left;
+  }
+
+  .navbar {
+    flex-direction: column;
+    padding: 8px 16px;
+  }
+  .nav-links {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .search-container {
+    margin: 8px 0 0 0;
+    max-width: 100%;
+  }
+
+  .highlight-boxes {
+    flex-direction: column;
+  }
+}

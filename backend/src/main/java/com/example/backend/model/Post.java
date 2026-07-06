@@ -1,15 +1,10 @@
 package com.example.backend.model;
 
 import lombok.Data;
+import lombok.Setter;
+import lombok.AccessLevel;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.example.backend.config.CategoryDeserializer;
-import com.example.backend.config.PostTagDeserializer;
-import com.example.backend.config.CategorySerializer;
-import com.example.backend.config.PostTagSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
@@ -31,7 +26,7 @@ public class Post {
     private String companyName;
 
 	@Schema(description = "The category to which the post belongs.", example = "Music & Media")
-	//@JsonDeserialize(using = CategoryDeserializer.class)
+	@Setter(AccessLevel.NONE)
 	private Category category; 
 
     @Schema(description = "A description of why this company should be boycotted.", example = "Spotify ran ICE, and israel prison ads, as well as having their ceo investing in 'Helsing AI' who make AI killbots.")
@@ -41,7 +36,7 @@ public class Post {
     private List<String> sourceLinks;  
 
 	@Schema(description = "Tags associated with the post", example = "[\"israel\", \"spotify\"]")
-	//@JsonDeserialize(contentUsing = PostTagDeserializer.class)
+	@Setter(AccessLevel.NONE)
     private List<PostTag> tags;          
 
 	@Schema(description = "Highlights organised in boxes (max 3 boxes, up to 4 items each)")
@@ -70,12 +65,13 @@ public class Post {
     }
 
     @JsonProperty("category")
-    public void setCategoryFromString(String categoryName) {
+    public void setCategory(String categoryName) {
         this.category = categoryName == null ? null : new Category(categoryName);
     }
 
+    // Custom setter for tags – accepts a list of strings
     @JsonProperty("tags")
-    public void setTagsFromStrings(List<String> tagNames) {
+    public void setTags(List<String> tagNames) {
         this.tags = tagNames == null ? null :
             tagNames.stream().map(PostTag::new).collect(Collectors.toList());
     }

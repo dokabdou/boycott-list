@@ -109,14 +109,20 @@ export class PostDetailComponent implements OnInit {
     const companyName = updated.companyName;
 
     this.postService.editPost(postId, updated).subscribe({
-      next: () => {
-        this.showBanner('success', `"${companyName}" updated successfully.`);
+      next: (savedPost) => {
+        this.showBanner('success', `"${savedPost.companyName}" updated successfully.`);
 
-        const currentPost = this.post();
+		console.log("updated : ", savedPost);
+
+        /* const currentPost = this.post();
         if (currentPost) {
-          this.post.set({ ...currentPost, ...updated });
+          this.post.set({ ...currentPost, ...savedPost });
         }
+	    //this.post.set(savedPost);
+		console.log("this post ==> ", this.post); */
+		this.loadPost();
         this.cancelEdit();
+		console.log('Post updated, new value:', this.post());
       },
       error: () => {
         this.showBanner('error', `Failed to update "${companyName}".`);
