@@ -51,11 +51,14 @@ export class SubmitFormComponent implements OnInit {
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
+  editingHighlight: WritableSignal<{ boxIndex: number; itemIndex: number; value: string } | null> =
+    signal(null);
+
   constructor(
     private fb: FormBuilder,
     private postService: PostService,
     private tagService: TagService,
-	private categoryService: CategoryService,
+    private categoryService: CategoryService,
   ) {}
 
   ngOnInit() {
@@ -123,6 +126,38 @@ export class SubmitFormComponent implements OnInit {
     );
   }
 
+  startEditHighlightItem(boxIndex: number, itemIndex: number) {
+    this.editingHighlight.set({
+      boxIndex,
+      itemIndex,
+      value: this.highlightBoxes[boxIndex][itemIndex],
+    });
+    // Focus the input after it appears – dynamic ID as before
+    setTimeout(() => {
+      const el = document.getElementById(
+        `highlight-input-${boxIndex}-${itemIndex}`,
+      ) as HTMLInputElement;
+      el?.focus();
+    }, 0);
+  }
+
+  saveEditHighlightItem() {
+    const highlight = this.editingHighlight();
+    if (!highlight) return;
+    const { boxIndex, itemIndex, value } = highlight;
+    const trimmed = value.trim();
+    if (trimmed) {
+      this.highlightBoxes[boxIndex][itemIndex] = trimmed;
+    } else {
+      this.highlightBoxes[boxIndex].splice(itemIndex, 1);
+    }
+    this.editingHighlight.set(null);
+  }
+
+  cancelEditHighlightItem() {
+    this.editingHighlight.set(null);
+  }
+
   addHighlightBox() {
     if (this.highlightBoxes.length < 3) {
       this.highlightBoxes.push([]);
@@ -143,6 +178,42 @@ export class SubmitFormComponent implements OnInit {
 
   removeHighlightItem(boxIndex: number, itemIndex: number) {
     this.highlightBoxes[boxIndex].splice(itemIndex, 1);
+  }
+
+  onEnter(event: Event) {
+    const keyEvent = event as KeyboardEvent;
+    // Only intercept if the target is a normal input/textarea/button, not on the submit button itself
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'BUTTON' && target.getAttribute('type') === 'submit') {
+      return; // let the submit happen normally
+    }
+
+    // Prevent the form from being submitted
+    event.preventDefault();
+
+    // Find all focusable elements inside the form
+
+    const form = target.closest('form');
+    if (!form) return;
+
+    const focusableSelectors = [
+      'input:not([type=hidden]):not([disabled])',
+      'textarea:not([disabled])',
+      'select:not([disabled])',
+      'button:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+    ];
+
+    const elements = Array.from(
+      form.querySelectorAll<HTMLElement>(focusableSelectors.join(',')),
+    ).filter((el) => el.offsetParent !== null); // only visible elements
+
+    const currentIndex = elements.indexOf(target);
+    let nextIndex = currentIndex + 1;
+    if (nextIndex >= elements.length) {
+      nextIndex = 0; // wrap to first
+    }
+    elements[nextIndex]?.focus();
   }
 
   onSubmit() {

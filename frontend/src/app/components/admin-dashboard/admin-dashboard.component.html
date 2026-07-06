@@ -76,7 +76,7 @@
 
 		<!-- Admin Create Post Form -->
 		<h3>Create a Post (as Admin)</h3>
-		<form [formGroup]="adminForm" (ngSubmit)="createAdminPost()">
+		<form [formGroup]="adminForm" (ngSubmit)="createAdminPost()" (keydown.enter)="onEnter($event)">
 			<mat-form-field appearance="fill" class="full-width">
 			<mat-label>Company Name</mat-label>
 			<input matInput formControlName="companyName" required>
@@ -127,32 +127,49 @@
 				</mat-error>
 			</mat-form-field>
 
-			<!-- Highlights Section (same as submit form) -->
+			<!-- Highlights Section -->
 			<div class="highlights-section">
-			<h3>Highlights (up to 3 boxes, 4 items each)</h3>
-			<div *ngFor="let box of highlightBoxes; let i = index" class="highlight-box">
+				<h3>Highlights (up to 3 boxes, 4 items each)</h3>
+				<div *ngFor="let box of highlightBoxes; let i = index" class="highlight-box">
 				<div class="box-header">
-				<strong>Box {{ i + 1 }}</strong>
-				<button mat-icon-button color="warn" type="button" (click)="removeHighlightBox(i)">
+					<strong>Box {{ i + 1 }}</strong>
+					<button mat-icon-button color="warn" type="button" (click)="removeHighlightBox(i)">
 					<mat-icon>delete</mat-icon>
-				</button>
+					</button>
 				</div>
 				<ul>
-				<li *ngFor="let item of box; let j = index">
-					{{ item }}
+					<li *ngFor="let item of box; let j = index">
+					<ng-container *ngIf="editingHighlight()?.boxIndex === i && editingHighlight()?.itemIndex === j; else displayMode">
+						<input
+						[id]="'highlight-input-' + i + '-' + j"
+						type="text"
+						[ngModel]="editingHighlight()?.value"
+						(ngModelChange)="editingHighlight()!.value = $event"
+						(keydown.enter)="saveEditHighlightItem()"
+						(blur)="saveEditHighlightItem()"
+						(keydown.escape)="cancelEditHighlightItem()"
+						class="edit-highlight-input"
+						/>
+					</ng-container>
+					<ng-template #displayMode>
+						<span (dblclick)="startEditHighlightItem(i, j)">{{ item }}</span>
+						<button mat-icon-button color="primary" type="button" (click)="startEditHighlightItem(i, j)">
+						<mat-icon>edit</mat-icon>
+						</button>
+					</ng-template>
 					<button mat-icon-button color="warn" type="button" (click)="removeHighlightItem(i, j)">
-					<mat-icon>close</mat-icon>
+						<mat-icon>close</mat-icon>
 					</button>
-				</li>
+					</li>
 				</ul>
 				<div class="add-item" *ngIf="box.length < 4">
-				<input #newItem placeholder="Add item" (keyup.enter)="addHighlightItem(i, newItem)">
-				<button mat-stroked-button type="button" (click)="addHighlightItem(i, newItem)">Add</button>
+					<input #newItem placeholder="Add item" (keyup.enter)="addHighlightItem(i, newItem)">
+					<button mat-stroked-button type="button" (click)="addHighlightItem(i, newItem)">Add</button>
 				</div>
-			</div>
-			<button mat-stroked-button type="button" *ngIf="highlightBoxes.length < 3" (click)="addHighlightBox()">
+				</div>
+				<button mat-stroked-button type="button" *ngIf="highlightBoxes.length < 3" (click)="addHighlightBox()">
 				Add Highlight Box
-			</button>
+				</button>
 			</div>
 
 			<div formArrayName="sourceLinks">

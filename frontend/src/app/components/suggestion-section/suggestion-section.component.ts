@@ -23,7 +23,7 @@ import { AuthService } from '../../services/auth.service';
     MatIconModule,
   ],
   templateUrl: './suggestion-section.component.html',
-  styleUrls: ['./suggestion-section.component.css'],
+  styleUrls: ['./suggestion-section.component.css', '../../../styles.css'],
 })
 export class SuggestionSectionComponent {
   @Input() postId!: string;

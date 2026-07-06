@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, WritableSignal, signal, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, WritableSignal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -66,7 +66,9 @@ export class AdminDashboardComponent implements OnInit {
   editSuggestionContent = '';
 
   banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
-
+  editingHighlight: WritableSignal<{ boxIndex: number; itemIndex: number; value: string } | null> =
+    signal(null);
+	
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
   constructor(
@@ -214,6 +216,61 @@ export class AdminDashboardComponent implements OnInit {
 
   removeHighlightItem(boxIndex: number, itemIndex: number) {
     this.highlightBoxes[boxIndex].splice(itemIndex, 1);
+  }
+
+  startEditHighlightItem(boxIndex: number, itemIndex: number) {
+    this.editingHighlight.set({
+      boxIndex,
+      itemIndex,
+      value: this.highlightBoxes[boxIndex][itemIndex],
+    });
+    // Focus the input after it appears – dynamic ID as before
+    setTimeout(() => {
+      const el = document.getElementById(
+        `highlight-input-${boxIndex}-${itemIndex}`,
+      ) as HTMLInputElement;
+      el?.focus();
+    }, 0);
+  }
+
+  saveEditHighlightItem() {
+    const highlight = this.editingHighlight();
+    if (!highlight) return;
+    const { boxIndex, itemIndex, value } = highlight;
+    const trimmed = value.trim();
+    if (trimmed) {
+      this.highlightBoxes[boxIndex][itemIndex] = trimmed;
+    } else {
+      this.highlightBoxes[boxIndex].splice(itemIndex, 1);
+    }
+    this.editingHighlight.set(null);
+  }
+
+  cancelEditHighlightItem() {
+    this.editingHighlight.set(null);
+  }
+
+  onEnter(event: Event) {
+    const keyEvent = event as KeyboardEvent;
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'BUTTON' && target.getAttribute('type') === 'submit') return;
+    event.preventDefault();
+    const form = target.closest('form');
+    if (!form) return;
+    const focusableSelectors = [
+      'input:not([type=hidden]):not([disabled])',
+      'textarea:not([disabled])',
+      'select:not([disabled])',
+      'button:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+    ];
+    const elements = Array.from(
+      form.querySelectorAll<HTMLElement>(focusableSelectors.join(',')),
+    ).filter((el) => el.offsetParent !== null);
+    const currentIndex = elements.indexOf(target);
+    let nextIndex = currentIndex + 1;
+    if (nextIndex >= elements.length) nextIndex = 0;
+    elements[nextIndex]?.focus();
   }
 
   loadPendingPosts() {

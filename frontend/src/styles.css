@@ -1,48 +1,141 @@
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  background: #f9f9fb;
-  color: #333;
+/* ============================================================
+   CSS Custom Properties (Modern Palette)
+   ============================================================ */
+:root {
+  --primary: #1E293B;           /* Slate 800 – main headers / borders */
+  --primary-light: #334155;     /* Slate 700 – hover states */
+  --accent: #3B82F6;            /* Blue 500 – interactive elements, links */
+  --accent-light: #93C5FD;      /* Blue 300 – light hover backgrounds */
+  --accent-warning: #F59E0B;    /* Amber 500 – category / highlights */
+  --success: #10B981;           /* Emerald 500 – success banners */
+  --error: #EF4444;             /* Red 500 – error / reject */
+  --bg: #F8FAFC;                /* Slate 50 – page background */
+  --surface: #FFFFFF;           /* White – cards */
+  --surface-alt: #F1F5F9;      /* Slate 100 – subtle backgrounds */
+  --border: #E2E8F0;            /* Slate 200 – borders */
+  --text: #0F172A;              /* Slate 900 – main text */
+  --text-secondary: #64748B;    /* Slate 500 – secondary text */
+  --radius: 12px;               /* Border‑radius for cards */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --transition: 0.2s ease;
 }
 
-.page-content {
-  padding: 10px 10px;          /* vertical + horizontal padding */
-  max-width: 1200px;           /* optional – keeps content from being too wide */
-  margin: 0 auto;              /* center the content */
-  box-sizing: border-box;
-}
-
-/* .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-.post-card {
-  margin-bottom: 20px;
-}
-.full-width {
-  width: 100%;
-} */
-
-/* Smooth scrolling */
+/* ============================================================
+   Global Resets & Base
+   ============================================================ */
 html {
   scroll-behavior: smooth;
 }
 
-/* Better mat-card spacing */
-.mat-mdc-card {
-  border-radius: 12px !important;
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
+.page-content {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
 
-/* .scroll-to-top-btn {
+/* ============================================================
+   Global Utility Classes
+   ============================================================ */
+.full-width {
+  width: 100%;
+}
+
+/* Buttons */
+button[mat-raised-button],
+button[mat-stroked-button] {
+  border-radius: 8px;
+}
+
+/* Chips (global override) */
+mat-chip {
+  font-size: 0.75rem !important;
+  background-color: var(--accent-light) !important;
+  color: var(--primary) !important;
+  font-weight: 500;
+}
+
+mat-chip-row {
+  background-color: var(--accent-light) !important;
+  color: var(--primary) !important;
+}
+
+/* Cards */
+.mat-mdc-card {
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Headings */
+h1, h2, h3 {
+  color: var(--primary);
+}
+
+/* Links */
+a {
+  color: var(--accent);
+  word-break: break-all;
+}
+
+/* ============================================================
+   Banners (global fixed notifications)
+   ============================================================ */
+.banner-fixed {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-md);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.success-banner {
+  background-color: var(--success);
+}
+
+.failure-banner {
+  background-color: var(--error);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   Scroll‑to‑top Button
+   ============================================================ */
+.scroll-to-top-btn {
   position: fixed;
   bottom: 30px;
   right: 30px;
   width: 48px;
   height: 48px;
-  background-color: #3f51b5;
-  color: #fff;
+  background-color: var(--primary);
+  color: white;
   border: none;
   border-radius: 50%;
   font-size: 1.4rem;
@@ -52,15 +145,118 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(63, 81, 181, 0.4);
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-md);
+  transition: background-color var(--transition), transform var(--transition);
 }
 
 .scroll-to-top-btn:hover {
-  background-color: #303f9f;
+  background-color: var(--primary-light);
   transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(63, 81, 181, 0.5);
-} */
+}
 
-.scroll-to-top-btn { position: fixed; bottom: 40px; right: 40px; width: 50px; height: 50px; background-color: rgba(60, 42, 33, 0.5); color: var(--white); border: none; border-radius: 50%; font-size: 1.5rem; font-weight: bold; cursor: pointer; z-index: 9999; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: background-color 0.3s ease, transform 0.2s ease; }
-.scroll-to-top-btn:hover { background-color: var(--brand-brown); transform: translateY(-3px); }
+/* ============================================================
+   Shared Toggle Arrow (used in collapsible sections)
+   ============================================================ */
+.toggle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+
+.toggle-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.arrow {
+  font-size: 14px;
+  transition: transform var(--transition);
+  display: inline-block;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+/* ============================================================
+   Highlight Box (used in forms & detail views)
+   ============================================================ */
+.highlight-box {
+  background: var(--surface-alt);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.highlight-box ul {
+  list-style: none;
+  padding-left: 8px;
+}
+
+.highlight-box li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.add-item {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.add-item input {
+  flex: 1;
+  padding: 4px;
+}
+
+/* ============================================================
+   Common Form Layout
+   ============================================================ */
+mat-form-field {
+  margin-bottom: 16px;
+}
+
+button[mat-stroked-button] {
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   Intro Toggle (used in post‑list)
+   ============================================================ */
+.intro-toggle {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  background: var(--surface);
+  transition: box-shadow var(--transition);
+}
+.intro-toggle:hover {
+  box-shadow: var(--shadow-md);
+}
+.toggle-body {
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.toggle-body.collapsed {
+  max-height: 0;
+  padding-top: 0;
+  margin-top: 0;
+  border-top: none;
+}

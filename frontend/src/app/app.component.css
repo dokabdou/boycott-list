@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 24px;
-  background: #3f51b5;
+  background: var(--primary);
   color: white;
   flex-wrap: wrap;
 }
@@ -14,16 +14,16 @@
   align-items: center;
 }
 
-.nav-brand {
-  font-weight: 600;
-  font-size: 1.2rem;
-}
-
-.nav-link,
-.nav-brand {
+.nav-brand,
+.nav-link {
   color: white;
   text-decoration: none;
   white-space: nowrap;
+}
+
+.nav-brand {
+  font-weight: 600;
+  font-size: 1.2rem;
 }
 
 .nav-link:hover {
@@ -34,6 +34,7 @@
   cursor: pointer;
 }
 
+/* Search bar */
 .search-container {
   display: flex;
   align-items: center;

@@ -5,23 +5,22 @@
 }
 
 h2 {
-  color: #3f51b5;
   margin-bottom: 20px;
 }
 
 h3 {
   margin-top: 30px;
-  border-bottom: 2px solid #3f51b5;
+  border-bottom: 2px solid var(--primary);
   padding-bottom: 6px;
 }
 
 mat-expansion-panel {
   margin-bottom: 16px;
-  border-left: 4px solid #ff9800;
+  border-left: 4px solid var(--accent-warning);
 }
 
 mat-panel-description {
-  color: #666;
+  color: var(--text-secondary);
   font-style: italic;
 }
 
@@ -38,24 +37,7 @@ mat-panel-description {
 hr {
   margin: 40px 0;
   border: none;
-  border-top: 1px solid #ddd;
-}
-
-.full-width {
-  width: 100%;
-}
-
-mat-form-field {
-  margin-bottom: 16px;
-}
-
-button[mat-stroked-button] {
-  margin-bottom: 16px;
-}
-
-mat-chip-row {
-  background-color: #e8eaf6 !important;
-  color: #1a237e !important;
+  border-top: 1px solid var(--border);
 }
 
 button[mat-raised-button][type="submit"] {
@@ -69,47 +51,11 @@ button[mat-raised-button][type="submit"] {
   margin-bottom: 24px;
 }
 
-.highlight-box {
-  background: #f5f5f5;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-}
-
-.box-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.highlight-box ul {
-  list-style: none;
-  padding-left: 8px;
-}
-
-.highlight-box li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.add-item {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.add-item input {
-  flex: 1;
-  padding: 4px;
-}
-
 .pending-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 2px solid #3f51b5;
+  border-bottom: 2px solid var(--primary);
   padding-bottom: 6px;
   margin-bottom: 16px;
 }
@@ -118,33 +64,9 @@ button[mat-raised-button][type="submit"] {
   border-bottom: none;
 }
 
-.banner-fixed {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  color: white;
-  padding: 16px 24px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
-}
-
-.success-banner {
-  background-color: #2e7d32;
-}
-
-.failure-banner {
-  background-color: #d32f2f;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
+.edit-highlight-input {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
 }
