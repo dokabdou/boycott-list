@@ -46,7 +46,18 @@
 </div>
 
 <!-- Scroll to top button -->
-<button class="scroll-to-top-btn" (click)="scrollToTop()" title="Back to top">↑</button>
+<button
+  class="scroll-to-top-btn"
+  [class.dragging]="isDragging()"
+  (click)="scrollToTop()"
+  (mousedown)="startDrag($event)"
+  (touchstart)="startDrag($event)"
+  [style.left.px]="btnX()"
+  [style.top.px]="btnY()"
+  title="Back to top (drag to move)"
+>
+  ↑
+</button>
 
 @if (toastMessage) {
   <div class="toast">

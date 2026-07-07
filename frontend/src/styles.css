@@ -194,8 +194,6 @@ a {
    ============================================================ */
 .scroll-to-top-btn {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
   width: 48px;
   height: 48px;
   background-color: var(--primary);
@@ -204,13 +202,15 @@ a {
   border-radius: 50%;
   font-size: 1.4rem;
   font-weight: bold;
-  cursor: pointer;
+  cursor: grab;
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-md);
   transition: background-color var(--transition), transform var(--transition);
+  user-select: none;
+  touch-action: none;          /* prevent scrolling while dragging on touch devices */
 }
 
 .scroll-to-top-btn:hover {
@@ -218,6 +218,12 @@ a {
   transform: translateY(-3px);
 }
 
+.scroll-to-top-btn.dragging {
+  cursor: grabbing;
+  transition: none;            /* instant movement while dragging */
+  transform: none;
+  opacity: 0.9;
+}
 /* ============================================================
    Shared Toggle Arrow (used in collapsible sections)
    ============================================================ */

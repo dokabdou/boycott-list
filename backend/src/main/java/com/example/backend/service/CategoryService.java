@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 public class CategoryService extends GenericCrudService<Category, CategoryRepository> {
 	// Moved the service code to the GenericCrudService to avoid code duplication with TagService
 
-	//private final MongoTemplate mongoTemplate;
+	private final MongoTemplate mongoTemplate;
 	private CategoryRepository categoryRepository;
 
-	public CategoryService(CategoryRepository categoryRepository/* , MongoTemplate mongoTemplate */) {
+	public CategoryService(CategoryRepository categoryRepository, MongoTemplate mongoTemplate) {
 		super(categoryRepository);
 		this.categoryRepository = categoryRepository;
-		//this.mongoTemplate = mongoTemplate;
+		this.mongoTemplate = mongoTemplate;
 	}
 
 	public Category create(Category category) {
@@ -35,6 +35,18 @@ public class CategoryService extends GenericCrudService<Category, CategoryReposi
 					return categoryRepository.save(newCat);
 				});
 	}
+
+	@Override
+    public void deleteById(String id) {
+        Category cat = getById(id);
+        if (cat != null) {
+            // Unset the category field from all posts that have this category
+            Query query = new Query(Criteria.where("category.name").is(cat.getName()));
+            Update update = new Update().unset("category");
+            mongoTemplate.updateMulti(query, update, "posts");
+        }
+        super.deleteById(id);
+    }
 
 	// Only methods specific to CategoryService should be added here. All common CRUD operations are handled by GenericCrudService.
 
