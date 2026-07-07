@@ -155,7 +155,10 @@ public class AdminController {
 	@Operation(summary = "Create a new tag",
 			   description = "Creates a new tag. Only called after vetting.")
 	public PostTag createTag(@RequestBody PostTag tag) {
-		return postTagService.create(tag);
+		postTagService.create(tag);
+		PostTag result = postTagService.create(tag);
+		System.out.println("Create TAG :: " + result);
+		return result;
 	}
 	
 	@PostMapping("/tags/create-multiple")
@@ -163,12 +166,14 @@ public class AdminController {
 			   description = "Adds new tags to the system. Only called after vetting.")
 	public ResponseEntity<?> addNewTags(@RequestBody List<PostTag> tags) {
 		postTagService.createAll(tags);
+		System.out.println("Create TAGSSS :: ");
 		return ResponseEntity.ok().build();
 	}
 
 	@PutMapping("/tags/{id}")
 	@Operation(summary = "Update a tag")
 	public PostTag updateTag(@PathVariable String id, @RequestBody String newNameString) {
+		System.out.println("UPDATE TAG :: ");
 		return postTagService.updateById(id, newNameString);
 	}
 
@@ -176,6 +181,7 @@ public class AdminController {
 	@Operation(summary = "Delete a tag",
 			   description = "Deletes an existing tag. Only called after vetting.")
 	public ResponseEntity<?> deleteTag(@PathVariable String id) {
+		System.out.println("DELETE TAG :: " + id);
 		postTagService.deleteById(id);
 		return ResponseEntity.ok().build();
 	}
@@ -183,6 +189,7 @@ public class AdminController {
 	@DeleteMapping("/tags/deleteSelected")
 	@Operation(summary = "Delete all the tags")
 	public ResponseEntity<?> deleteSelectedTags(List<String> tagIds) {
+		System.out.println("DELETE TAGSS :: ");
 		postTagService.deleteSelected(tagIds);
 		return ResponseEntity.ok().build();
 	}
@@ -190,6 +197,7 @@ public class AdminController {
 	@DeleteMapping("/tags/deleteAll")
 	@Operation(summary = "Delete all the tags")
 	public ResponseEntity<?> deleteAllTags() {
+		System.out.println("DELETE ALL TAGS  :: ");
 		postTagService.deleteAll();
 		return ResponseEntity.ok().build();
 	}
@@ -200,6 +208,7 @@ public class AdminController {
 	@Operation(summary = "Create a new category",
 			   description = "Creates a new category. Only called after vetting.")
 	public Category createCategory(@RequestBody Category category) {
+		System.out.println("CREATE CAT :: ");
 		return categoryService.create(category);
 	}
 	
@@ -207,6 +216,7 @@ public class AdminController {
 	@Operation(summary = "Add new categories",
 			   description = "Adds new categories to the system. Only called after vetting.")
 	public ResponseEntity<?> addNewCategories(@RequestBody List<Category> categories) {
+		System.out.println("ADD CATSSS :: ");
 		categoryService.createAll(categories);
 		return ResponseEntity.ok().build();
 	}
@@ -214,12 +224,14 @@ public class AdminController {
 	@PutMapping("/categories/{id}")
 	@Operation(summary = "Update a category")
 	public Category updateCategory(@PathVariable String id, @RequestBody String newNameString) {
+		System.out.println("UDAPTE CAT :: ");
 		return categoryService.updateById(id, newNameString);
 	}
 
 	@DeleteMapping("/categories/{id}")
 	@Operation(summary = "Delete a category")
 	public ResponseEntity<?> deleteCategory(@PathVariable String id) {
+		System.out.println("DEELTE CAT :: ");
 		categoryService.deleteById(id);
 		return ResponseEntity.ok().build();
 	}
@@ -227,6 +239,7 @@ public class AdminController {
 	@DeleteMapping("/categories/deleteSelected")
 	@Operation(summary = "Delete all selected categories")
 	public ResponseEntity<?> deleteSelectedCategories(List<String> categoryIds) {
+		System.out.println("DELETE CATSSS :: ");
 		categoryService.deleteSelected(categoryIds);
 		return ResponseEntity.ok().build();
 	}
@@ -234,6 +247,7 @@ public class AdminController {
 	@DeleteMapping("/categories/deleteAll")
 	@Operation(summary = "Delete all categories")
 	public ResponseEntity<?> deleteAllCategories() {
+		System.out.println("DELETE ALLL CATSS :: ");
 		categoryService.deleteAll();
 		return ResponseEntity.ok().build();
 	}

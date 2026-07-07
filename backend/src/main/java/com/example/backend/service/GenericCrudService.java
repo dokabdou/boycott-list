@@ -48,7 +48,9 @@ public abstract class GenericCrudService<
     }
 
     public List<T> getAll() {
-        return repository.findAll();
+		List<T> result = repository.findAll();
+		System.out.println("GET ALL :: " + result);
+        return result;
     }
 
     public T updateById(String id, String newName) {

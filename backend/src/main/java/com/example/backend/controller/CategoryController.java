@@ -25,10 +25,13 @@ public class CategoryController {
 		return categoryService.getById(id);
 	}
 
-	@GetMapping("/")
+	@GetMapping
 	@Operation(summary = "Get all approved categories")
 	public List<Category> getAllCategories() {
-		return categoryService.getAll();
+		System.out.println("GET ALL CATEGORY :: ");
+		List<Category> result = categoryService.getAll();
+		System.out.println("GET ALL CATEGORY :: " + result);
+		return result;
 	}
 
     /* private final MongoTemplate mongoTemplate;

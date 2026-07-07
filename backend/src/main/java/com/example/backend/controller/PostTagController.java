@@ -28,6 +28,8 @@ public class PostTagController {
 	@GetMapping("/approved")
 	@Operation(summary = "Get all approved tags")
 	public List<PostTag> getApprovedTags() {
-		return tagService.getAll();
+		List<PostTag> result = tagService.getAll();
+		System.out.println("GET ALL TAGS:: " + result);
+		return result;
 	}
 }
