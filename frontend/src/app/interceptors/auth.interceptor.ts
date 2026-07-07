@@ -6,10 +6,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getToken();
 
-  console.log(
+  /* console.log(
     `[Interceptor] ${req.method} ${req.url} → token:`,
     token ? token.substring(0, 10) + '...' : 'null',
-  );
+  ); */
 
   if (token && req.url.startsWith('/api/admin')) {
     req = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });

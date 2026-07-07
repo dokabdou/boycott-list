@@ -96,7 +96,6 @@ export class AdminDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log('AdminDashboardComponent initialized');
     this.loadPendingPosts();
     this.adminForm = this.fb.group({
       companyName: ['', Validators.required],
@@ -305,7 +304,6 @@ export class AdminDashboardComponent implements OnInit {
       next: () => {
         this.loadPendingPosts();
         this.banner.set({ type: 'success', message: `Approved: ${companyName}` });
-        console.log('Banner set to success');
         setTimeout(() => this.banner.set(null), 5000);
       },
       error: (err) => {
@@ -324,7 +322,6 @@ export class AdminDashboardComponent implements OnInit {
       next: () => {
         this.loadPendingPosts();
         this.banner.set({ type: 'error', message: `Rejected: ${companyName}` });
-        console.log('Banner set to error');
         setTimeout(() => this.banner.set(null), 5000);
       },
       error: (err) => {

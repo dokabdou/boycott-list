@@ -16,7 +16,7 @@ export class CategoryService {
     const categories = this.http
       .get<Category[]>(`${this.publicUrl}`)
       .pipe(map((cats) => cats.map((c) => c.name)));
-    console.log('Categories:', categories);
+    //console.log('Categories:', categories);
     return categories;
   }
 
@@ -25,14 +25,14 @@ export class CategoryService {
   createCategory(name: string): Observable<Category> {
     const cat: Category = { name, approved: true };
     const category = this.http.post<Category>(`${this.adminUrl}/create`, cat);
-    console.log('Category created:', category);
+    //console.log('Category created:', category);
     return category;
   }
 
   createMultipleCategories(names: string[]): Observable<void> {
     const categories: Category[] = names.map((name) => ({ name, approved: true }));
     const response = this.http.post<void>(`${this.adminUrl}/create-multiple`, { categories });
-    console.log('Multiple categories created:', response);
+    //console.log('Multiple categories created:', response);
     return response;
   }
 
@@ -52,20 +52,20 @@ export class CategoryService {
 
   deleteCategory(id: string): Observable<void> {
     const response = this.http.delete<void>(`${this.adminUrl}/${id}`);
-    console.log('Category deleted:', response);
+    //console.log('Category deleted:', response);
     return response;
   }
 
   deleteMultipleCategories(ids: string[]): Observable<void> {
     const categories: Category[] = ids.map((id) => ({ id, name: '', approved: true }));
     const response = this.http.post<void>(`${this.adminUrl}/deleteSelected`, { categories });
-    console.log('Multiple categories deleted:', response);
+    //console.log('Multiple categories deleted:', response);
     return response;
   }
 
   deleteAllCategories(): Observable<void> {
     const categories = this.http.delete<void>(`${this.adminUrl}/deleteAll`);
-    console.log('All categories deleted:', categories);
+    //console.log('All categories deleted:', categories);
     return categories;
   }
 }
