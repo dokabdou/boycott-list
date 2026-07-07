@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, WritableSignal, signal, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  WritableSignal,
+  signal,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -27,6 +35,7 @@ import { Suggestion } from '../../models/suggestion.model';
 import { Post } from '../../models/post.model';
 import { CategoryService } from '../../services/category.service';
 import { Tag } from '../../models/tag.model';
+import { Category } from '../../models/category.model';
 import { HighlightService } from '../../services/highlight.service';
 
 @Component({
@@ -50,24 +59,30 @@ import { HighlightService } from '../../services/highlight.service';
 })
 export class AdminDashboardComponent implements OnInit {
   activeTab: 'post' | 'manage' = 'post';
-  categories: WritableSignal<string[]> = signal([]);
-  tags: WritableSignal<Tag[]> = signal([]);
 
+  // Post tab
   pendingPosts: WritableSignal<Post[]> = signal([]);
   adminForm!: FormGroup;
-
   selectedTags: string[] = [];
   allTags: string[] = [];
   filteredTags!: Observable<string[]>;
-
   allCategories: string[] = [];
+
+  // Manage tab
+  adminCategories: WritableSignal<Category[]> = signal([]);
+  adminTags: WritableSignal<Tag[]> = signal([]);
+
+  // Inline edit state
+  editingCategoryId: WritableSignal<string | null> = signal(null);
+  editCategoryName = '';
+  editingTagId: WritableSignal<string | null> = signal(null);
+  editTagName = '';
 
   suggestions: WritableSignal<Suggestion[]> = signal([]);
   editingSuggestionId: WritableSignal<string | null> = signal(null);
   editSuggestionContent = '';
 
   banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
-
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
@@ -77,7 +92,7 @@ export class AdminDashboardComponent implements OnInit {
     private tagService: TagService,
     private categoryService: CategoryService,
     private fb: FormBuilder,
-	public hs: HighlightService
+    public hs: HighlightService,
   ) {}
 
   ngOnInit() {
@@ -101,57 +116,104 @@ export class AdminDashboardComponent implements OnInit {
     this.categoryService.getCategories().subscribe((categories) => {
       this.allCategories = categories;
     });
-  }
 
-  /* loadCategories() {
-    this.postService.getCategories().subscribe((cats) => this.categories.set(cats));
-  }
-
-  loadTags() {
-    this.tagService.getAdminTags().subscribe((tags) => this.tags.set(tags));
-  }
-
-  addCategory() {
-    // Categories are just strings, we create them by creating a new tag? Actually, categories come from post.category; to add a new one we just need to have it appear in the autocomplete – we can add it via tag creation? But categories are not tags. The best way is to allow the admin to create a new category by directly adding it to the list and persisting it as a "dummy" post or by providing an endpoint to add a category. For simplicity, we'll implement a local add: the admin can type a new category name and we'll add it to the local list; however, it won't be saved until a post uses it. That's acceptable.
-    const name = this.newCategoryName.trim();
-    if (!name) return;
-    // Add locally; will be available in autocomplete next time categories are loaded from existing posts
-    if (!this.categories().includes(name)) {
-      this.categories.update((cats) => [...cats, name].sort());
-    }
-    this.newCategoryName = '';
-  }
-
-  startEditCategory(cat: string) {
-    this.editingCategoryId.set(cat); // use the name as ID for categories
-    this.editCategoryName = cat;
-  }
-
-  saveEditCategory(oldName: string) {
-    const newName = this.editCategoryName.trim();
-    if (!newName || newName === oldName) return;
-    this.categoryService.renameCategory(oldName, newName).subscribe(() => {
-      this.editingCategoryId.set(null);
-      this.loadCategories();
-    });
-  }
-
-  deleteCategory(name: string) {
-    if (confirm('Delete this category?')) {
-      this.categoryService.deleteCategory(name).subscribe(() => this.loadCategories());
-    }
-  }
-
-  refreshData() {
-    // get the tags and categories, edit and update or delete the allTags and allCategories arrays
+    // Preload manage tab data
+    this.loadAdminCategories();
+    this.loadAdminTags();
   }
 
   switchTab(tab: 'post' | 'manage') {
     this.activeTab = tab;
     if (tab === 'manage') {
-      this.loadSuggestions();
+      this.loadAdminCategories();
+      this.loadAdminTags();
     }
-  } */
+  }
+
+  // ---------- Manage tab data ----------
+  loadAdminCategories() {
+    this.categoryService.getAdminCategories().subscribe((cats) => this.adminCategories.set(cats));
+  }
+
+  loadAdminTags() {
+    this.tagService.getAdminTags().subscribe((tags) => this.adminTags.set(tags));
+  }
+
+  // ---------- Category CRUD ----------
+  newCategoryName = '';
+  addCategory() {
+    const name = this.newCategoryName.trim();
+    if (!name) return;
+    this.categoryService.createCategory(name).subscribe((cat) => {
+      this.adminCategories.update((cats) =>
+        [...cats, cat].sort((a, b) => a.name.localeCompare(b.name)),
+      );
+      this.newCategoryName = '';
+    });
+  }
+
+  startEditCategory(cat: Category) {
+    this.editingCategoryId.set(cat.id!);
+    this.editCategoryName = cat.name;
+  }
+
+  saveEditCategory(id: string) {
+    const newName = this.editCategoryName.trim();
+    if (!newName) return;
+    this.categoryService.editCategory(id, newName).subscribe((updatedCat) => {
+      this.adminCategories.update((cats) => cats.map((c) => (c.id === id ? updatedCat : c)));
+      this.editingCategoryId.set(null);
+    });
+  }
+
+  cancelEditCategory() {
+    this.editingCategoryId.set(null);
+  }
+
+  deleteCategory(id: string) {
+    if (confirm('Delete this category?')) {
+      this.categoryService.deleteCategory(id).subscribe(() => {
+        this.adminCategories.update((cats) => cats.filter((c) => c.id !== id));
+      });
+    }
+  }
+
+  // ---------- Tag CRUD ----------
+  newTagName = '';
+  addTagAdmin() {
+    const name = this.newTagName.trim();
+    if (!name) return;
+    this.tagService.createTag(name).subscribe((tag) => {
+      this.adminTags.update((tags) => [...tags, tag].sort((a, b) => a.name.localeCompare(b.name)));
+      this.newTagName = '';
+    });
+  }
+
+  startEditTag(tag: Tag) {
+    this.editingTagId.set(tag.id!);
+    this.editTagName = tag.name;
+  }
+
+  saveEditTag(id: string) {
+    const newName = this.editTagName.trim();
+    if (!newName) return;
+    this.tagService.editTag(id, newName).subscribe((updatedTag) => {
+      this.adminTags.update((tags) => tags.map((t) => (t.id === id ? updatedTag : t)));
+      this.editingTagId.set(null);
+    });
+  }
+
+  cancelEditTag() {
+    this.editingTagId.set(null);
+  }
+
+  deleteTag(id: string) {
+    if (confirm('Delete this tag?')) {
+      this.tagService.deleteTag(id).subscribe(() => {
+        this.adminTags.update((tags) => tags.filter((t) => t.id !== id));
+      });
+    }
+  }
 
   get sourceLinks(): FormArray {
     return this.adminForm.get('sourceLinks') as FormArray;
