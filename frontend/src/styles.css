@@ -280,8 +280,17 @@ a {
 }
 
 .add-item input {
-  flex: 1;
-  padding: 4px;
+   width: 100%;
+  min-height: 40px;
+  padding: 8px;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  resize: none;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1.5;
 }
 
 /* ============================================================
@@ -335,6 +344,22 @@ button[mat-stroked-button] {
 button[mat-raised-button]:focus-visible {
   box-shadow: 0 0 0 3px var(--accent);
 }
+
+.edit-highlight-input {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  resize: none;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1.5;
+}
+
+
 
 @media (prefers-reduced-motion: reduce) {
   *,

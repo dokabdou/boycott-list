@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, WritableSignal, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, WritableSignal, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -27,6 +27,7 @@ import { Suggestion } from '../../models/suggestion.model';
 import { Post } from '../../models/post.model';
 import { CategoryService } from '../../services/category.service';
 import { Tag } from '../../models/tag.model';
+import { HighlightService } from '../../services/highlight.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -45,6 +46,7 @@ import { Tag } from '../../models/tag.model';
   ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css', '../../../styles.css'],
+  providers: [HighlightService],
 })
 export class AdminDashboardComponent implements OnInit {
   activeTab: 'post' | 'manage' = 'post';
@@ -57,7 +59,6 @@ export class AdminDashboardComponent implements OnInit {
   selectedTags: string[] = [];
   allTags: string[] = [];
   filteredTags!: Observable<string[]>;
-  highlightBoxes: string[][] = [];
 
   allCategories: string[] = [];
 
@@ -66,9 +67,8 @@ export class AdminDashboardComponent implements OnInit {
   editSuggestionContent = '';
 
   banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
-  editingHighlight: WritableSignal<{ boxIndex: number; itemIndex: number; value: string } | null> =
-    signal(null);
-	
+
+
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
   constructor(
@@ -77,6 +77,7 @@ export class AdminDashboardComponent implements OnInit {
     private tagService: TagService,
     private categoryService: CategoryService,
     private fb: FormBuilder,
+	public hs: HighlightService
   ) {}
 
   ngOnInit() {
@@ -196,60 +197,6 @@ export class AdminDashboardComponent implements OnInit {
     );
   }
 
-  addHighlightBox() {
-    if (this.highlightBoxes.length < 3) {
-      this.highlightBoxes.push([]);
-    }
-  }
-
-  removeHighlightBox(index: number) {
-    this.highlightBoxes.splice(index, 1);
-  }
-
-  addHighlightItem(boxIndex: number, input: HTMLInputElement) {
-    const value = input.value.trim();
-    if (value && this.highlightBoxes[boxIndex].length < 4) {
-      this.highlightBoxes[boxIndex].push(value);
-      input.value = '';
-    }
-  }
-
-  removeHighlightItem(boxIndex: number, itemIndex: number) {
-    this.highlightBoxes[boxIndex].splice(itemIndex, 1);
-  }
-
-  startEditHighlightItem(boxIndex: number, itemIndex: number) {
-    this.editingHighlight.set({
-      boxIndex,
-      itemIndex,
-      value: this.highlightBoxes[boxIndex][itemIndex],
-    });
-    // Focus the input after it appears – dynamic ID as before
-    setTimeout(() => {
-      const el = document.getElementById(
-        `highlight-input-${boxIndex}-${itemIndex}`,
-      ) as HTMLInputElement;
-      el?.focus();
-    }, 0);
-  }
-
-  saveEditHighlightItem() {
-    const highlight = this.editingHighlight();
-    if (!highlight) return;
-    const { boxIndex, itemIndex, value } = highlight;
-    const trimmed = value.trim();
-    if (trimmed) {
-      this.highlightBoxes[boxIndex][itemIndex] = trimmed;
-    } else {
-      this.highlightBoxes[boxIndex].splice(itemIndex, 1);
-    }
-    this.editingHighlight.set(null);
-  }
-
-  cancelEditHighlightItem() {
-    this.editingHighlight.set(null);
-  }
-
   onEnter(event: Event) {
     const keyEvent = event as KeyboardEvent;
     const target = event.target as HTMLElement;
@@ -333,7 +280,7 @@ export class AdminDashboardComponent implements OnInit {
       .submitPost(
         this.adminForm.value,
         this.selectedTags,
-        this.highlightBoxes,
+        this.hs.highlightBoxes(),
         true, // isAdmin = true → auto‑approved, admin endpoint
       )
       .subscribe(() => {
@@ -342,7 +289,7 @@ export class AdminDashboardComponent implements OnInit {
         this.sourceLinks.clear();
         this.sourceLinks.push(this.fb.control('', Validators.required));
         this.selectedTags = [];
-        this.highlightBoxes = [];
+        this.hs.highlightBoxes.set([]);
       });
   }
 }

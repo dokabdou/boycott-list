@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -16,6 +16,8 @@ import { SuggestionSectionComponent } from '../suggestion-section/suggestion-sec
 import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { HighlightService } from '../../services/highlight.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-post-detail',
@@ -34,9 +36,11 @@ import { MatInputModule } from '@angular/material/input';
     RouterLink,
     MatFormFieldModule,
     MatInputModule,
+    FormsModule,
   ],
   templateUrl: './post-detail.component.html',
   styleUrls: ['./post-detail.component.css', '../../../styles.css'],
+  providers: [HighlightService],
 })
 export class PostDetailComponent implements OnInit {
   post: WritableSignal<Post | null> = signal(null);
@@ -45,13 +49,13 @@ export class PostDetailComponent implements OnInit {
   editForm: FormGroup | null = null;
   banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
 
-
   constructor(
     private route: ActivatedRoute,
     private postService: PostService,
     private authService: AuthService,
     private fb: FormBuilder,
     private router: Router,
+    public hs: HighlightService,
   ) {}
 
   ngOnInit(): void {
@@ -82,13 +86,48 @@ export class PostDetailComponent implements OnInit {
           : [this.fb.control('', Validators.required)],
       ),
       tags: [post.tags?.join(', ') || ''],
-      highlights: [post.highlights?.map((box) => box.join('|')).join('\n') || ''],
+      // highlights textarea removed – we use the builder now
     });
+
+    // Initialise the highlight builder from the post
+    this.hs.highlightBoxes.set(post.highlights ? post.highlights.map((box) => [...box]) : []);
   }
 
   cancelEdit(): void {
     this.editingPostId.set(null);
     this.editForm = null;
+    this.hs.highlightBoxes.set([]); // reset
+    this.hs.editingHighlight.set(null);
+  }
+
+  // saveEdit must use the highlights from the service
+  saveEdit(postId: string): void {
+    if (!this.editForm?.valid) return;
+
+    const formValue = this.editForm.value;
+    const updated: Post = {
+      id: postId,
+      companyName: formValue.companyName,
+      category: formValue.category,
+      description: formValue.description,
+      sourceLinks: formValue.sourceLinks,
+      tags: formValue.tags
+        .split(',')
+        .map((t: string) => t.trim())
+        .filter(Boolean),
+      highlights: this.hs.highlightBoxes().filter((box) => box.length > 0),
+    };
+
+    this.postService.editPost(postId, updated).subscribe({
+      next: (savedPost) => {
+        this.showBanner('success', `"${savedPost.companyName}" updated successfully.`);
+        this.loadPost();
+        this.cancelEdit();
+      },
+      error: () => {
+        this.showBanner('error', 'Failed to update.');
+      },
+    });
   }
 
   get sourceLinksArray(): FormArray {
@@ -101,33 +140,6 @@ export class PostDetailComponent implements OnInit {
 
   removeLink(index: number): void {
     this.sourceLinksArray.removeAt(index);
-  }
-
-  saveEdit(postId: string): void {
-    if (!this.editForm?.valid) return;
-    const updated = this.postService.buildEditPayload(this.editForm.value, postId);
-    const companyName = updated.companyName;
-
-    this.postService.editPost(postId, updated).subscribe({
-      next: (savedPost) => {
-        this.showBanner('success', `"${savedPost.companyName}" updated successfully.`);
-
-		console.log("updated : ", savedPost);
-
-        /* const currentPost = this.post();
-        if (currentPost) {
-          this.post.set({ ...currentPost, ...savedPost });
-        }
-	    //this.post.set(savedPost);
-		console.log("this post ==> ", this.post); */
-		this.loadPost();
-        this.cancelEdit();
-		console.log('Post updated, new value:', this.post());
-      },
-      error: () => {
-        this.showBanner('error', `Failed to update "${companyName}".`);
-      },
-    });
   }
 
   deletePost(): void {

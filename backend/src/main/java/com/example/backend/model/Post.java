@@ -66,7 +66,12 @@ public class Post {
 
     @JsonProperty("category")
     public void setCategory(String categoryName) {
-        this.category = categoryName == null ? null : new Category(categoryName);
+		// if the categoryName is null then set it to UnCategorized
+        if (categoryName == null || categoryName.isBlank()) {
+			this.category = new Category("UnCategorized");
+		} else {
+			this.category = new Category(categoryName);
+		}
     }
 
     // Custom setter for tags – accepts a list of strings

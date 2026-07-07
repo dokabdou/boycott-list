@@ -15,10 +15,25 @@ public class CategoryService extends GenericCrudService<Category, CategoryReposi
 	// Moved the service code to the GenericCrudService to avoid code duplication with TagService
 
 	//private final MongoTemplate mongoTemplate;
+	private CategoryRepository categoryRepository;
 
 	public CategoryService(CategoryRepository categoryRepository/* , MongoTemplate mongoTemplate */) {
 		super(categoryRepository);
+		this.categoryRepository = categoryRepository;
 		//this.mongoTemplate = mongoTemplate;
+	}
+
+	public Category create(Category category) {
+		if (category == null || category.getName() == null || category.getName().isBlank()) {
+			return null;
+		}
+		return categoryRepository.findByName(category.getName())
+				.orElseGet(() -> {
+					Category newCat = new Category();
+					newCat.setName(category.getName());
+					newCat.setApproved(true);
+					return categoryRepository.save(newCat);
+				});
 	}
 
 	// Only methods specific to CategoryService should be added here. All common CRUD operations are handled by GenericCrudService.

@@ -34,8 +34,11 @@ public class PostService {
     public Post submitByAdmin(Post post, String adminUsername) {
         post.setAnonymous(false);
         post.setSubmittedBy(adminUsername);
+		
 		Category createdCategory = categoryService.create(post.getCategory());
 		post.setCategory(createdCategory.getName());
+
+
 		post.setStatus(Post.PostStatus.APPROVED);  // auto‑approved
 		post.setCreatedAt(Instant.now());
 		post.setReviewedAt(Instant.now());
@@ -63,20 +66,28 @@ public class PostService {
     }
 
     public Post approvePost(String id, String adminUsername) {
-        Optional<Post> opt = postRepository.findById(id);
-        if (opt.isPresent()) {
-            Post post = opt.get();
-            post.setStatus(Post.PostStatus.APPROVED);
-			post.setReviewedAt(Instant.now());
-			post.setReviewedBy(adminUsername);
-			Category createdCategory = categoryService.create(post.getCategory());
-			post.setCategory(createdCategory.getName());
-			tagService.createAll(post.getTags());
-			System.out.println("PostService ==> Approved post ID: " + post.getId() + " by admin: " + adminUsername);
-            return postRepository.save(post);
-        }
-        throw new RuntimeException("Post not found");
-    }
+		Post post = postRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Post not found"));
+
+		// Ensure category always has a valid, non-blank name
+		if (post.getCategory() == null || post.getCategory().getName() == null || post.getCategory().getName().isBlank()) {
+			post.setCategory("UnCategorized");
+		}
+
+		System.out.println("----- ApprovedPost :: " + post.getCategory());
+
+		// Now category is guaranteed to be non-null and have a proper name
+		Category createdCategory = categoryService.create(post.getCategory());
+		post.setCategory(createdCategory.getName());
+
+		post.setStatus(Post.PostStatus.APPROVED);
+		post.setReviewedAt(Instant.now());
+		post.setReviewedBy(adminUsername);
+		tagService.createAll(post.getTags());
+
+		System.out.println("PostService ==> Approved post ID: " + post.getId() + " by admin: " + adminUsername);
+		return postRepository.save(post);
+	}
 
     public Post rejectPost(String id, String adminUsername) {
         Optional<Post> opt = postRepository.findById(id);
@@ -105,11 +116,13 @@ public class PostService {
 				.orElseThrow(() -> new RuntimeException("Post not found"));
 		post.setCompanyName(updatedPost.getCompanyName());
 
-		if (updatedPost.getCategory() != null) {
+		if (updatedPost.getCategory() != null && !updatedPost.getCategory().getName().isBlank()) {
 			post.setCategory(updatedPost.getCategory().getName());
 		} else {
-			post.setCategory((String) null);
+			post.setCategory("UnCategorized");
 		}
+		Category createdCategory = categoryService.create(post.getCategory());
+		post.setCategory(createdCategory.getName());
 
 		post.setDescription(updatedPost.getDescription());
 		post.setSourceLinks(updatedPost.getSourceLinks());

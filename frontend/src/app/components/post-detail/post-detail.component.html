@@ -113,12 +113,56 @@
 			<button mat-stroked-button type="button" (click)="addLink()" style="margin-bottom: 5px;">Add link</button>
 			</div>
 
-			<!-- Highlights -->
-			<mat-form-field appearance="fill" class="full-width">
-			<mat-label>Highlights</mat-label>
-			<textarea matInput formControlName="highlights" rows="4"
-						placeholder="Each line = one box, items separated by |&#10;e.g.&#10;Item 1|Item 2|Item 3&#10;Other|Box items"></textarea>
-			</mat-form-field>
+			<!-- Highlights Section -->
+			<div class="highlights-section">
+				<h3>Highlights (up to 3 boxes, 4 items each)</h3>
+				<div *ngFor="let box of hs.highlightBoxes(); let i = index" class="highlight-box">
+					<div class="box-header">
+					<strong>Box {{ i + 1 }}</strong>
+					<button mat-icon-button color="warn" type="button" (click)="hs.removeHighlightBox(i)">
+						<mat-icon>delete</mat-icon>
+					</button>
+					</div>
+					<ul>
+					<li *ngFor="let item of box; let j = index">
+						<ng-container *ngIf="hs.editingHighlight()?.boxIndex === i && hs.editingHighlight()?.itemIndex === j; else displayMode">
+							<textarea
+								[id]="'highlight-input-' + i + '-' + j"
+								[value]="hs.editingHighlight()?.value ?? ''"
+								(input)="hs.updateHighlightValue(($any($event.target)?.value ?? ''))"
+								(keydown.enter)="hs.saveEditHighlightItem()"
+								(keydown.escape)="hs.cancelEditHighlightItem()"
+								rows="1"
+								class="edit-highlight-input"
+								#highlightTextarea
+							></textarea>
+						<button mat-icon-button color="primary" type="button" (click)="hs.saveEditHighlightItem()">
+							<mat-icon>check</mat-icon>
+						</button>
+						<button mat-icon-button type="button" (click)="hs.cancelEditHighlightItem()">
+							<mat-icon>close</mat-icon>
+						</button>
+						</ng-container>
+						<ng-template #displayMode>
+						<span (dblclick)="hs.startEditHighlightItem(i, j)">{{ item }}</span>
+						<button mat-icon-button color="primary" type="button" (click)="hs.startEditHighlightItem(i, j)">
+							<mat-icon>edit</mat-icon>
+						</button>
+						<button mat-icon-button color="warn" type="button" (click)="hs.removeHighlightItem(i, j)">
+							<mat-icon>close</mat-icon>
+						</button>
+						</ng-template>
+					</li>
+					</ul>
+					<div class="add-item" *ngIf="box.length < 4">
+					<input #newItem placeholder="Add item" (keyup.enter)="hs.addHighlightItem(i, newItem)">
+					<button mat-stroked-button type="button" (click)="hs.addHighlightItem(i, newItem)">Add</button>
+					</div>
+				</div>
+				<button mat-stroked-button type="button" *ngIf="hs.highlightBoxes().length < 3" (click)="hs.addHighlightBox()">
+					Add Highlight Box
+				</button>
+			</div>
 
 			<!-- Actions -->
 			<div class="edit-actions">

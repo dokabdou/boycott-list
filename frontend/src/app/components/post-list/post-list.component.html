@@ -62,7 +62,7 @@
         </div>
 
         <!-- EDIT MODE -->
-        <div *ngIf="editingPostId() === post.id && editForm">
+ <!--        <div *ngIf="editingPostId() === post.id && editForm">
           <form [formGroup]="editForm">
             <mat-form-field appearance="fill" class="full-width">
               <mat-label>Company Name</mat-label>
@@ -111,18 +111,18 @@
               <button mat-button (click)="cancelEdit()">Cancel</button>
             </div>
           </form>
-        </div>
+        </div> -->
       </mat-card-content>
 
       <!-- Admin buttons (only for logged‑in admins, only when not editing) -->
-      <mat-card-actions *ngIf="isLoggedIn() && editingPostId() !== post.id">
+      <!-- <mat-card-actions *ngIf="isLoggedIn() && editingPostId() !== post.id">
         <button mat-button color="primary" (click)="startEdit(post)">
           <mat-icon>edit</mat-icon> Edit
         </button>
         <button mat-button color="warn" (click)="deletePost(post.id!)">
           <mat-icon>delete</mat-icon> Delete
         </button>
-      </mat-card-actions>
+      </mat-card-actions> -->
 
       <mat-card-footer *ngIf="post.submittedBy && !post.anonymous && editingPostId() !== post.id">
         <small>Posted by {{ post.submittedBy }}</small>

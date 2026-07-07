@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, WritableSignal, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  WritableSignal,
+  signal,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -22,6 +30,7 @@ import { map, startWith } from 'rxjs/operators';
 import { PostService } from '../../services/post.service';
 import { TagService } from '../../services/tag.service';
 import { CategoryService } from '../../services/category.service';
+import { HighlightService } from '../../services/highlight.service';
 
 @Component({
   selector: 'app-submit-form',
@@ -39,26 +48,24 @@ import { CategoryService } from '../../services/category.service';
   ],
   templateUrl: './submit-form.component.html',
   styleUrls: ['./submit-form.component.css', '../../../styles.css'],
+  providers: [HighlightService],
 })
 export class SubmitFormComponent implements OnInit {
   submitForm!: FormGroup;
   selectedTags: string[] = [];
   allTags: string[] = [];
   filteredTags!: Observable<string[]>;
-  highlightBoxes: string[][] = [];
   allCategories: string[] = [];
   showBanner: WritableSignal<boolean> = signal(false);
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
-
-  editingHighlight: WritableSignal<{ boxIndex: number; itemIndex: number; value: string } | null> =
-    signal(null);
 
   constructor(
     private fb: FormBuilder,
     private postService: PostService,
     private tagService: TagService,
     private categoryService: CategoryService,
+    public hs: HighlightService,
   ) {}
 
   ngOnInit() {
@@ -77,8 +84,8 @@ export class SubmitFormComponent implements OnInit {
       );
     });
 
-    this.categoryService.getCategories().subscribe((categories) => {
-      this.allCategories = categories;
+    this.categoryService.getCategories().subscribe((cats) => {
+      this.allCategories = cats;
     });
   }
 
@@ -89,11 +96,11 @@ export class SubmitFormComponent implements OnInit {
   addLink() {
     this.sourceLinks.push(this.fb.control('', Validators.required));
   }
-
   removeLink(index: number) {
     this.sourceLinks.removeAt(index);
   }
 
+  // Tag chip methods (unchanged)
   addTag(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
     if (value && !this.selectedTags.includes(value)) {
@@ -104,9 +111,7 @@ export class SubmitFormComponent implements OnInit {
 
   removeTag(tag: string): void {
     const index = this.selectedTags.indexOf(tag);
-    if (index >= 0) {
-      this.selectedTags.splice(index, 1);
-    }
+    if (index >= 0) this.selectedTags.splice(index, 1);
   }
 
   selectedTag(event: MatAutocompleteSelectedEvent): void {
@@ -114,9 +119,7 @@ export class SubmitFormComponent implements OnInit {
     if (!this.selectedTags.includes(value)) {
       this.selectedTags.push(value);
     }
-    if (this.tagInput) {
-      this.tagInput.nativeElement.value = '';
-    }
+    if (this.tagInput) this.tagInput.nativeElement.value = '';
   }
 
   private filterTags(value: string): string[] {
@@ -126,76 +129,13 @@ export class SubmitFormComponent implements OnInit {
     );
   }
 
-  startEditHighlightItem(boxIndex: number, itemIndex: number) {
-    this.editingHighlight.set({
-      boxIndex,
-      itemIndex,
-      value: this.highlightBoxes[boxIndex][itemIndex],
-    });
-    // Focus the input after it appears – dynamic ID as before
-    setTimeout(() => {
-      const el = document.getElementById(
-        `highlight-input-${boxIndex}-${itemIndex}`,
-      ) as HTMLInputElement;
-      el?.focus();
-    }, 0);
-  }
-
-  saveEditHighlightItem() {
-    const highlight = this.editingHighlight();
-    if (!highlight) return;
-    const { boxIndex, itemIndex, value } = highlight;
-    const trimmed = value.trim();
-    if (trimmed) {
-      this.highlightBoxes[boxIndex][itemIndex] = trimmed;
-    } else {
-      this.highlightBoxes[boxIndex].splice(itemIndex, 1);
-    }
-    this.editingHighlight.set(null);
-  }
-
-  cancelEditHighlightItem() {
-    this.editingHighlight.set(null);
-  }
-
-  addHighlightBox() {
-    if (this.highlightBoxes.length < 3) {
-      this.highlightBoxes.push([]);
-    }
-  }
-
-  removeHighlightBox(index: number) {
-    this.highlightBoxes.splice(index, 1);
-  }
-
-  addHighlightItem(boxIndex: number, input: HTMLInputElement) {
-    const value = input.value.trim();
-    if (value && this.highlightBoxes[boxIndex].length < 4) {
-      this.highlightBoxes[boxIndex].push(value);
-      input.value = '';
-    }
-  }
-
-  removeHighlightItem(boxIndex: number, itemIndex: number) {
-    this.highlightBoxes[boxIndex].splice(itemIndex, 1);
-  }
-
+  // Enter key navigation (prevents form submission on fields)
   onEnter(event: Event) {
-    const keyEvent = event as KeyboardEvent;
-    // Only intercept if the target is a normal input/textarea/button, not on the submit button itself
     const target = event.target as HTMLElement;
-    if (target.tagName === 'BUTTON' && target.getAttribute('type') === 'submit') {
-      return; // let the submit happen normally
-    }
-
-    // Prevent the form from being submitted
+    if (target.tagName === 'BUTTON' && target.getAttribute('type') === 'submit') return;
     event.preventDefault();
-
-    // Find all focusable elements inside the form
-
     const form = target.closest('form');
     if (!form) return;
-
     const focusableSelectors = [
       'input:not([type=hidden]):not([disabled])',
       'textarea:not([disabled])',
@@ -203,16 +143,12 @@ export class SubmitFormComponent implements OnInit {
       'button:not([disabled])',
       '[tabindex]:not([tabindex="-1"])',
     ];
-
     const elements = Array.from(
       form.querySelectorAll<HTMLElement>(focusableSelectors.join(',')),
-    ).filter((el) => el.offsetParent !== null); // only visible elements
-
+    ).filter((el) => el.offsetParent !== null);
     const currentIndex = elements.indexOf(target);
     let nextIndex = currentIndex + 1;
-    if (nextIndex >= elements.length) {
-      nextIndex = 0; // wrap to first
-    }
+    if (nextIndex >= elements.length) nextIndex = 0;
     elements[nextIndex]?.focus();
   }
 
@@ -223,15 +159,15 @@ export class SubmitFormComponent implements OnInit {
       .submitPost(
         this.submitForm.value,
         this.selectedTags,
-        this.highlightBoxes,
-        false, // isAdmin = false → anonymous submission
+        this.hs.highlightBoxes(), // ✅ from the shared service
+        false, // anonymous
       )
       .subscribe(() => {
         this.submitForm.reset();
         this.sourceLinks.clear();
         this.sourceLinks.push(this.fb.control('', Validators.required));
         this.selectedTags = [];
-        this.highlightBoxes = [];
+        this.hs.highlightBoxes.set([]); // reset highlights
         this.showBanner.set(true);
         setTimeout(() => this.showBanner.set(false), 7000);
       });
