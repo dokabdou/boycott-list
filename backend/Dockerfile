@@ -1,5 +1,5 @@
 # Stage 1: Build with JDK 25 + Maven
-FROM eclipse-temurin:25-jdk AS build
+FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /app
 
 # Install Maven manually (official Maven image not available for JDK 25 yet)
