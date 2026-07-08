@@ -1,19 +1,19 @@
-# Stage 1: Build with JDK 25 + Maven
-FROM eclipse-temurin:25-jdk AS build
+# Stage 1: Build with JDK 21 + Maven
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
-# Install Maven manually (official Maven image not available for JDK 25 yet)
+# Install Maven
 RUN apt update && apt install -y maven && rm -rf /var/lib/apt/lists/*
 
 COPY pom.xml .
-# Download dependencies first (cache layer)
+# Download dependencies (cached layer)
 RUN mvn dependency:go-offline -B
 
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Stage 2: Run the app with JRE 25
-FROM eclipse-temurin:25-jre
+# Stage 2: Run the app with JRE 21
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 
