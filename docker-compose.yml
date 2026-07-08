@@ -12,6 +12,9 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
+    container_name: backend_boycott_list
+    ports:
+      - "8080:8080"
     depends_on:
       - mongodb
     environment:
@@ -23,6 +26,9 @@ services:
   frontend:
     build: ./frontend
     restart: unless-stopped
+    container_name: frontend_boycott_list
+    ports:
+      - "4200:4200"
     networks:
       - proxy-network
 
