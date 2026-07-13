@@ -12,11 +12,5 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'submit', component: SubmitFormComponent },
   { path: 'admin', component: AdminDashboardComponent, canActivate: [adminGuard] },
-
-  // Dynamic route – do not prerender
-  {
-    path: 'post/:id',
-    component: PostDetailComponent,
-    data: { renderMode: 'client' }   // ✅ skip SSR for this route
-  }
+  { path: 'post/:id', component: PostDetailComponent, renderMode: 'client' }
 ];
