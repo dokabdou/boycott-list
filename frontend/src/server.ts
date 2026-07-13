@@ -7,6 +7,7 @@ import {
 import express from 'express';
 import { join } from 'node:path';
 import * as crypto from 'crypto';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -23,6 +24,11 @@ app.use(
     redirect: false,
   }),
 );
+
+app.use('/api', createProxyMiddleware({
+  target: 'http://backend:8080',
+  changeOrigin: true,
+}));
 
 /**
  * Handle all other requests by rendering the Angular application.
