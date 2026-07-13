@@ -10,7 +10,7 @@ services:
       - internal-app-network
 
   backend:
-    build: ./backend
+    image: boycott-list-backend:latest   # use local image
     restart: unless-stopped
     container_name: backend_boycott_list
     ports:
@@ -24,13 +24,14 @@ services:
       - proxy-network
 
   frontend:
-    build: ./frontend
+    image: boycott-list-frontend:latest  # use local image
     restart: unless-stopped
     container_name: frontend_boycott_list
     ports:
       - "4200:4200"
     networks:
       - proxy-network
+      - internal-app-network
 
 networks:
   proxy-network:

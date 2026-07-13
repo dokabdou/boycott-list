@@ -26,24 +26,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            if (jwtUtil.validateToken(token)) {
-                String username = jwtUtil.getUsernameFromToken(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities()
-                        );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-        }
-        filterChain.doFilter(request, response);
-    }
+	protected void doFilterInternal(HttpServletRequest request,
+									HttpServletResponse response,
+									FilterChain filterChain)
+			throws ServletException, IOException {
+
+		String authHeader = request.getHeader("Authorization");
+
+		// If no token is present, just continue (do NOT return 403)
+		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
+		String token = authHeader.substring(7);
+		try {
+			// Fallback extraction of username (subject) from JWT payload when JwtUtil lacks extractUsername
+			String username = null;
+			try {
+				String[] parts = token.split("\\.");
+				if (parts.length > 1) {
+					String payload = new String(java.util.Base64.getUrlDecoder().decode(parts[1]));
+					java.util.regex.Matcher m = java.util.regex.Pattern.compile("\"sub\"\\s*:\\s*\"([^\"]+)\"").matcher(payload);
+					if (m.find()) {
+						username = m.group(1);
+					}
+				}
+			} catch (IllegalArgumentException ignored) {
+			}
+			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+				if (jwtUtil.validateToken(token)) {
+					UsernamePasswordAuthenticationToken authToken =
+							new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+					SecurityContextHolder.getContext().setAuthentication(authToken);
+				}
+			}
+		} catch (Exception e) {
+			// Invalid token – just don't authenticate, don't throw
+		}
+
+		filterChain.doFilter(request, response);
+	}
 }

@@ -54,6 +54,6 @@ echo "Starting Angular frontend..."
 cd ~/boycott-list/frontend || exit
 HOST=0.0.0.0 PORT=4200 node dist/frontend/server/server.mjs &
 FRONTEND_PID=$!
-echo "FRONTEND LAUNCHED -- now go to https://lasignare.abdoudiallo.fr/"
+echo "FRONTEND LAUNCHED -- now go to https://boycott-list.abdoudiallo.fr/"
 
 wait
