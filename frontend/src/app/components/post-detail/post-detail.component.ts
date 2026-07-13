@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, WritableSignal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, /*RouterLink*/ } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
 import { Post } from '../../models/post.model';
 import { CommentSectionComponent } from '../comment-section/comment-section.component';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
-import { SuggestionSectionComponent } from '../suggestion-section/suggestion-section.component';
+//import { SuggestionSectionComponent } from '../suggestion-section/suggestion-section.component';
 import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
