@@ -9,12 +9,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 
-@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
@@ -26,46 +23,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-	protected void doFilterInternal(HttpServletRequest request,
-									HttpServletResponse response,
-									FilterChain filterChain)
-			throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
-		String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader("Authorization");
 
-		// If no token is present, just continue (do NOT return 403)
-		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            // No token → continue (Spring Security will enforce access rules)
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-		String token = authHeader.substring(7);
-		try {
-			// Fallback extraction of username (subject) from JWT payload when JwtUtil lacks extractUsername
-			String username = null;
-			try {
-				String[] parts = token.split("\\.");
-				if (parts.length > 1) {
-					String payload = new String(java.util.Base64.getUrlDecoder().decode(parts[1]));
-					java.util.regex.Matcher m = java.util.regex.Pattern.compile("\"sub\"\\s*:\\s*\"([^\"]+)\"").matcher(payload);
-					if (m.find()) {
-						username = m.group(1);
-					}
-				}
-			} catch (IllegalArgumentException ignored) {
-			}
-			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-				if (jwtUtil.validateToken(token)) {
-					UsernamePasswordAuthenticationToken authToken =
-							new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-					SecurityContextHolder.getContext().setAuthentication(authToken);
-				}
-			}
-		} catch (Exception e) {
-			// Invalid token – just don't authenticate, don't throw
-		}
+        final String token = authHeader.substring(7);
+        String username = null;
 
-		filterChain.doFilter(request, response);
-	}
+        try {
+            username = jwtUtil.getUsernameFromToken(token);
+        } catch (Exception e) {
+            // Invalid token – continue without authentication
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            // Use single-argument validateToken if that's what your JwtUtil provides
+            if (jwtUtil.validateToken(token)) {
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        }
+
+        // Always continue the request
+        filterChain.doFilter(request, response);
+    }
 }
