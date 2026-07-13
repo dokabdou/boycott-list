@@ -12,5 +12,5 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'submit', component: SubmitFormComponent },
   { path: 'admin', component: AdminDashboardComponent, canActivate: [adminGuard] },
-  { path: 'post/:id', component: PostDetailComponent, data: { prerender: false } }
+  { path: 'post/:id', component: PostDetailComponent, data: { getPrerenderParams: () => [] } }
 ];
