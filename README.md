@@ -137,7 +137,7 @@ pct push 113 /opt/boycott-list/backend.tar /opt/boycott-list/backend.tar && pct 
 ```
 The first `/opt/boycott-list/docker-compose.yml` is the source on the host and the second is the destination in the LXC.
 
-Then enter that container :: `pct enter 113`
+Then enter that container :: `pct enter 113` and `cd /opt/boycott-list`
 
 
 Now in the LXC, laod the images and use them. ::
@@ -156,6 +156,8 @@ The app front and backend should be running without a hitch. But if problems ari
 ```bash
 docker-compose down
 docker load -i frontend.tar && docker-compose up -d frontend && docker load -i backend.tar && docker-compose up -d backend
+# OR JUST :
+docker-compose up -d
 ```
 
 Then view the app on :: 10.10.10.13:4200 (the LXC IP address)(if the cloudflare + nginx url isnt set up yet)
@@ -163,7 +165,7 @@ Then view the app on :: 10.10.10.13:4200 (the LXC IP address)(if the cloudflare 
 Security ::
 - JWT stored in HttpOnly cookie – JavaScript cannot access the token, preventing XSS attacks.
 - The cookie is set with SameSite=Lax and (when on HTTPS) Secure.
-- All admin endpoints require ROLE_ADMIN and a valid JWT.
+- All admin endpoints require ADMIN and a valid JWT.
 - Public endpoints are open.
 - CSRF is disabled because the app uses stateless token authentication.
 - Frontend uses a strict Content‑Security‑Policy header (including nonces).
@@ -182,6 +184,110 @@ Security ::
 | Can’t access `http://10.10.10.9:8080` from host | Containers are on isolated Docker network | Use iptables to forward ports, or access via the container’s IP on the Docker bridge (if on same host). For the LXC container, use `10.10.10.13:4200`. |
 
 ---
+
+
+## Access the database
+
+## 1. Enter the LXC container
+
+```bash
+pct enter 113
+```
+
+---
+
+## 2. Connect to the MongoDB shell
+
+Database container is named `boycott-list_mongodb_1` (or the default name from the compose file).  
+The database name is `clientdb` (set in the environment variable).
+
+```bash
+docker exec -it boycott-list_mongodb_1 mongosh
+```
+
+Once inside `mongosh`, switch to the database:
+
+```javascript
+use clientdb
+```
+
+---
+
+## 3. View collections and content
+
+List all collections:
+
+```javascript
+show collections
+```
+
+=> `posts`, `categories`, `tags`
+
+### View all documents in a collection
+
+```javascript
+db.posts.find().pretty()        // all posts
+```
+
+### View approved posts
+
+```javascript
+db.posts.find({ approved: true }).pretty()
+```
+
+### Count documents
+
+```javascript
+db.posts.countDocuments()
+```
+
+### Update a post by its `_id`
+
+1. First find the post to update:
+
+   ```javascript
+   use clientdb
+   db.posts.find({}, { companyName: 1, approved: 1 }).pretty()
+   ```
+
+2. Copy the `_id` value (e.g., `ObjectId("64a1b2c3d4e5f67890abcdef")`) and run:
+
+   ```javascript
+   db.posts.updateOne(
+     { _id: ObjectId("64a1b2c3d4e5f67890abcdef") },
+     {
+       $set: {
+         approved: true,
+         tags: ["environment", "labor", "new-tag"],
+         description: "Updated description text here"
+       }
+     }
+   )
+   ```
+
+
+### Approve all unapproved posts
+
+```javascript
+db.posts.updateMany(
+  { approved: false },
+  { $set: { approved: true } }
+)
+```
+
+---
+
+## 5. Exit the shell
+
+Type `exit` or press `Ctrl+D`.
+
+Now I can verify that the data is correct and restart the backend container after the update:
+
+```bash
+docker-compose restart backend
+```
+---
+
 
 
 ## URL SET UP WITH NGINX AND Cloudflare

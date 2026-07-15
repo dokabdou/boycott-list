@@ -7,6 +7,8 @@ Carrefour distributed care packages to israeli soldiers, supplied food and bever
 
 The UN, WHO Profits, DBIO prove this is true even though Carrefour denies it. Carrefour has continued its expansion on illegally occupied Palestinian land.
 
+This one could be a hard one to boycott, since it is a supermarket and sometimes we might not have any choice but to buy from them.
+
 Category : 
 HyperMarket
 
@@ -19,6 +21,7 @@ Tags :
 Carrefour, HyperMarket, israel
 
 Highlights : 
+Carrefour is complicit in the Palestinian genocide.
 Carrefour sees the tide shifting and halted its development in the West Asia area and is refocusing in France, Europe, Brazil and is trying to expand info Africa.
 Guinea recently opened a Carrefour store, but the global boycott is taking effect.
 

@@ -20,12 +20,14 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     private void addJwtCookie(HttpServletResponse response, String token, int maxAge) {
-        String cookie = String.format(
-            "jwt=%s; HttpOnly; Path=/; Max-Age=%d; SameSite=Lax",
-            token != null ? token : "", maxAge
-        );
-        response.addHeader("Set-Cookie", cookie);
-    }
+		// For production HTTPS, always use Secure
+		String secureFlag = "Secure; ";   // remove if you ever go back to HTTP
+		String cookie = String.format(
+			"jwt=%s; HttpOnly; Path=/; Max-Age=%d; SameSite=Lax; %s",
+			token != null ? token : "", maxAge, secureFlag
+		);
+		response.addHeader("Set-Cookie", cookie);
+	}
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body,

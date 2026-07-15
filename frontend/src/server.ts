@@ -72,14 +72,14 @@ app.use((req, res, next) => {
       });
 
       // attach the strict Content-Security-Policy header
-	 /*  secureResponse.headers.set(
+      /*  secureResponse.headers.set(
       'Content-Security-Policy',
       `default-src 'self'; script-src 'self' 'nonce-${nonce}' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://serif.com; img-src 'self' data:; connect-src 'self' http://10.10.10.13:4200 http://localhost:8080 http://192.168.1.47:8080 https://api.boycott-list.abdoudiallo.fr http://backend_boycott_list:8080;`,
     ); */
-		secureResponse.headers.set(
-      'Content-Security-Policy',
-      `default-src 'self'; script-src 'self' 'nonce-${nonce}' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';`,
-    );
+      secureResponse.headers.set(
+        'Content-Security-Policy',
+        `default-src 'self'; script-src 'self' 'nonce-${nonce}' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';`,
+      );
 
       //  Let Angular's built-in helper send the secure response to the browser!
       writeResponseToNodeResponse(secureResponse, res);
