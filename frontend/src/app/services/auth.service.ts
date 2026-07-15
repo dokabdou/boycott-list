@@ -1,64 +1,41 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly TOKEN_KEY = 'auth_token';
-  private loggedInSubject = new BehaviorSubject<boolean>(false); // start with false
+  private isLoggedInSignal = signal(false);
+  readonly isLoggedIn = this.isLoggedInSignal.asReadonly();
 
-  loggedIn$: Observable<boolean> = this.loggedInSubject.asObservable();
-
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object,
-  ) {}
+  constructor(private http: HttpClient) {
+    // On app start, check if the JWT cookie is still valid
+    this.checkLoginStatus();
+  }
 
   /**
-   * Call this once after the app is running in the browser.
-   * It will check localStorage and update the login state.
+   * Called automatically on service creation.
+   * Asks the backend if the current request is authenticated.
    */
-  initAuth(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      const hasToken = !!localStorage.getItem(this.TOKEN_KEY);
-      this.loggedInSubject.next(hasToken);
-    }
+  private checkLoginStatus(): void {
+    this.http.get<{ username: string }>('/api/auth/me').subscribe({
+      next: () => this.isLoggedInSignal.set(true),
+      error: () => this.isLoggedInSignal.set(false),
+    });
   }
 
-  private hasToken(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      return !!localStorage.getItem(this.TOKEN_KEY);
-    }
-    return false;
+  /**
+   * Login. The backend sets the HttpOnly cookie.
+   */
+  login(username: string, password: string): Observable<{ message: string }> {
+    return this.http
+      .post<{ message: string }>('/api/auth/login', { username, password })
+      .pipe(tap(() => this.isLoggedInSignal.set(true)));
   }
 
-  login(username: string, password: string): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>('/api/auth/login', { username, password }).pipe(
-      tap((res) => {
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem(this.TOKEN_KEY, res.token);
-        }
-        this.loggedInSubject.next(true);
-      }),
-    );
-  }
-
-  logout(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(this.TOKEN_KEY);
-    }
-    this.loggedInSubject.next(false);
-  }
-
-  isLoggedIn(): boolean {
-    return this.loggedInSubject.value;
-  }
-
-  getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem(this.TOKEN_KEY);
-    }
-    return null;
+  /**
+   * Logout. The backend clears the cookie.
+   */
+  logout(): Observable<any> {
+    return this.http.post('/api/auth/logout', {}).pipe(tap(() => this.isLoggedInSignal.set(false)));
   }
 }
