@@ -24,7 +24,7 @@ public class SecurityConfig {
 
     public SecurityConfig(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-    }
+    }	
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -49,6 +49,20 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+	/* @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()                  // ← allow everything
+            )
+            // .addFilterBefore(...)                        // ← remove the filter
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+
+        return http.build();
+    } */
 
     @Bean
     public UserDetailsService userDetailsService() {
