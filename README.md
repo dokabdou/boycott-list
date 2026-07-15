@@ -12,7 +12,7 @@ The admin(me) can approve submissions and manage content.
 - **Deployment:** Docker Compose on a Proxmox LXC container
 
 ---
-## Deployement steps
+## Deployment steps
 
 ### Local tests
 
@@ -202,7 +202,7 @@ Proxy Host set up - on website::
 - Fill out the Details tab exactly like this:
 - Domain Names: Enter a domain name : boycott-list.abdoudiallo.fr
 - Scheme: http
-- Forward Hostname / IP: 10.10.10.13
+- Forward Hostname / IP: 10.10.10.13 ==> the destination is going to be http://10.10.10.13:4200
 - Forward Port: 4200
 - toggle options then save
 ==> for future webapps just add a proxy host
