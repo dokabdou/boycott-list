@@ -142,6 +142,16 @@ export class AppComponent implements OnInit {
 
   onSearchInput(term: string) {
     this.searchService.setSearchTerm(term);
+    //console.log('term => ', term);
+  }
+
+  onSearchEnter() {
+    //console.log('onSearchEnter called, term:', this.searchTerm);
+    this.onSearchInput(this.searchTerm);
+    if (this.router.url !== '/') {
+      this.router.navigate(['/']);
+	  this.onSearchInput(this.searchTerm);
+    }
   }
 
   clearSearch() {

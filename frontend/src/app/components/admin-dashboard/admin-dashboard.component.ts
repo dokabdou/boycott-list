@@ -83,6 +83,7 @@ export class AdminDashboardComponent implements OnInit {
   editSuggestionContent = '';
 
   banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
+  showBanner: WritableSignal<boolean> = signal(false);
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
@@ -349,6 +350,8 @@ export class AdminDashboardComponent implements OnInit {
         this.sourceLinks.push(this.fb.control('', Validators.required));
         this.selectedTags = [];
         this.hs.highlightBoxes.set([]);
+		this.showBanner.set(true);
+    	setTimeout(() => this.showBanner.set(false), 7000);
       });
   }
 }

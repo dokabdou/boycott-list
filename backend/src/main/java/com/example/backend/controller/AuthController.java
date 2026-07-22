@@ -15,6 +15,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
 
+	// TODO :: token protections and basic security measures
+
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 

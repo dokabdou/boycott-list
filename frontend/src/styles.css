@@ -267,11 +267,6 @@ a {
   align-items: center;
 }
 
-.highlight-box ul {
-  list-style: none;
-  padding-left: 8px;
-}
-
 .highlight-box li {
   display: flex;
   align-items: center;

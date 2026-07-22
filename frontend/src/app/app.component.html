@@ -19,26 +19,20 @@
   </div>
 
   <!-- Search bar pushed to the right -->
-  <div class="search-container">
-	<!-- <button class="theme-toggle" (click)="toggleTheme()" aria-label="Toggle dark mode">
-		@if (themeService.isDark()) {
-			<span>☀️</span>
-		} @else {
-			<span>🌙</span>
+	<form class="search-container" (ngSubmit)="onSearchEnter()" #searchForm="ngForm">
+		<span class="search-icon">🔍</span>
+		<input
+			type="text"
+			name="search"
+			placeholder="Search by name, tag, category, poster…"
+			[(ngModel)]="searchTerm"
+			(input)="onSearchInput(searchTerm)"
+			class="search-input"
+		/>
+		@if (searchTerm) {
+			<button class="clear-btn" type="button" (click)="clearSearch()">✕</button>
 		}
-	</button> -->
-    <span class="search-icon">🔍</span>
-    <input
-      type="text"
-      placeholder="Search by name, tag, category, poster…"
-      [(ngModel)]="searchTerm"
-      (input)="onSearchInput(searchTerm)"
-      class="search-input"
-    />
-    @if (searchTerm) {
-      <button class="clear-btn" (click)="clearSearch()">✕</button>
-    }
-  </div>
+	</form>
 </nav>
 
 <div class="page-content">

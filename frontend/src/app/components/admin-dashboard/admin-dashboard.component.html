@@ -1,4 +1,10 @@
 <div class="page-content">
+	@if (showBanner()) {
+		<div class="banner-fixed success-banner">
+		<span>Admin post posted</span>
+		<button class="close-btn" (click)="showBanner.set(false)">✕</button>
+		</div>
+	}
   <div class="admin-tabs">
     <h2>Admin Dashboard</h2>
     <div class="tab-buttons">

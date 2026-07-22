@@ -27,6 +27,10 @@
 
 .description-section { margin: 24px 0; }
 
+.description-section p {
+  white-space: pre-wrap;
+}
+
 .description-box {
   flex: 2;
   min-width: 300px;
@@ -38,7 +42,18 @@
   max-width: 300px;
 }
 
-.highlights { margin-top: 20px; }
+.highlights { 
+	margin-top: 20px; 
+}
+
+.highlights .highlight-box ul.bullet-points {
+  list-style-type: square !important;
+  padding-left: 1.5rem !important;
+}
+
+.highlights .highlight-box ul.bullet-points li {
+  display: list-item !important;
+}
 
 .highlight-box {
   background: var(--surface);

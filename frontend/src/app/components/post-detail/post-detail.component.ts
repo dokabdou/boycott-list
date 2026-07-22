@@ -66,11 +66,17 @@ export class PostDetailComponent implements OnInit {
   loadPost() {
     this.postService.getPostById(this.postId).subscribe((post) => {
       this.post.set(post);
+      console.log('POST :: ', post);
     });
   }
 
   isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
+  }
+
+  formatDescription(desc: string | null | undefined): string {
+    if (!desc) return '';
+    return desc.replace(/\n/g, '<br>');
   }
 
   // -------- EDIT ----------

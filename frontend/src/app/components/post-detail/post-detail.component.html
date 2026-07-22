@@ -30,7 +30,7 @@
       <div class="description-section">
         <mat-card>
           <mat-card-content>
-            <p>{{ p.description }}</p>
+            <p [innerHTML]="formatDescription(p.description)"></p>
           </mat-card-content>
         </mat-card>
 
@@ -39,7 +39,7 @@
           <h3>Highlights</h3>
           <div class="highlight-boxes">
             <div *ngFor="let box of p.highlights" class="highlight-box">
-              <ul>
+              <ul class="bullet-points">
                 <li *ngFor="let item of box">{{ item }}</li>
               </ul>
             </div>
