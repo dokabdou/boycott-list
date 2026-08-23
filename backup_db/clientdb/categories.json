@@ -1,0 +1,8 @@
+{"_id":{"$oid":"6a574f84dbc70c72a5a8d040"},"name":"Music & Media","approved":true,"_class":"com.example.backend.model.Category"}
+{"_id":{"$oid":"6a57a8c9faed283457a8e681"},"name":"HyperMarket","approved":true,"_class":"com.example.backend.model.Category"}
+{"_id":{"$oid":"6a5f67b8faed283457a8e686"},"name":"Cars","approved":true,"_class":"com.example.backend.model.Category"}
+{"_id":{"$oid":"6a5f6e7afaed283457a8e68d"},"name":"Technology","approved":true,"_class":"com.example.backend.model.Category"}
+{"_id":{"$oid":"6a5f7a19faed283457a8e691"},"name":"Sports","approved":true,"_class":"com.example.backend.model.Category"}
+{"_id":{"$oid":"6a5f8240faed283457a8e697"},"name":"Fast Food","approved":true,"_class":"com.example.backend.model.Category"}
+{"_id":{"$oid":"6a5f8548faed283457a8e69b"},"name":"UnCategorized","approved":true,"_class":"com.example.backend.model.Category"}
+{"_id":{"$oid":"6a5f8871faed283457a8e69e"},"name":"Soda","approved":true,"_class":"com.example.backend.model.Category"}

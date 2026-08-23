@@ -1,0 +1,25 @@
+{"_id":{"$oid":"6a574f84dbc70c72a5a8d041"},"name":"Spotify","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a574f84dbc70c72a5a8d042"},"name":"ai","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a574f84dbc70c72a5a8d043"},"name":"israel","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a574f84dbc70c72a5a8d044"},"name":"Music & Media","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a57a8c9faed283457a8e682"},"name":"Carrefour","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a57a8c9faed283457a8e683"},"name":"HyperMarket","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f67b9faed283457a8e687"},"name":"Tesla","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f67b9faed283457a8e688"},"name":"congo","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f67b9faed283457a8e689"},"name":"mining","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f67b9faed283457a8e68a"},"name":"Cars","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f6e7afaed283457a8e68e"},"name":"Thalès","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f6e7afaed283457a8e68f"},"name":"Technology","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f7a19faed283457a8e692"},"name":"Fifa","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f7a19faed283457a8e693"},"name":"corruption","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f7a19faed283457a8e694"},"name":"trump","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f7a19faed283457a8e695"},"name":"Sports","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f8240faed283457a8e698"},"name":"McDonalds","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f8240faed283457a8e699"},"name":"Fast Food","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f8548faed283457a8e69c"},"name":"Sodastream","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f8871faed283457a8e69f"},"name":"Coca-Cola","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f8871faed283457a8e6a0"},"name":"pollution","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f8871faed283457a8e6a1"},"name":"Soda","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a5f8c16faed283457a8e6a3"},"name":"Disney and Disney Plus","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a89b9fd9cfaa905f5eeac67"},"name":"Apple","approved":true,"_class":"com.example.backend.model.PostTag"}
+{"_id":{"$oid":"6a89ba239cfaa905f5eeac68"},"name":"Google","approved":true,"_class":"com.example.backend.model.PostTag"}
