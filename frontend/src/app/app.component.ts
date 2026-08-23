@@ -27,9 +27,7 @@ export class AppComponent implements OnInit {
   private router = inject(Router);
   private searchService = inject(SearchService);
 
-  // Reactive login state – updates automatically
-  isLoggedIn = toSignal(this.authService.loggedIn$, { initialValue: false });
-
+  isLoggedIn = this.authService.isLoggedIn;
   // Search term for the navbar search bar
   searchTerm = '';
 
@@ -57,10 +55,8 @@ export class AppComponent implements OnInit {
   } */
 
   ngOnInit() {
-    this.authService.initAuth();
     if (isPlatformBrowser(this.platformId)) {
-      // Initial position – bottom‑right corner, clamped inside viewport
-      this.btnX.set(window.innerWidth - this.BUTTON_SIZE - 20); // 20px margin
+      this.btnX.set(window.innerWidth - this.BUTTON_SIZE - 20);
       this.btnY.set(window.innerHeight - this.BUTTON_SIZE - 20);
     }
   }
@@ -163,7 +159,15 @@ export class AppComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
+    this.authService.logout().subscribe({
+      next: () => {
+        // Signal automatically set to false by the service
+        this.router.navigate(['/']);
+      },
+      error: () => {
+        // Still navigate even on error (cookie might be stale)
+        this.router.navigate(['/']);
+      },
+    });
   }
 }
