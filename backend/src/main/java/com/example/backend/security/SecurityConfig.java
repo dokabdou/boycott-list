@@ -24,7 +24,7 @@ public class SecurityConfig {
 
     public SecurityConfig(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-    }	
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,36 +33,21 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-					"/api/public/**", 
-					"/api/auth/**", 
-					"/h2-console/**", 
-					"/swagger-ui.html",
-					"/swagger-ui/**", 
-					"/v3/api-docs/**"
-				).permitAll()
+                    "/api/public/**",
+                    "/api/auth/**",
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**"
+                ).permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userDetailsService()),
-                             UsernamePasswordAuthenticationFilter.class)
-            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));  // for H2
-
+            .addFilterBefore(
+                new JwtAuthenticationFilter(jwtUtil, userDetailsService()),
+                UsernamePasswordAuthenticationFilter.class
+            );
         return http.build();
     }
-
-	/* @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()                  // ← allow everything
-            )
-            // .addFilterBefore(...)                        // ← remove the filter
-            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
-
-        return http.build();
-    } */
 
     @Bean
     public UserDetailsService userDetailsService() {

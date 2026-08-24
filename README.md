@@ -11,6 +11,10 @@ The admin(me) can approve submissions and manage content.
 - **Database:** MongoDB 7.0
 - **Deployment:** Docker Compose on a Proxmox LXC container
 
+Generate QR CODE in linux terminal or cmdr : 
+```
+curl -o boycott-list.png "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fboycott-list.abdoudiallo.fr%2F"
+```
 ---
 ## Deployment steps
 
@@ -18,32 +22,7 @@ The admin(me) can approve submissions and manage content.
 
 Like always to test the frontend locally :: `ng serve` is all it takes.
 Usually to run the backend locally I would run :: `mvn clean spring-boot:run`but this time I create a docker image that I run locally.
-
-`docker-compose-test.yml` :
-```bash 
-version: '3.8'
-services:
-  mongodb:
-    image: mongo:7.0
-    ports:
-      - "27017:27017"
-    networks:
-      - testnet
-  backend:
-    image: boycott-list-backend:latest
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/clientdb
-    networks:
-      - testnet
-networks:
-  testnet:
-    driver: bridge
-```
-
-Then in the /backend build the image :`docker build --no-cache -t boycott-list-backend:latest .`
-Afterwards, start the service :: `docker-compose -f docker-compose-test.yml up -d` (to stop it : `docker-compose -f docker-compose-test.yml down`)
+BUT NOW I RUN THE docker-compose.yml file
 
 Then, because the frontend is running locally, just checkout `http://localhost:4200/`
 
@@ -85,7 +64,7 @@ scp frontend.tar root@192.168.1.55:/opt/boycott-list/
 # login as root with the password
 ```
 
-I usually open on terminal for the frontend and another for the backend, to run the previous commands at once ::
+## I usually open on terminal for the frontend and another for the backend, to run the previous commands at once ::
 frontend :
 ```bash
 docker build -t boycott-list-frontend:latest . && docker save boycott-list-frontend:latest -o frontend.tar && scp frontend.tar root@192.168.1.55:/opt/boycott-list/
@@ -95,7 +74,16 @@ backend :
 docker build -t boycott-list-backend:latest . && docker save boycott-list-backend:latest -o backend.tar && scp backend.tar root@192.168.1.55:/opt/boycott-list/
 ```
 
-Copy the `docker-compose.yml` over to the host as well : `scp docker-compose.yml root@192.168.1.55:/opt/boycott-list/` 
+Copy the `docker-compose.yml` over to the host as well : 
+```
+scp docker-compose.yml root@192.168.1.55:/opt/boycott-list/
+``` 
+
+AND copy the `docker-compose-prod.yml` over to the host as well : 
+```
+scp docker-compose-prod.yml root@192.168.1.55:/opt/boycott-list/
+``` 
+IT WILL BE USED TO REDEPLOY THE APP !!
 
 In a terminal, making sure that the server is up and that the tailscale vpn is connected on the machine ::
 ```bash
@@ -130,14 +118,33 @@ Now send the files to the container :
 pct push 113 /opt/boycott-list/backend.tar /opt/boycott-list/backend.tar
 pct push 113 /opt/boycott-list/frontend.tar /opt/boycott-list/frontend.tar
 pct push 113 /opt/boycott-list/docker-compose.yml /opt/boycott-list/docker-compose.yml
+pct push 113 /opt/boycott-list/docker-compose-prod.yml /opt/boycott-list/docker-compose-prod.yml
 ```
+
+## ALL AT ONCE
 ```bash
 # all at once
-pct push 113 /opt/boycott-list/backend.tar /opt/boycott-list/backend.tar && pct push 113 /opt/boycott-list/frontend.tar /opt/boycott-list/frontend.tar && pct push 113 /opt/boycott-list/docker-compose.yml /opt/boycott-list/docker-compose.yml
+pct push 113 /opt/boycott-list/backend.tar /opt/boycott-list/backend.tar && pct push 113 /opt/boycott-list/frontend.tar /opt/boycott-list/frontend.tar && pct push 113 /opt/boycott-list/docker-compose.yml /opt/boycott-list/docker-compose.yml && pct push 113 /opt/boycott-list/docker-compose-prod.yml /opt/boycott-list/docker-compose-prod.yml
 ```
 The first `/opt/boycott-list/docker-compose.yml` is the source on the host and the second is the destination in the LXC.
 
 Then enter that container :: `pct enter 113` and `cd /opt/boycott-list`
+
+AND ON PROXMOX TOO : `cd /opt/boycott-list` to re-run the images
+
+
+Create the .env file (required for PostgreSQL and JWT):
+`nano .env`
+Paste:
+
+```
+DB_NAME=devdb
+DB_USERNAME=dev
+DB_PASSWORD=dev
+APP_SECURITY_COOKIE_SECURE=false
+JWT_SECRET=<long-random-secret>
+```
+(run in terminal for token: openssl rand -base64 64)
 
 
 Now in the LXC, laod the images and use them. ::
@@ -147,17 +154,34 @@ docker ps
 # ensure the external network exists (if compose file uses it)
 docker network create proxy-network
 # load the images and create them and run them
-docker load -i frontend.tar && docker-compose up -d frontend && docker load -i backend.tar && docker-compose up -d backend
-# OR JUST :
-docker-compose up -d
+docker load -i frontend.tar && docker compose -f docker-compose-prod.yml up -d frontend && docker load -i backend.tar && docker compose -f docker-compose-prod.yml up -d backend
 ```
 
 The app front and backend should be running without a hitch. But if problems arise, tear down the whole project and recreate the images ::
 ```bash
 docker-compose down
-docker load -i frontend.tar && docker-compose up -d frontend && docker load -i backend.tar && docker-compose up -d backend
-# OR JUST :
-docker-compose up -d
+docker load -i frontend.tar && docker compose -f docker-compose-prod.yml up -d frontend && docker load -i backend.tar && docker compose -f docker-compose-prod.yml up -d backend
+
+# check that all is running
+docker ps
+
+# check logs
+docker logs backend_boycott_list
+docker logs frontend_boycott_list
+```
+
+IF THERE IS TROUBLE ::
+
+```
+# Stop and remove everything
+docker compose -f docker-compose-prod.yml down
+
+# Re‑load images if necessary
+docker load -i backend.tar
+docker load -i frontend.tar
+
+# Start again
+docker compose -f docker-compose-prod.yml up -d
 ```
 
 Then view the app on :: 10.10.10.13:4200 (the LXC IP address)(if the cloudflare + nginx url isnt set up yet)
