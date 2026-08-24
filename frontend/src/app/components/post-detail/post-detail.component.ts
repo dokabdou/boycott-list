@@ -162,4 +162,51 @@ export class PostDetailComponent implements OnInit {
 		this.banner.set({ type, message: formattedMessage });
 		setTimeout(() => this.banner.set(null), 5000);
 	}
+
+	sharePost() {
+		const url = window.location.href;
+
+		if (navigator.share) {
+			navigator
+				.share({
+					title: this.post()?.companyName || 'Boycott post',
+					text: this.post()?.description?.slice(0, 100) || '',
+					url,
+				})
+				.catch(() => {
+					// User cancelled – do nothing
+				});
+		} else {
+			navigator.clipboard
+				?.writeText(url)
+				.then(() => {
+					this.showBanner('success', 'Link copied to clipboard!');
+				})
+				.catch(() => {
+					// Fallback: use a temporary input
+					const input = document.createElement('input');
+					input.value = url;
+					document.body.appendChild(input);
+					input.select();
+					document.execCommand('copy');
+					document.body.removeChild(input);
+					this.showBanner('success', 'Link copied to clipboard!');
+				});
+		}
+	}
+
+	downloadPostJson() {
+		const post = this.post();
+		if (!post) return;
+
+		const json = JSON.stringify(post, null, 2);
+		const blob = new Blob([json], { type: 'application/json' });
+		const url = URL.createObjectURL(blob);
+
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `${post.companyName || 'post'}.json`;
+		a.click();
+		URL.revokeObjectURL(url);
+	}
 }

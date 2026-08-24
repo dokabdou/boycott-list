@@ -86,6 +86,8 @@ export class AdminDashboardComponent implements OnInit {
 
 	@ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
+	@ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
 	constructor(
 		private suggestionService: SuggestionService,
 		private postService: PostService,
@@ -344,5 +346,52 @@ export class AdminDashboardComponent implements OnInit {
 				this.selectedTags = [];
 				this.hs.highlightBoxes.set([]);
 			});
+	}
+
+	exportAllPosts() {
+		this.postService.exportAllPosts().subscribe((posts) => {
+			const json = JSON.stringify(posts, null, 2);
+			const blob = new Blob([json], { type: 'application/json' });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = 'all-posts.json';
+			a.click();
+			URL.revokeObjectURL(url);
+		});
+	}
+
+	triggerImport() {
+		this.fileInput.nativeElement.click();
+	}
+
+	onFileSelected(event: Event) {
+		const input = event.target as HTMLInputElement;
+		if (!input.files?.length) return;
+		const file = input.files[0];
+		const reader = new FileReader();
+		reader.onload = () => {
+			try {
+				const data = JSON.parse(reader.result as string);
+				if (Array.isArray(data)) {
+					this.postService.importBulkPosts(data).subscribe(() => {
+						this.loadPendingPosts();
+						this.banner.set({ type: 'success', message: 'Bulk import successful' });
+						setTimeout(() => this.banner.set(null), 5000);
+					});
+				} else {
+					this.postService.importSinglePost(data).subscribe(() => {
+						this.loadPendingPosts();
+						this.banner.set({ type: 'success', message: 'Import successful' });
+						setTimeout(() => this.banner.set(null), 5000);
+					});
+				}
+			} catch (e) {
+				this.banner.set({ type: 'error', message: 'Invalid JSON file' });
+				setTimeout(() => this.banner.set(null), 5000);
+			}
+		};
+		reader.readAsText(file);
+		input.value = '';
 	}
 }

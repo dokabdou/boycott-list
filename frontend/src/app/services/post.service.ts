@@ -136,4 +136,17 @@ export class PostService {
 			highlights,
 		};
 	}
+
+	// Import Export posts
+	exportAllPosts(): Observable<Post[]> {
+		return this.http.get<Post[]>(`${this.adminUrl}/export/posts`);
+	}
+
+	importSinglePost(post: Post): Observable<Post> {
+		return this.http.post<Post>(`${this.adminUrl}/import/single`, post);
+	}
+
+	importBulkPosts(posts: Post[]): Observable<Post[]> {
+		return this.http.post<Post[]>(`${this.adminUrl}/import/bulk`, posts);
+	}
 }

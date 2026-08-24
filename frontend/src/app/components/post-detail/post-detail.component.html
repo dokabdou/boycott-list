@@ -10,14 +10,24 @@
 		</div>
 	</ng-container>
 	<div *ngIf="post() as p">
-		<!-- Admin buttons -->
-		<div class="admin-post-actions" *ngIf="isLoggedIn() && editingPostId() !== p.id">
-			<button mat-raised-button color="primary" (click)="startEdit(p)">
+		<!-- Admin buttons --> 		<!-- Display mode: action buttons -->
+		<div class="post-actions">
+			<button mat-raised-button color="primary" (click)="sharePost()">
+				<mat-icon>share</mat-icon> Share
+			</button>
+
+			@if (isLoggedIn()) {
+				<button mat-raised-button color="accent" (click)="downloadPostJson()">
+				<mat-icon>download</mat-icon> Download JSON
+				</button>
+
+				<button mat-raised-button color="primary" (click)="startEdit(p)">
 				<mat-icon>edit</mat-icon> Edit
-			</button>
-			<button mat-raised-button color="warn" (click)="deletePost()">
+				</button>
+				<button mat-raised-button color="warn" (click)="deletePost()">
 				<mat-icon>delete</mat-icon> Delete
-			</button>
+				</button>
+			}
 		</div>
 
 		<!-- Display mode -->

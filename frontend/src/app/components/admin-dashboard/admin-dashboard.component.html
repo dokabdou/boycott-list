@@ -431,6 +431,23 @@
 						}
 					</div>
 				</div>
+				<!-- Post import/export -->
+				<div class="data-management">
+					<h4>Data Management</h4>
+					<button mat-raised-button color="primary" (click)="exportAllPosts()">
+						<mat-icon>download</mat-icon> Export All Posts
+					</button>
+					<button mat-raised-button (click)="triggerImport()">
+						<mat-icon>upload</mat-icon> Import Posts
+					</button>
+					<input
+						#fileInput
+						type="file"
+						accept=".json"
+						style="display: none"
+						(change)="onFileSelected($event)"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>

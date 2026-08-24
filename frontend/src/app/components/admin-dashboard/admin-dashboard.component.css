@@ -136,3 +136,13 @@ button[mat-raised-button][type='submit'] {
 .item-actions {
 	display: flex;
 }
+
+.data-management {
+  margin-top: 30px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.data-management button {
+  min-width: 180px;
+}

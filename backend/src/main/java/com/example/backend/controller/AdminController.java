@@ -251,4 +251,24 @@ public class AdminController {
 		categoryService.deleteAll();
 		return ResponseEntity.ok().build();
 	}
+
+
+	// IMPORT EXPORT posts
+	// Export all posts
+	@GetMapping("/export/posts")
+	public List<Post> exportAllPosts() {
+		return postService.getAllPosts();
+	}
+
+	// Import a single post
+	@PostMapping("/import/single")
+	public Post importSinglePost(@RequestBody Post post) {
+		return postService.importPost(post);
+	}
+
+	// Bulk import
+	@PostMapping("/import/bulk")
+	public List<Post> importBulkPosts(@RequestBody List<Post> posts) {
+		return postService.importPosts(posts);
+	}
 }

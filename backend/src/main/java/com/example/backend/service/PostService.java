@@ -135,17 +135,36 @@ public class PostService {
         return postRepository.findAllByOrderByCreatedAtDesc();
     }
 
-    public Post importPost(Post post) {
-        post.setId(generateId());
-        if (post.getStatus() == null) post.setStatus(Post.PostStatus.PENDING);
-        if (post.getCreatedAt() == null) post.setCreatedAt(Instant.now());
-        if (post.getCategory() == null || post.getCategory().isBlank()) {
-            post.setCategory("UnCategorized");
-        }
-        return postRepository.save(post);
-    }
-
     public List<Post> importPosts(List<Post> posts) {
-        return posts.stream().map(this::importPost).toList();
-    }
+		for (Post post : posts) {
+			post.setId(null);                       // force new ID
+			if (post.getStatus() == null) post.setStatus(Post.PostStatus.PENDING);
+			if (post.getCreatedAt() == null) post.setCreatedAt(Instant.now());
+			if (post.getCategory() != null && !post.getCategory().isBlank()) {
+				Category created = categoryService.create(new Category(post.getCategory()));
+				post.setCategory(created != null ? created.getName() : "UnCategorized");
+			}
+			if (post.getTags() != null) {
+				tagService.createAll(post.getTags().stream().map(PostTag::new).toList());
+			}
+		}
+		return postRepository.saveAll(posts);
+	}
+
+	public Post importPost(Post post) {
+		post.setId(null);
+		if (post.getStatus() == null) post.setStatus(Post.PostStatus.PENDING);
+		if (post.getCreatedAt() == null) post.setCreatedAt(Instant.now());
+		if (post.getCategory() != null && !post.getCategory().isBlank()) {
+			Category category = new Category(post.getCategory());
+			Category created = categoryService.create(category);
+			post.setCategory(created != null ? created.getName() : "UnCategorized");
+		} else {
+			post.setCategory("UnCategorized");
+		}
+		if (post.getTags() != null) {
+			tagService.createAll(post.getTags().stream().map(PostTag::new).toList());
+		}
+		return postRepository.save(post);
+	}
 }
