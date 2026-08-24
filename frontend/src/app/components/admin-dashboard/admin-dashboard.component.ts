@@ -394,9 +394,20 @@ export class AdminDashboardComponent implements OnInit {
 			const json = JSON.stringify(posts, null, 2);
 			const blob = new Blob([json], { type: 'application/json' });
 			const url = URL.createObjectURL(blob);
+
+			const now = new Date();
+			const year = now.getFullYear();
+			const month = String(now.getMonth() + 1).padStart(2, '0');
+			const day = String(now.getDate()).padStart(2, '0');
+			const hours = String(now.getHours()).padStart(2, '0');
+			const minutes = String(now.getMinutes()).padStart(2, '0');
+			const seconds = String(now.getSeconds()).padStart(2, '0');
+
+			const filename = `all_posts_${year}-${month}-${day}_${hours}-${minutes}-${seconds}.json`;
+
 			const a = document.createElement('a');
 			a.href = url;
-			a.download = 'all-posts.json';
+			a.download = filename;
 			a.click();
 			URL.revokeObjectURL(url);
 		});
