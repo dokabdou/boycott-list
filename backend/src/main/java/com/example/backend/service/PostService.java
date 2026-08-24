@@ -125,6 +125,10 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
+	public void deletePosts(List<String> ids) {
+		postRepository.deleteAllById(ids);
+	}
+
     public List<Post> getApprovedPostsByCategory(String category) {
         return postRepository.findByCategory(category).stream()
                 .filter(p -> p.getStatus() == Post.PostStatus.APPROVED)
@@ -135,26 +139,13 @@ public class PostService {
         return postRepository.findAllByOrderByCreatedAtDesc();
     }
 
-    public List<Post> importPosts(List<Post> posts) {
-		for (Post post : posts) {
-			post.setId(null);                       // force new ID
-			if (post.getStatus() == null) post.setStatus(Post.PostStatus.PENDING);
-			if (post.getCreatedAt() == null) post.setCreatedAt(Instant.now());
-			if (post.getCategory() != null && !post.getCategory().isBlank()) {
-				Category created = categoryService.create(new Category(post.getCategory()));
-				post.setCategory(created != null ? created.getName() : "UnCategorized");
-			}
-			if (post.getTags() != null) {
-				tagService.createAll(post.getTags().stream().map(PostTag::new).toList());
-			}
-		}
-		return postRepository.saveAll(posts);
-	}
-
 	public Post importPost(Post post) {
-		post.setId(null);
+		post.setId(UUID.randomUUID().toString());
 		if (post.getStatus() == null) post.setStatus(Post.PostStatus.PENDING);
 		if (post.getCreatedAt() == null) post.setCreatedAt(Instant.now());
+
+		post.setReviewedAt(Instant.now());
+
 		if (post.getCategory() != null && !post.getCategory().isBlank()) {
 			Category category = new Category(post.getCategory());
 			Category created = categoryService.create(category);
@@ -165,6 +156,13 @@ public class PostService {
 		if (post.getTags() != null) {
 			tagService.createAll(post.getTags().stream().map(PostTag::new).toList());
 		}
+
 		return postRepository.save(post);
+	}
+
+	public List<Post> importPosts(List<Post> posts) {
+		return posts.stream()
+				.map(this::importPost)
+				.toList();
 	}
 }

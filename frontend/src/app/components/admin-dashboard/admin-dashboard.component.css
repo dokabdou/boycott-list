@@ -137,12 +137,52 @@ button[mat-raised-button][type='submit'] {
 	display: flex;
 }
 
-.data-management {
-  margin-top: 30px;
+.data-mng-buttons {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.data-mng-buttons button {
+  flex: 1;
+}
+
+
+.bulk-delete-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.bulk-delete-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
-.data-management button {
-  min-width: 180px;
+
+.bulk-delete-header h5 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.post-checkbox-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 10px 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.post-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.post-checkbox-item input[type='checkbox'] {
+  cursor: pointer;
 }

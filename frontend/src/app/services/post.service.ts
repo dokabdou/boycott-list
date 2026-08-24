@@ -102,8 +102,18 @@ export class PostService {
 		return result;
 	}
 
+	getAllPosts(): Observable<Post[]> {
+		return this.http
+			.get<Post[]>(`${this.adminUrl}/posts`)
+			.pipe(map((posts) => posts.map((p) => this.mapPost(p))));
+	}
+
 	deletePost(id: string): Observable<void> {
 		return this.http.delete<void>(`${this.adminUrl}/posts/${id}`);
+	}
+
+	deletePosts(ids: string[]): Observable<void> {
+		return this.http.delete<void>(`${this.adminUrl}/posts/bulk`, { body: ids });
 	}
 
 	buildEditPayload(formValue: any, postId: string): Post {

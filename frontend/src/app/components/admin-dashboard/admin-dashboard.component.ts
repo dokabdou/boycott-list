@@ -68,6 +68,9 @@ export class AdminDashboardComponent implements OnInit {
 	filteredTags!: Observable<string[]>;
 	allCategories: string[] = [];
 
+	allPosts: WritableSignal<Post[]> = signal([]);
+	selectedPostIds: WritableSignal<string[]> = signal([]);
+
 	// Manage tab
 	adminCategories: WritableSignal<Category[]> = signal([]);
 	adminTags: WritableSignal<Tag[]> = signal([]);
@@ -128,6 +131,44 @@ export class AdminDashboardComponent implements OnInit {
 		if (tab === 'manage') {
 			this.loadAdminCategories();
 			this.loadAdminTags();
+			this.loadAllPosts();
+		}
+	}
+
+	loadAllPosts() {
+		this.postService.getAllPosts().subscribe((posts) => {
+			this.allPosts.set(posts);
+			this.selectedPostIds.set([]);
+		});
+	}
+
+	togglePostSelection(id: string) {
+		const selected = [...this.selectedPostIds()];
+		const index = selected.indexOf(id);
+		if (index === -1) {
+			selected.push(id);
+		} else {
+			selected.splice(index, 1);
+		}
+		this.selectedPostIds.set(selected);
+	}
+
+	toggleSelectAll() {
+		if (this.selectedPostIds().length === this.allPosts().length) {
+			this.selectedPostIds.set([]);
+		} else {
+			this.selectedPostIds.set(this.allPosts().map((p) => p.id!));
+		}
+	}
+
+	bulkDeleteSelected() {
+		const ids = this.selectedPostIds();
+		if (ids.length === 0) return;
+		if (confirm(`Delete ${ids.length} selected posts?`)) {
+			this.postService.deletePosts(ids).subscribe(() => {
+				this.loadAllPosts();
+				this.showBanner('success', `Deleted ${ids.length} posts.`);
+			});
 		}
 	}
 
@@ -365,33 +406,73 @@ export class AdminDashboardComponent implements OnInit {
 		this.fileInput.nativeElement.click();
 	}
 
+	private showBanner(type: 'success' | 'error', message: string) {
+		this.banner.set({ type, message });
+		setTimeout(() => this.banner.set(null), 5000);
+	}
+
 	onFileSelected(event: Event) {
 		const input = event.target as HTMLInputElement;
 		if (!input.files?.length) return;
-		const file = input.files[0];
-		const reader = new FileReader();
-		reader.onload = () => {
-			try {
-				const data = JSON.parse(reader.result as string);
-				if (Array.isArray(data)) {
-					this.postService.importBulkPosts(data).subscribe(() => {
+
+		const files = Array.from(input.files);
+		const posts: Post[] = [];
+		const fileReadPromises: Promise<void>[] = [];
+
+		for (const file of files) {
+			fileReadPromises.push(
+				new Promise<void>((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onload = () => {
+						try {
+							const data = JSON.parse(reader.result as string);
+							if (Array.isArray(data)) {
+								// JSON file contains multiple posts
+								posts.push(...data);
+							} else {
+								// JSON file contains a single post
+								posts.push(data);
+							}
+							resolve();
+						} catch (e) {
+							reject(e);
+						}
+					};
+					reader.onerror = reject;
+					reader.readAsText(file);
+				}),
+			);
+		}
+
+		Promise.all(fileReadPromises)
+			.then(() => {
+				if (posts.length === 0) {
+					this.showBanner('error', 'No valid posts found.');
+					return;
+				}
+
+				if (posts.length === 1) {
+					// Single post import
+					this.postService.importSinglePost(posts[0]).subscribe(() => {
 						this.loadPendingPosts();
-						this.banner.set({ type: 'success', message: 'Bulk import successful' });
-						setTimeout(() => this.banner.set(null), 5000);
+						this.showBanner('success', 'Single import successful');
 					});
 				} else {
-					this.postService.importSinglePost(data).subscribe(() => {
+					// Multiple posts (bulk import)
+					this.postService.importBulkPosts(posts).subscribe(() => {
 						this.loadPendingPosts();
-						this.banner.set({ type: 'success', message: 'Import successful' });
-						setTimeout(() => this.banner.set(null), 5000);
+						this.showBanner(
+							'success',
+							`Bulk import successful (${posts.length} posts)`,
+						);
 					});
 				}
-			} catch (e) {
-				this.banner.set({ type: 'error', message: 'Invalid JSON file' });
-				setTimeout(() => this.banner.set(null), 5000);
-			}
-		};
-		reader.readAsText(file);
-		input.value = '';
+			})
+			.catch(() => {
+				this.showBanner('error', 'Invalid JSON file(s)');
+			})
+			.finally(() => {
+				input.value = '';
+			});
 	}
 }

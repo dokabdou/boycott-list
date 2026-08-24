@@ -432,21 +432,55 @@
 					</div>
 				</div>
 				<!-- Post import/export -->
-				<div class="data-management">
+				<div class="column">
 					<h4>Data Management</h4>
-					<button mat-raised-button color="primary" (click)="exportAllPosts()">
-						<mat-icon>download</mat-icon> Export All Posts
-					</button>
-					<button mat-raised-button (click)="triggerImport()">
-						<mat-icon>upload</mat-icon> Import Posts
-					</button>
+					<div class="data-mng-buttons">
+						<button mat-raised-button color="primary" (click)="exportAllPosts()">
+							<mat-icon>download</mat-icon> Export All Posts
+						</button>
+						<button mat-raised-button (click)="triggerImport()">
+							<mat-icon>upload</mat-icon> Import Posts
+						</button>
+					</div>
 					<input
 						#fileInput
 						type="file"
 						accept=".json"
+						multiple
 						style="display: none"
 						(change)="onFileSelected($event)"
 					/>
+					<div class="bulk-delete-section">
+						<div class="bulk-delete-header">
+						<h5>All Posts ({{ allPosts().length }})</h5>
+						<button mat-button type="button" (click)="toggleSelectAll()">
+							{{ selectedPostIds().length === allPosts().length ? 'Deselect All' : 'Select All' }}
+						</button>
+						</div>
+
+						<div class="post-checkbox-list">
+						@for (post of allPosts(); track post.id) {
+							<div class="post-checkbox-item">
+							<input
+								type="checkbox"
+								[checked]="selectedPostIds().includes(post.id!)"
+								(change)="togglePostSelection(post.id!)"
+							/>
+							<span>{{ post.companyName }}</span>
+							</div>
+						}
+						</div>
+
+						<button
+						mat-raised-button
+						color="warn"
+						[disabled]="selectedPostIds().length === 0"
+						(click)="bulkDeleteSelected()"
+						>
+						<mat-icon>delete</mat-icon>
+						Delete Selected ({{ selectedPostIds().length }})
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>

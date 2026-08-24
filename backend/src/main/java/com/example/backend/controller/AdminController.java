@@ -92,6 +92,17 @@ public class AdminController {
 		return ResponseEntity.ok().build();
 	}
 
+	@GetMapping("/posts")
+	public List<Post> getAllPosts() {
+		return postService.getAllPosts();
+	}
+
+	@DeleteMapping("/posts/bulk")
+	public ResponseEntity<?> deletePosts(@RequestBody List<String> ids) {
+		postService.deletePosts(ids);
+		return ResponseEntity.ok().build();
+	}
+
 
 	// Suggestion management endpoints for admins
 
