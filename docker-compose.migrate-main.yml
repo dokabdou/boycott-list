@@ -1,0 +1,23 @@
+services:
+  migrate:
+    image: python:3-alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./scripts:/app/scripts
+      - ./backup_db:/app/backup_db
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DUMP_DIR: /app/backup_db/clientdb
+    command: >
+      sh -c "pip install --quiet psycopg2-binary &&
+             python /app/scripts/migrate_json.py"
+    networks:
+      - dev-net

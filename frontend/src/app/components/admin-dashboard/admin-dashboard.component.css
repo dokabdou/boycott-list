@@ -5,135 +5,134 @@
 } */
 
 h2 {
-  margin-bottom: 20px;
+	margin-bottom: 20px;
 }
 
 h3 {
-  margin-top: 30px;
-  border-bottom: 2px solid var(--primary);
-  padding-bottom: 6px;
+	margin-top: 30px;
+	border-bottom: 2px solid var(--primary);
+	padding-bottom: 6px;
 }
 
 mat-expansion-panel {
-  margin-bottom: 16px;
-  border-left: 5px solid var(--accent-warning);
+	margin-bottom: 16px;
+	border-left: 5px solid var(--accent-warning);
 }
 
 mat-panel-description {
-  color: var(--text-secondary);
-  font-style: italic;
+	color: var(--text-secondary);
+	font-style: italic;
 }
 
 .actions {
-  margin-top: 16px;
-  display: flex;
-  gap: 10px;
+	margin-top: 16px;
+	display: flex;
+	gap: 10px;
 }
 
 .actions button {
-  flex: 1;
+	flex: 1;
 }
 
 hr {
-  margin: 40px 0;
-  border: none;
-  border-top: 1px solid var(--border);
+	margin: 40px 0;
+	border: none;
+	border-top: 1px solid var(--border);
 }
 
-button[mat-raised-button][type="submit"] {
-  margin-top: 16px;
-  width: 100%;
-  padding: 8px;
-  font-size: 16px;
+button[mat-raised-button][type='submit'] {
+	margin-top: 16px;
+	width: 100%;
+	padding: 8px;
+	font-size: 16px;
 }
 
 .highlights-section {
-  margin-bottom: 24px;
+	margin-bottom: 24px;
 }
 
 .pending-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 2px solid var(--primary);
-  padding-bottom: 6px;
-  margin-bottom: 16px;
-  gap: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 2px solid var(--primary);
+	padding-bottom: 6px;
+	margin-bottom: 16px;
+	gap: 8px;
 }
 .pending-header h3 {
-  margin: 0;
-  border-bottom: none;
+	margin: 0;
+	border-bottom: none;
 }
 
 .edit-highlight-input {
-  width: 100%;
-  padding: 4px;
-  border: 1px solid var(--primary);
-  border-radius: 4px;
+	width: 100%;
+	padding: 4px;
+	border: 1px solid var(--primary);
+	border-radius: 4px;
 }
 
-
 .tab-buttons {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
+	display: flex;
+	gap: 16px;
+	margin-bottom: 24px;
 }
 
 .tab-buttons button {
-  background: none;
-  border: none;
-  padding: 8px 16px;
-  font-size: 1rem;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  color: var(--text-secondary);
-  transition: 0.2s;
+	background: none;
+	border: none;
+	padding: 8px 16px;
+	font-size: 1rem;
+	cursor: pointer;
+	border-bottom: 2px solid transparent;
+	color: var(--text-secondary);
+	transition: 0.2s;
 }
 
 .tab-buttons button.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-  font-weight: 500;
+	color: var(--primary);
+	border-bottom-color: var(--primary);
+	font-weight: 500;
 }
 
 .manage-container {
-  margin-top: 30px;
+	margin-top: 30px;
 }
 
 .management-section {
-  display: flex;
-  gap: 30px;
+	display: flex;
+	gap: 30px;
 }
 
 .column {
-  flex: 1;
+	flex: 1;
 }
 
 .add-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 16px;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	margin-bottom: 16px;
 }
 
 .add-row mat-form-field {
-  margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 .list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--border);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+	padding: 6px 0;
+	border-bottom: 1px solid var(--border);
 }
 
 .edit-field {
-  margin-bottom: 0;
-  flex: 1;
+	margin-bottom: 0;
+	flex: 1;
 }
 
 .item-actions {
-  display: flex;
+	display: flex;
 }

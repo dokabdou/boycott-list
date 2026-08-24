@@ -1,5 +1,5 @@
 export interface Tag {
-  id?: string;
-  name: string;
-  approved: boolean;
+	id?: string;
+	name: string;
+	approved: boolean;
 }

@@ -1,21 +1,18 @@
 package com.example.backend.service;
 
 import com.example.backend.model.GenericModel;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public abstract class GenericCrudService<
-    T extends GenericModel,
-    R extends MongoRepository<T, String>
-> {
+public abstract class GenericCrudService<T extends GenericModel, R extends JpaRepository<T, String>> {
+
+    protected final R repository;
 	/**
 	 * The repository used for CRUD operations.
 	 * For Tags and Categories, in order to avoid code duplication because the service implementations are similar.
 	 */
-
-    protected final R repository;
 
     public GenericCrudService(R repository) {
         this.repository = repository;
@@ -32,6 +29,9 @@ public abstract class GenericCrudService<
             return null;
         }
         entity.setApproved(true);
+        if (entity.getId() == null) {
+            entity.setId(java.util.UUID.randomUUID().toString());
+        }
         return repository.save(entity);
     }
 
@@ -48,9 +48,7 @@ public abstract class GenericCrudService<
     }
 
     public List<T> getAll() {
-		List<T> result = repository.findAll();
-		System.out.println("GET ALL :: " + result);
-        return result;
+        return repository.findAll();
     }
 
     public T updateById(String id, String newName) {
@@ -66,7 +64,7 @@ public abstract class GenericCrudService<
 
     public void deleteSelected(List<String> entities) {
         if (entities != null) {
-            entities.forEach(e -> repository.deleteById(e));
+            entities.forEach(repository::deleteById);
         }
     }
 

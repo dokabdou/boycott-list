@@ -1,63 +1,63 @@
 .suggestion-section {
-  background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  padding: 20px;
-  margin-top: 32px;
+	background: var(--surface);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow-sm);
+	padding: 20px;
+	margin-top: 32px;
 }
 
 .suggestion-body {
-  margin-top: 12px;
-  max-height: 400px;
-  width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  overflow-wrap: break-word;
+	margin-top: 12px;
+	max-height: 400px;
+	width: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	overflow-wrap: break-word;
 }
 
 .new-suggestion {
-  margin-bottom: 24px;
+	margin-bottom: 24px;
 }
 
 .suggestions-list {
-  margin-top: 16px;
+	margin-top: 16px;
 }
 
 .suggestion-card {
-  border-left: 3px solid var(--primary-light);
-  background: var(--surface-alt);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 12px;
+	border-left: 3px solid var(--primary-light);
+	background: var(--surface-alt);
+	border-radius: 8px;
+	padding: 12px 16px;
+	margin-bottom: 12px;
 }
 
 .suggestion-card p {
-  overflow-wrap: break-word;
-  word-break: break-word;
-  white-space: normal;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	white-space: normal;
 }
 
 .suggestion-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
 }
 .date {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
+	font-size: 0.8rem;
+	color: var(--text-secondary);
 }
 
 .suggestion-admin-actions {
-  display: flex;
-  gap: 4px;
+	display: flex;
+	gap: 4px;
 }
 .edit-form {
-  margin-top: 8px;
-  margin-left: 20px;
+	margin-top: 8px;
+	margin-left: 20px;
 }
 
 .reply-card {
-  border-left: 2px solid var(--border);
-  margin-left: 40px;
+	border-left: 2px solid var(--border);
+	margin-left: 40px;
 }

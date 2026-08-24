@@ -11,90 +11,90 @@ import { Suggestion } from '../../models/suggestion.model';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-suggestion-section',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-  ],
-  templateUrl: './suggestion-section.component.html',
-  styleUrls: ['./suggestion-section.component.css', '../../../styles.css'],
+	selector: 'app-suggestion-section',
+	standalone: true,
+	imports: [
+		CommonModule,
+		FormsModule,
+		MatFormFieldModule,
+		MatInputModule,
+		MatButtonModule,
+		MatCardModule,
+		MatIconModule,
+	],
+	templateUrl: './suggestion-section.component.html',
+	styleUrls: ['./suggestion-section.component.css', '../../../styles.css'],
 })
 export class SuggestionSectionComponent {
-  @Input() postId!: string;
+	@Input() postId!: string;
 
-  suggestions = signal<Suggestion[]>([]);
-  collapsed = signal(false);
-  readonly ANON_NAME = 'anon wolf';
+	suggestions = signal<Suggestion[]>([]);
+	collapsed = signal(false);
+	readonly ANON_NAME = 'anon wolf';
 
-  constructor(
-    private suggestionService: SuggestionService,
-    private authService: AuthService,
-  ) {}
+	constructor(
+		private suggestionService: SuggestionService,
+		private authService: AuthService,
+	) {}
 
-  editingSuggestionId = signal<string | null>(null);
-  editSuggestionContent = '';
-  isAdmin: boolean = false;
+	editingSuggestionId = signal<string | null>(null);
+	editSuggestionContent = '';
+	isAdmin: boolean = false;
 
-  newContent = signal('');
+	newContent = signal('');
 
-  ngOnInit(): void {
-    this.isAdmin = this.authService.isLoggedIn();
-    this.loadSuggestions();
-  }
+	ngOnInit(): void {
+		this.isAdmin = this.authService.isLoggedIn();
+		this.loadSuggestions();
+	}
 
-  toggleCollapse() {
-    this.collapsed.update((v) => !v);
-  }
+	toggleCollapse() {
+		this.collapsed.update((v) => !v);
+	}
 
-  startEditSuggestion(sugg: Suggestion) {
-    this.editingSuggestionId.set(sugg.id!);
-    this.editSuggestionContent = sugg.content;
-  }
+	startEditSuggestion(sugg: Suggestion) {
+		this.editingSuggestionId.set(sugg.id!);
+		this.editSuggestionContent = sugg.content;
+	}
 
-  cancelEditSuggestion() {
-    this.editingSuggestionId.set(null);
-  }
+	cancelEditSuggestion() {
+		this.editingSuggestionId.set(null);
+	}
 
-  saveEditSuggestion(id: string) {
-    const newContent = this.editSuggestionContent.trim();
-    if (!newContent) return;
-    this.suggestionService.updateSuggestion(id, newContent).subscribe((updated) => {
-      this.suggestions.update((s) =>
-        s.map((item) => (item.id === id ? { ...item, content: updated.content } : item)),
-      );
-      this.editingSuggestionId.set(null);
-    });
-  }
+	saveEditSuggestion(id: string) {
+		const newContent = this.editSuggestionContent.trim();
+		if (!newContent) return;
+		this.suggestionService.updateSuggestion(id, newContent).subscribe((updated) => {
+			this.suggestions.update((s) =>
+				s.map((item) => (item.id === id ? { ...item, content: updated.content } : item)),
+			);
+			this.editingSuggestionId.set(null);
+		});
+	}
 
-  deleteSuggestion(id: string) {
-    if (confirm('Delete this suggestion?')) {
-      this.suggestionService.deleteSuggestion(id).subscribe(() => {
-        this.suggestions.update((s) => s.filter((item) => item.id !== id));
-      });
-    }
-  }
+	deleteSuggestion(id: string) {
+		if (confirm('Delete this suggestion?')) {
+			this.suggestionService.deleteSuggestion(id).subscribe(() => {
+				this.suggestions.update((s) => s.filter((item) => item.id !== id));
+			});
+		}
+	}
 
-  loadSuggestions() {
-    this.suggestionService.getSuggestions(this.postId).subscribe((s) => {
-      this.suggestions.set(s);
-    });
-  }
+	loadSuggestions() {
+		this.suggestionService.getSuggestions(this.postId).subscribe((s) => {
+			this.suggestions.set(s);
+		});
+	}
 
-  addSuggestion() {
-    const content = this.newContent().trim();
-    if (!content) return;
+	addSuggestion() {
+		const content = this.newContent().trim();
+		if (!content) return;
 
-    this.suggestionService
-      .addSuggestion(this.postId, this.ANON_NAME, content)
-      .subscribe((newSuggestion) => {
-        this.suggestions.update((s) => [newSuggestion, ...s]);
-        this.newContent.set('');
-      });
-  }
+		this.suggestionService
+			.addSuggestion(this.postId, this.ANON_NAME, content)
+			.subscribe((newSuggestion) => {
+				this.suggestions.update((s) => [newSuggestion, ...s]);
+				this.newContent.set('');
+			});
+	}
 }

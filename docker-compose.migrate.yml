@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: "no"
+    environment:
+      POSTGRES_DB: devdb
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    volumes:
+      - pg-migrate-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d devdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - migration-net
+
+  migrate:
+    image: python:3-alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./scripts:/app/scripts
+      - ./backup_db:/app/backup_db
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: devdb
+      DB_USERNAME: dev
+      DB_PASSWORD: dev
+      DUMP_DIR: /app/backup_db/clientdb
+    command: >
+      sh -c "pip install --quiet psycopg2-binary &&
+             python /app/scripts/migrate_json.py"
+    networks:
+      - migration-net
+
+networks:
+  migration-net:
+    driver: bridge
+
+volumes:
+  pg-migrate-data:

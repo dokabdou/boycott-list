@@ -1,53 +1,80 @@
 <div class="page-content">
 	<div class="suggestion-section">
-	<div class="toggle-header" (click)="toggleCollapse()">
-		<h3>Suggestions</h3>
-		<span class="arrow" [class.open]="!collapsed()">▼</span>
-	</div>
-
-	<div class="suggestion-body" *ngIf="!collapsed()">
-		<div class="new-suggestion">
-		<mat-form-field appearance="outline" class="full-width">
-			<mat-label>Suggest info or sources...</mat-label>
-			<textarea matInput rows="2"
-					[ngModel]="newContent()"
-					(ngModelChange)="newContent.set($event)"></textarea>
-		</mat-form-field>
-		<button mat-raised-button color="accent"
-				(click)="addSuggestion()"
-				[disabled]="!newContent().trim()">
-			Send Suggestion
-		</button>
+		<div class="toggle-header" (click)="toggleCollapse()">
+			<h3>Suggestions</h3>
+			<span class="arrow" [class.open]="!collapsed()">▼</span>
 		</div>
 
-		<div class="suggestions-list" *ngIf="suggestions().length">
-		<div *ngFor="let suggestion of suggestions()" class="suggestion-card">
-			<div class="suggestion-header">
-			<strong>{{ suggestion.author }}</strong>
-			<span class="date">{{ suggestion.createdAt | date:'short' }}</span>
-			</div>
-			<p>{{ suggestion.content }}</p>
-			<div class="suggestion-admin-actions" *ngIf="isAdmin && editingSuggestionId() !== suggestion.id">
-				<button mat-icon-button color="primary" (click)="startEditSuggestion(suggestion)">
-					<mat-icon>edit</mat-icon>
-				</button>
-				<button mat-icon-button color="warn" (click)="deleteSuggestion(suggestion.id!)">
-					<mat-icon>delete</mat-icon>
-				</button>
-				</div>
-
-				<!-- Edit form -->
-				<div *ngIf="editingSuggestionId() === suggestion.id" class="edit-form">
+		<div class="suggestion-body" *ngIf="!collapsed()">
+			<div class="new-suggestion">
 				<mat-form-field appearance="outline" class="full-width">
-					<textarea matInput rows="2" [(ngModel)]="editSuggestionContent"></textarea>
+					<mat-label>Suggest info or sources...</mat-label>
+					<textarea
+						matInput
+						rows="2"
+						[ngModel]="newContent()"
+						(ngModelChange)="newContent.set($event)"
+					></textarea>
 				</mat-form-field>
-				<div class="actions">
-					<button mat-raised-button color="primary" (click)="saveEditSuggestion(suggestion.id!)">Save</button>
-					<button mat-button (click)="cancelEditSuggestion()">Cancel</button>
+				<button
+					mat-raised-button
+					color="accent"
+					(click)="addSuggestion()"
+					[disabled]="!newContent().trim()"
+				>
+					Send Suggestion
+				</button>
+			</div>
+
+			<div class="suggestions-list" *ngIf="suggestions().length">
+				<div *ngFor="let suggestion of suggestions()" class="suggestion-card">
+					<div class="suggestion-header">
+						<strong>{{ suggestion.author }}</strong>
+						<span class="date">{{ suggestion.createdAt | date: 'short' }}</span>
+					</div>
+					<p>{{ suggestion.content }}</p>
+					<div
+						class="suggestion-admin-actions"
+						*ngIf="isAdmin && editingSuggestionId() !== suggestion.id"
+					>
+						<button
+							mat-icon-button
+							color="primary"
+							(click)="startEditSuggestion(suggestion)"
+						>
+							<mat-icon>edit</mat-icon>
+						</button>
+						<button
+							mat-icon-button
+							color="warn"
+							(click)="deleteSuggestion(suggestion.id!)"
+						>
+							<mat-icon>delete</mat-icon>
+						</button>
+					</div>
+
+					<!-- Edit form -->
+					<div *ngIf="editingSuggestionId() === suggestion.id" class="edit-form">
+						<mat-form-field appearance="outline" class="full-width">
+							<textarea
+								matInput
+								rows="2"
+								[(ngModel)]="editSuggestionContent"
+							></textarea>
+						</mat-form-field>
+						<div class="actions">
+							<button
+								mat-raised-button
+								color="primary"
+								(click)="saveEditSuggestion(suggestion.id!)"
+							>
+								Save
+							</button>
+							<button mat-button (click)="cancelEditSuggestion()">Cancel</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-		</div>
-	</div>
 	</div>
 </div>

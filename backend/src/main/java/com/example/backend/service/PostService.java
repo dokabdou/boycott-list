@@ -1,16 +1,13 @@
 package com.example.backend.service;
 
-import com.example.backend.model.Post;
-import com.example.backend.model.PostTag;
-import com.example.backend.model.Category;
+import com.example.backend.model.*;
 import com.example.backend.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,47 +15,48 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostTagService tagService;
-	private final CategoryService categoryService;
+    private final CategoryService categoryService;
+
+    private String generateId() {
+        return UUID.randomUUID().toString();
+    }
 
     public Post submitAnonymous(Post post) {
+        post.setId(generateId());
         post.setAnonymous(true);
         post.setSubmittedBy("anonymous");
         post.setStatus(Post.PostStatus.PENDING);
         post.setCreatedAt(Instant.now());
-		//return postRepository.save(post);
-		Post savedPost = postRepository.save(post);
-		System.out.println("PostService ==> Saved anonymous post ID: " + savedPost.getId());   //
-        return savedPost;
+        return postRepository.save(post);
     }
 
     public Post submitByAdmin(Post post, String adminUsername) {
+        post.setId(generateId());
         post.setAnonymous(false);
         post.setSubmittedBy(adminUsername);
-		
-		Category createdCategory = categoryService.create(post.getCategory());
-		post.setCategory(createdCategory.getName());
+        post.setStatus(Post.PostStatus.APPROVED);
+        post.setCreatedAt(Instant.now());
+        post.setReviewedAt(Instant.now());
+        post.setReviewedBy(adminUsername);
 
+        // Ensure category exists
+        if (post.getCategory() != null && !post.getCategory().isBlank()) {
+            Category cat = new Category(post.getCategory());
+            cat = categoryService.create(cat);
+            post.setCategory(cat != null ? cat.getName() : "UnCategorized");
+        } else {
+            post.setCategory("UnCategorized");
+        }
 
-		post.setStatus(Post.PostStatus.APPROVED);  // auto‑approved
-		post.setCreatedAt(Instant.now());
-		post.setReviewedAt(Instant.now());
-		post.setReviewedBy(adminUsername);
-
-		// Tags are already on post (converted from strings via custom setter)
-    	// Just ensure they exist in the tags collection
-		tagService.createAll(post.getTags());
-		//return postRepository.save(post);
-		Post savedPost = postRepository.save(post);
-		System.out.println("PostService ==> Saved post ID: " + savedPost.getId());   // ← add this
-		return savedPost;
+        // Ensure tags exist (optional – only create missing tags in DB)
+        if (post.getTags() != null) {
+            tagService.createAll(post.getTags().stream().map(PostTag::new).toList());
+        }
+        return postRepository.save(post);
     }
 
     public List<Post> getPendingPosts() {
-	List<Post> pendingPosts = postRepository.findByStatus(Post.PostStatus.PENDING);
-	System.out.println("Retrieved pending posts count: " + pendingPosts.size());   // ←
-        //return postRepository.findByStatus(Post.PostStatus.PENDING);
-	System.out.println("PostService ==> Pending posts: " + pendingPosts); 
-	return pendingPosts;
+        return postRepository.findByStatus(Post.PostStatus.PENDING);
     }
 
     public List<Post> getApprovedPosts() {
@@ -66,84 +64,88 @@ public class PostService {
     }
 
     public Post approvePost(String id, String adminUsername) {
-		Post post = postRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        post.setStatus(Post.PostStatus.APPROVED);
+        post.setReviewedAt(Instant.now());
+        post.setReviewedBy(adminUsername);
 
-		// Ensure category always has a valid, non-blank name
-		if (post.getCategory() == null || post.getCategory().getName() == null || post.getCategory().getName().isBlank()) {
-			post.setCategory("UnCategorized");
-		}
-
-		System.out.println("----- ApprovedPost :: " + post.getCategory());
-
-		// Now category is guaranteed to be non-null and have a proper name
-		Category createdCategory = categoryService.create(post.getCategory());
-		post.setCategory(createdCategory.getName());
-
-		post.setStatus(Post.PostStatus.APPROVED);
-		post.setReviewedAt(Instant.now());
-		post.setReviewedBy(adminUsername);
-		tagService.createAll(post.getTags());
-
-		System.out.println("PostService ==> Approved post ID: " + post.getId() + " by admin: " + adminUsername);
-		return postRepository.save(post);
-	}
-
-    public Post rejectPost(String id, String adminUsername) {
-        Optional<Post> opt = postRepository.findById(id);
-        if (opt.isPresent()) {
-            Post post = opt.get();
-            post.setStatus(Post.PostStatus.REJECTED);
-            post.setReviewedAt(Instant.now());
-            post.setReviewedBy(adminUsername);
-            return postRepository.save(post);
+        if (post.getCategory() == null || post.getCategory().isBlank()) {
+            post.setCategory("UnCategorized");
         }
-        throw new RuntimeException("Post not found");
+        // Ensure category exists in categories table
+        Category cat = new Category(post.getCategory());
+        cat = categoryService.create(cat);
+        post.setCategory(cat != null ? cat.getName() : "UnCategorized");
+        return postRepository.save(post);
     }
 
-	public List<String> getApprovedTags() {
-		return tagService.getAll().stream()
-				.map(PostTag::getName)
-				.collect(Collectors.toList());
-	}
+    public Post rejectPost(String id, String adminUsername) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        post.setStatus(Post.PostStatus.REJECTED);
+        post.setReviewedAt(Instant.now());
+        post.setReviewedBy(adminUsername);
+        return postRepository.save(post);
+    }
 
-	public Optional<Post> getPostById(String id) {
-		return postRepository.findById(id);
-	}
+    public List<String> getApprovedTags() {
+        return tagService.getAll().stream().map(PostTag::getName).toList();
+    }
 
-	public Post editPost(String id, Post updatedPost) {
-		Post post = postRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Post not found"));
-		post.setCompanyName(updatedPost.getCompanyName());
+    public Optional<Post> getPostById(String id) {
+        return postRepository.findById(id);
+    }
 
-		if (updatedPost.getCategory() != null && !updatedPost.getCategory().getName().isBlank()) {
-			post.setCategory(updatedPost.getCategory().getName());
-		} else {
-			post.setCategory("UnCategorized");
-		}
-		Category createdCategory = categoryService.create(post.getCategory());
-		post.setCategory(createdCategory.getName());
+    public Post editPost(String id, Post updatedPost) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        post.setCompanyName(updatedPost.getCompanyName());
+        post.setCategory(updatedPost.getCategory());
+        post.setDescription(updatedPost.getDescription());
+        post.setSourceLinks(updatedPost.getSourceLinks());
+        post.setTags(updatedPost.getTags());
+        post.setHighlights(updatedPost.getHighlights());
 
-		post.setDescription(updatedPost.getDescription());
-		post.setSourceLinks(updatedPost.getSourceLinks());
-		
-		List<String> tagNames = updatedPost.getTags().stream()
-            .map(PostTag::getName)
-            .collect(Collectors.toList());
-		post.setTags(tagNames);
+        // Ensure category exists
+        if (post.getCategory() != null && !post.getCategory().isBlank()) {
+            Category cat = new Category(post.getCategory());
+            cat = categoryService.create(cat);
+            post.setCategory(cat != null ? cat.getName() : "UnCategorized");
+        }
 
-		post.setHighlights(updatedPost.getHighlights());
-		tagService.createAll(updatedPost.getTags());
-		return postRepository.save(post);
-	}
+        // Update tags collection
+        if (post.getTags() != null) {
+            tagService.createAll(post.getTags().stream().map(PostTag::new).toList());
+        }
+        return postRepository.save(post);
+    }
 
-	public void deletePost(String id) {
-		postRepository.deleteById(id);
-	}
+    public void deletePost(String id) {
+        postRepository.deleteById(id);
+    }
 
-	public List<Post> getApprovedPostsByCategory(String category) {
-		return postRepository.findByCategory(category).stream()
-				.filter(p -> p.getStatus() == Post.PostStatus.APPROVED)
-				.collect(Collectors.toList());
-	}
+    public List<Post> getApprovedPostsByCategory(String category) {
+        return postRepository.findByCategory(category).stream()
+                .filter(p -> p.getStatus() == Post.PostStatus.APPROVED)
+                .toList();
+    }
+
+    public List<Post> getAllPosts() {
+        return postRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    public Post importPost(Post post) {
+        post.setId(generateId());
+        if (post.getStatus() == null) post.setStatus(Post.PostStatus.PENDING);
+        if (post.getCreatedAt() == null) post.setCreatedAt(Instant.now());
+        if (post.getCategory() == null || post.getCategory().isBlank()) {
+            post.setCategory("UnCategorized");
+        }
+        return postRepository.save(post);
+    }
+
+    public List<Post> importPosts(List<Post> posts) {
+        return posts.stream().map(this::importPost).toList();
+    }
 }

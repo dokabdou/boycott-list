@@ -1,22 +1,46 @@
-# docker-compose-test.yml
-version: '3.8'
 services:
-  mongodb:
-    image: mongo:7.0
-    ports:
-      - "27017:27017"
-    networks:
-      - testnet
-
-  backend:
-    image: boycott-list-backend:latest
-    ports:
-      - "8080:8080"
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/clientdb
+      POSTGRES_DB: devdb
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    volumes:
+      - pg-data-test:/var/lib/postgresql
+    ports:
+      - "5432:5432"   # optional, for local inspection
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d devdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
-      - testnet
+      - dev-net
+
+  migrate:
+    image: python:3-alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./scripts:/app/scripts
+      - ./backup_db:/app/backup_db
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: devdb
+      DB_USERNAME: dev
+      DB_PASSWORD: dev
+      DUMP_DIR: /app/backup_db/clientdb
+    command: >
+      sh -c "pip install --quiet pymongo psycopg2-binary &&
+             python /app/scripts/migrate_mongo_to_postgres.py"
+    networks:
+      - dev-net
 
 networks:
-  testnet:
-    driver: bridge
+  dev-net:
+
+volumes:
+  pg-data-test:

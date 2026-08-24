@@ -1,16 +1,16 @@
 .login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 70vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 70vh;
 }
 
 mat-card {
-  width: 400px;
-  padding: 30px;
+	width: 400px;
+	padding: 30px;
 }
 
 .error {
-  color: var(--error);
-  margin: 10px 0;
+	color: var(--error);
+	margin: 10px 0;
 }

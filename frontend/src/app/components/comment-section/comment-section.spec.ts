@@ -3,21 +3,20 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommentSection } from './comment-section.component';
 
 describe('CommentSection', () => {
-  let component: CommentSection;
-  let fixture: ComponentFixture<CommentSection>;
+	let component: CommentSection;
+	let fixture: ComponentFixture<CommentSection>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [CommentSection]
-    })
-    .compileComponents();
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			imports: [CommentSection],
+		}).compileComponents();
 
-    fixture = TestBed.createComponent(CommentSection);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+		fixture = TestBed.createComponent(CommentSection);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });

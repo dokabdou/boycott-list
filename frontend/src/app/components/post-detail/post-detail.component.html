@@ -1,181 +1,267 @@
 <div class="page-content">
 	<ng-container *ngIf="banner() as b">
-		<div class="banner-fixed" [class.success-banner]="b.type === 'success'" [class.failure-banner]="b.type === 'error'">
+		<div
+			class="banner-fixed"
+			[class.success-banner]="b.type === 'success'"
+			[class.failure-banner]="b.type === 'error'"
+		>
 			<span [innerHTML]="b.message"></span>
 			<button class="close-btn" (click)="banner.set(null)">✕</button>
 		</div>
 	</ng-container>
-  <div *ngIf="post() as p">
-    <!-- Admin buttons -->
-    <div class="admin-post-actions" *ngIf="isLoggedIn() && editingPostId() !== p.id">
-      <button mat-raised-button color="primary" (click)="startEdit(p)">
-        <mat-icon>edit</mat-icon> Edit
-      </button>
-      <button mat-raised-button color="warn" (click)="deletePost()">
-        <mat-icon>delete</mat-icon> Delete
-      </button>
-    </div>
+	<div *ngIf="post() as p">
+		<!-- Admin buttons -->
+		<div class="admin-post-actions" *ngIf="isLoggedIn() && editingPostId() !== p.id">
+			<button mat-raised-button color="primary" (click)="startEdit(p)">
+				<mat-icon>edit</mat-icon> Edit
+			</button>
+			<button mat-raised-button color="warn" (click)="deletePost()">
+				<mat-icon>delete</mat-icon> Delete
+			</button>
+		</div>
 
-    <!-- Display mode -->
-    <div *ngIf="editingPostId() !== p.id">
-      <h1 class="company-name">{{ p.companyName }}</h1>
-      <div class="category-chip" *ngIf="p.category">
-        <mat-chip class="category-chip-item">{{ p.category }}</mat-chip>
-      </div>
-      <mat-chip-listbox class="tags">
-        <mat-chip *ngFor="let tag of p.tags">{{ tag }}</mat-chip>
-      </mat-chip-listbox>
-
-      <!-- Description & Highlights (full width) -->
-      <div class="description-section">
-        <mat-card>
-          <mat-card-content>
-            <p>{{ p.description }}</p>
-          </mat-card-content>
-        </mat-card>
-
-        <!-- Highlights -->
-        <div class="highlights" *ngIf="p.highlights && p.highlights.length">
-          <h3>Highlights</h3>
-          <div class="highlight-boxes">
-            <div *ngFor="let box of p.highlights" class="highlight-box">
-              <ul>
-                <li *ngFor="let item of box">{{ item }}</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Source Links -->
-        <div class="sources" *ngIf="p.sourceLinks?.length">
-          <h3>Sources</h3>
-          <ul>
-            <li *ngFor="let link of p.sourceLinks">
-              <a [href]="link" target="_blank">{{ link }}</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Comments Section (full width) -->
-      <app-comment-section [postId]="p.id!" class="full-width-section"></app-comment-section>
-
-      <!-- Suggestions Section (full width) -->
-      <!-- <app-suggestion-section [postId]="p.id!" class="full-width-section"></app-suggestion-section> -->
-    </div>
-
-    <!-- Edit mode -->
-	<div *ngIf="editingPostId() === p.id && editForm" class="edit-post-wrapper">
-	<mat-card class="edit-post-card">
-		<mat-card-header>
-		<mat-card-title>Edit Post</mat-card-title>
-		</mat-card-header>
-		<mat-card-content>
-		<form [formGroup]="editForm">
-			<!-- Company Name -->
-			<mat-form-field appearance="fill" class="full-width">
-			<mat-label>Company Name</mat-label>
-			<input matInput formControlName="companyName" required>
-			</mat-form-field>
-
-			<!-- Category -->
-			<mat-form-field appearance="fill" class="full-width">
-			<mat-label>Category</mat-label>
-			<input matInput formControlName="category">
-			</mat-form-field>
-
-			<!-- Tags -->
-			<mat-form-field appearance="fill" class="full-width">
-			<mat-label>Tags (comma separated)</mat-label>
-			<input matInput formControlName="tags" placeholder="environment, labor, ...">
-			</mat-form-field>
-
-			<!-- Description -->
-			<mat-form-field appearance="fill" class="full-width">
-			<mat-label>Description</mat-label>
-			<textarea matInput formControlName="description" rows="3" required></textarea>
-			</mat-form-field>
-
-			<!-- Source Links -->
-			<div formArrayName="sourceLinks">
-			<div *ngFor="let link of sourceLinksArray.controls; let i = index"
-				style="display: flex; align-items: center; gap: 8px;">
-				<mat-form-field appearance="fill" class="full-width">
-				<mat-label>Source Link {{ i + 1 }}</mat-label>
-				<input matInput [formControlName]="i" placeholder="https://...">
-				</mat-form-field>
-				<button mat-icon-button color="warn" type="button"
-						(click)="removeLink(i)"
-						*ngIf="sourceLinksArray.length > 1">
-				<mat-icon>delete</mat-icon>
-				</button>
+		<!-- Display mode -->
+		<div *ngIf="editingPostId() !== p.id">
+			<h1 class="company-name">{{ p.companyName }}</h1>
+			<div class="category-chip" *ngIf="p.category">
+				<mat-chip class="category-chip-item">{{ p.category }}</mat-chip>
 			</div>
-			<button mat-stroked-button type="button" (click)="addLink()" style="margin-bottom: 5px;">Add link</button>
-			</div>
+			<mat-chip-listbox class="tags">
+				<mat-chip *ngFor="let tag of p.tags">{{ tag }}</mat-chip>
+			</mat-chip-listbox>
 
-			<!-- Highlights Section -->
-			<div class="highlights-section">
-				<h3>Highlights (up to 3 boxes, 4 items each)</h3>
-				<div *ngFor="let box of hs.highlightBoxes(); let i = index" class="highlight-box">
-					<div class="box-header">
-					<strong>Box {{ i + 1 }}</strong>
-					<button mat-icon-button color="warn" type="button" (click)="hs.removeHighlightBox(i)">
-						<mat-icon>delete</mat-icon>
-					</button>
-					</div>
-					<ul>
-					<li *ngFor="let item of box; let j = index">
-						<ng-container *ngIf="hs.editingHighlight()?.boxIndex === i && hs.editingHighlight()?.itemIndex === j; else displayMode">
-							<textarea
-								[id]="'highlight-input-' + i + '-' + j"
-								[value]="hs.editingHighlight()?.value ?? ''"
-								(input)="hs.updateHighlightValue(($any($event.target)?.value ?? ''))"
-								(keydown.enter)="hs.saveEditHighlightItem()"
-								(keydown.escape)="hs.cancelEditHighlightItem()"
-								rows="1"
-								class="edit-highlight-input"
-								#highlightTextarea
-							></textarea>
-						<button mat-icon-button color="primary" type="button" (click)="hs.saveEditHighlightItem()">
-							<mat-icon>check</mat-icon>
-						</button>
-						<button mat-icon-button type="button" (click)="hs.cancelEditHighlightItem()">
-							<mat-icon>close</mat-icon>
-						</button>
-						</ng-container>
-						<ng-template #displayMode>
-						<span (dblclick)="hs.startEditHighlightItem(i, j)">{{ item }}</span>
-						<button mat-icon-button color="primary" type="button" (click)="hs.startEditHighlightItem(i, j)">
-							<mat-icon>edit</mat-icon>
-						</button>
-						<button mat-icon-button color="warn" type="button" (click)="hs.removeHighlightItem(i, j)">
-							<mat-icon>close</mat-icon>
-						</button>
-						</ng-template>
-					</li>
-					</ul>
-					<div class="add-item" *ngIf="box.length < 4">
-					<input #newItem placeholder="Add item" (keyup.enter)="hs.addHighlightItem(i, newItem)">
-					<button mat-stroked-button type="button" (click)="hs.addHighlightItem(i, newItem)">Add</button>
+			<!-- Description & Highlights (full width) -->
+			<div class="description-section">
+				<mat-card>
+					<mat-card-content>
+						<p>{{ p.description }}</p>
+					</mat-card-content>
+				</mat-card>
+
+				<!-- Highlights -->
+				<div class="highlights" *ngIf="p.highlights && p.highlights.length">
+					<h3>Highlights</h3>
+					<div class="highlight-boxes">
+						<div *ngFor="let box of p.highlights" class="highlight-box">
+							<ul>
+								<li *ngFor="let item of box">{{ item }}</li>
+							</ul>
+						</div>
 					</div>
 				</div>
-				<button mat-stroked-button type="button" *ngIf="hs.highlightBoxes().length < 3" (click)="hs.addHighlightBox()">
-					Add Highlight Box
-				</button>
+
+				<!-- Source Links -->
+				<div class="sources" *ngIf="p.sourceLinks?.length">
+					<h3>Sources</h3>
+					<ul>
+						<li *ngFor="let link of p.sourceLinks">
+							<a [href]="link" target="_blank">{{ link }}</a>
+						</li>
+					</ul>
+				</div>
 			</div>
 
-			<!-- Actions -->
-			<div class="edit-actions">
-			<button mat-raised-button color="primary" (click)="saveEdit(p.id!)">Save</button>
-			<button mat-button (click)="cancelEdit()">Cancel</button>
-			</div>
-		</form>
-		</mat-card-content>
-	</mat-card>
+			<!-- Comments Section (full width) -->
+			<app-comment-section [postId]="p.id!" class="full-width-section"></app-comment-section>
+
+			<!-- Suggestions Section (full width) -->
+			<!-- <app-suggestion-section [postId]="p.id!" class="full-width-section"></app-suggestion-section> -->
+		</div>
+
+		<!-- Edit mode -->
+		<div *ngIf="editingPostId() === p.id && editForm" class="edit-post-wrapper">
+			<mat-card class="edit-post-card">
+				<mat-card-header>
+					<mat-card-title>Edit Post</mat-card-title>
+				</mat-card-header>
+				<mat-card-content>
+					<form [formGroup]="editForm">
+						<!-- Company Name -->
+						<mat-form-field appearance="fill" class="full-width">
+							<mat-label>Company Name</mat-label>
+							<input matInput formControlName="companyName" required />
+						</mat-form-field>
+
+						<!-- Category -->
+						<mat-form-field appearance="fill" class="full-width">
+							<mat-label>Category</mat-label>
+							<input matInput formControlName="category" />
+						</mat-form-field>
+
+						<!-- Tags -->
+						<mat-form-field appearance="fill" class="full-width">
+							<mat-label>Tags (comma separated)</mat-label>
+							<input
+								matInput
+								formControlName="tags"
+								placeholder="environment, labor, ..."
+							/>
+						</mat-form-field>
+
+						<!-- Description -->
+						<mat-form-field appearance="fill" class="full-width">
+							<mat-label>Description</mat-label>
+							<textarea
+								matInput
+								formControlName="description"
+								rows="3"
+								required
+							></textarea>
+						</mat-form-field>
+
+						<!-- Source Links -->
+						<div formArrayName="sourceLinks">
+							<div
+								*ngFor="let link of sourceLinksArray.controls; let i = index"
+								style="display: flex; align-items: center; gap: 8px"
+							>
+								<mat-form-field appearance="fill" class="full-width">
+									<mat-label>Source Link {{ i + 1 }}</mat-label>
+									<input
+										matInput
+										[formControlName]="i"
+										placeholder="https://..."
+									/>
+								</mat-form-field>
+								<button
+									mat-icon-button
+									color="warn"
+									type="button"
+									(click)="removeLink(i)"
+									*ngIf="sourceLinksArray.length > 1"
+								>
+									<mat-icon>delete</mat-icon>
+								</button>
+							</div>
+							<button
+								mat-stroked-button
+								type="button"
+								(click)="addLink()"
+								style="margin-bottom: 5px"
+							>
+								Add link
+							</button>
+						</div>
+
+						<!-- Highlights Section -->
+						<div class="highlights-section">
+							<h3>Highlights (up to 3 boxes, 4 items each)</h3>
+							<div
+								*ngFor="let box of hs.highlightBoxes(); let i = index"
+								class="highlight-box"
+							>
+								<div class="box-header">
+									<strong>Box {{ i + 1 }}</strong>
+									<button
+										mat-icon-button
+										color="warn"
+										type="button"
+										(click)="hs.removeHighlightBox(i)"
+									>
+										<mat-icon>delete</mat-icon>
+									</button>
+								</div>
+								<ul>
+									<li *ngFor="let item of box; let j = index">
+										<ng-container
+											*ngIf="
+												hs.editingHighlight()?.boxIndex === i &&
+													hs.editingHighlight()?.itemIndex === j;
+												else displayMode
+											"
+										>
+											<textarea
+												[id]="'highlight-input-' + i + '-' + j"
+												[value]="hs.editingHighlight()?.value ?? ''"
+												(input)="
+													hs.updateHighlightValue(
+														$any($event.target)?.value ?? ''
+													)
+												"
+												(keydown.enter)="hs.saveEditHighlightItem()"
+												(keydown.escape)="hs.cancelEditHighlightItem()"
+												rows="1"
+												class="edit-highlight-input"
+												#highlightTextarea
+											></textarea>
+											<button
+												mat-icon-button
+												color="primary"
+												type="button"
+												(click)="hs.saveEditHighlightItem()"
+											>
+												<mat-icon>check</mat-icon>
+											</button>
+											<button
+												mat-icon-button
+												type="button"
+												(click)="hs.cancelEditHighlightItem()"
+											>
+												<mat-icon>close</mat-icon>
+											</button>
+										</ng-container>
+										<ng-template #displayMode>
+											<span (dblclick)="hs.startEditHighlightItem(i, j)">{{
+												item
+											}}</span>
+											<button
+												mat-icon-button
+												color="primary"
+												type="button"
+												(click)="hs.startEditHighlightItem(i, j)"
+											>
+												<mat-icon>edit</mat-icon>
+											</button>
+											<button
+												mat-icon-button
+												color="warn"
+												type="button"
+												(click)="hs.removeHighlightItem(i, j)"
+											>
+												<mat-icon>close</mat-icon>
+											</button>
+										</ng-template>
+									</li>
+								</ul>
+								<div class="add-item" *ngIf="box.length < 4">
+									<input
+										#newItem
+										placeholder="Add item"
+										(keyup.enter)="hs.addHighlightItem(i, newItem)"
+									/>
+									<button
+										mat-stroked-button
+										type="button"
+										(click)="hs.addHighlightItem(i, newItem)"
+									>
+										Add
+									</button>
+								</div>
+							</div>
+							<button
+								mat-stroked-button
+								type="button"
+								*ngIf="hs.highlightBoxes().length < 3"
+								(click)="hs.addHighlightBox()"
+							>
+								Add Highlight Box
+							</button>
+						</div>
+
+						<!-- Actions -->
+						<div class="edit-actions">
+							<button mat-raised-button color="primary" (click)="saveEdit(p.id!)">
+								Save
+							</button>
+							<button mat-button (click)="cancelEdit()">Cancel</button>
+						</div>
+					</form>
+				</mat-card-content>
+			</mat-card>
+		</div>
 	</div>
-  </div>
 
-  <!-- <div class="skeleton-card" *ngIf="loading">
+	<!-- <div class="skeleton-card" *ngIf="loading">
 	<div class="skeleton-line"></div>
 	<div class="skeleton-line short"></div>
   </div> -->

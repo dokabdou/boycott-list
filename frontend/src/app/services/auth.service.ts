@@ -1,41 +1,70 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { TokenService } from './token.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private isLoggedInSignal = signal(false);
-  readonly isLoggedIn = this.isLoggedInSignal.asReadonly();
+	private isLoggedInSignal = signal(false);
+	readonly isLoggedIn = this.isLoggedInSignal.asReadonly();
+	private readonly tokenService = inject(TokenService);
 
-  constructor(private http: HttpClient) {
-    // On app start, check if the JWT cookie is still valid
-    this.checkLoginStatus();
-  }
+	private readyResolve!: () => void;
+	private readyPromise = new Promise<void>((resolve) => (this.readyResolve = resolve));
+	private initialized = false;
 
-  /**
-   * Called automatically on service creation.
-   * Asks the backend if the current request is authenticated.
-   */
-  private checkLoginStatus(): void {
-    this.http.get<{ username: string }>('/api/auth/me').subscribe({
-      next: () => this.isLoggedInSignal.set(true),
-      error: () => this.isLoggedInSignal.set(false),
-    });
-  }
+	constructor(
+		private http: HttpClient,
+		@Inject(PLATFORM_ID) private platformId: Object,
+	) {}
 
-  /**
-   * Login. The backend sets the HttpOnly cookie.
-   */
-  login(username: string, password: string): Observable<{ message: string }> {
-    return this.http
-      .post<{ message: string }>('/api/auth/login', { username, password })
-      .pipe(tap(() => this.isLoggedInSignal.set(true)));
-  }
+	/** Called by app initializer. */
+	async init(): Promise<void> {
+		if (isPlatformBrowser(this.platformId)) {
+			await this.checkLoginStatus();
+		}
+		this.initialized = true;
+		this.readyResolve();
+	}
 
-  /**
-   * Logout. The backend clears the cookie.
-   */
-  logout(): Observable<any> {
-    return this.http.post('/api/auth/logout', {}).pipe(tap(() => this.isLoggedInSignal.set(false)));
-  }
+	private checkLoginStatus(): Promise<void> {
+		return new Promise((resolve) => {
+			this.http.get<{ username: string }>('/api/auth/me').subscribe({
+				next: () => {
+					this.isLoggedInSignal.set(true);
+					resolve();
+				},
+				error: () => {
+					this.isLoggedInSignal.set(false);
+					resolve();
+				},
+			});
+		});
+	}
+
+	/** Wait until init() has completed. */
+	waitForReady(): Promise<void> {
+		return this.readyPromise;
+	}
+
+	isAuthenticated(): boolean {
+		return this.isLoggedInSignal();
+	}
+
+	getToken(): string | null {
+		return this.tokenService.getToken();
+	}
+
+	login(username: string, password: string): Observable<{ message: string }> {
+		return this.http
+			.post<{ message: string }>('/api/auth/login', { username, password })
+			.pipe(tap(() => this.isLoggedInSignal.set(true)));
+	}
+
+	logout(): Observable<any> {
+		return this.http
+			.post('/api/auth/logout', {})
+			.pipe(tap(() => this.isLoggedInSignal.set(false)));
+	}
 }

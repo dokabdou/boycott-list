@@ -8,23 +8,23 @@
 } */
 
 h2 {
-  margin-bottom: 24px;
+	margin-bottom: 24px;
 }
 
 button[mat-raised-button] {
-  margin-top: 16px;
-  width: 100%;
-  padding: 8px;
-  font-size: 16px;
+	margin-top: 16px;
+	width: 100%;
+	padding: 8px;
+	font-size: 16px;
 }
 
 .highlights-section {
-  margin-bottom: 24px;
+	margin-bottom: 24px;
 }
 
 .edit-highlight-input {
-  width: 100%;
-  padding: 4px;
-  border: 1px solid var(--primary);
-  border-radius: 4px;
+	width: 100%;
+	padding: 4px;
+	border: 1px solid var(--primary);
+	border-radius: 4px;
 }

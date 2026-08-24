@@ -1,124 +1,189 @@
 <div class="page-content">
 	@if (showBanner()) {
 		<div class="banner-fixed success-banner">
-		<span>Thank you for your post, it will be added shortly.</span>
-		<button class="close-btn" (click)="showBanner.set(false)">✕</button>
+			<span>Thank you for your post, it will be added shortly.</span>
+			<button class="close-btn" (click)="showBanner.set(false)">✕</button>
 		</div>
 	}
 	<div class="container">
-	<h2>Submit a Company to Boycott</h2>
-	<form [formGroup]="submitForm" (ngSubmit)="onSubmit()" (keydown.enter)="onEnter($event)">
-		<!-- Company Name -->
-		<mat-form-field appearance="fill" class="full-width">
-		<mat-label>Company Name</mat-label>
-		<input matInput formControlName="companyName" required>
-		</mat-form-field>
-
-		<!-- Category -->
-		<mat-form-field appearance="fill" class="full-width">
-		<mat-label>Category (e.g., Technology, Media, Online Shopping)</mat-label>
-		<input matInput formControlName="category"
-			[matAutocomplete]="categoryAuto"
-			placeholder="Enter or select a category">
-		<mat-autocomplete #categoryAuto="matAutocomplete">
-			<mat-option *ngFor="let cat of allCategories" [value]="cat">
-			{{ cat }}
-			</mat-option>
-		</mat-autocomplete>
-		</mat-form-field>
-
-		<!-- Tags (same as before) -->
-		<mat-form-field appearance="fill" class="full-width">
-		<mat-label>Tags</mat-label>
-		<mat-chip-grid #chipGrid aria-label="Tag selection">
-			<mat-chip-row *ngFor="let tag of selectedTags" (removed)="removeTag(tag)">
-			{{ tag }}
-			<button matChipRemove><mat-icon>cancel</mat-icon></button>
-			</mat-chip-row>
-		</mat-chip-grid>
-		<input #tagInput
-				placeholder="New tag..."
-				[matChipInputFor]="chipGrid"
-				[matAutocomplete]="auto"
-				(matChipInputTokenEnd)="addTag($event)"/>
-		<mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedTag($event)">
-			<mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
-			{{ tag }}
-			</mat-option>
-		</mat-autocomplete>
-		</mat-form-field>
-
-		<!-- Description -->
-		<mat-form-field appearance="fill" class="full-width">
-		<mat-label>Description / Reason</mat-label>
-		<textarea matInput formControlName="description" rows="4" required></textarea>
-		</mat-form-field>
-
-		<!-- Highlights Section -->
-		<div class="highlights-section">
-			<h3>Highlights (up to 3 boxes, 4 items each)</h3>
-			<div *ngFor="let box of hs.highlightBoxes(); let i = index" class="highlight-box">
-				<div class="box-header">
-				<strong>Box {{ i + 1 }}</strong>
-				<button mat-icon-button color="warn" type="button" (click)="hs.removeHighlightBox(i)">
-					<mat-icon>delete</mat-icon>
-				</button>
-				</div>
-				<ul>
-				<li *ngFor="let item of box; let j = index">
-					<ng-container *ngIf="hs.editingHighlight()?.boxIndex === i && hs.editingHighlight()?.itemIndex === j; else displayMode">
-						<input
-							[id]="'highlight-input-' + i + '-' + j"
-							type="text"
-							[value]="hs.editingHighlight()?.value ?? ''"
-							(input)="hs.updateHighlightValue(($any($event.target)?.value ?? ''))"
-							(keydown.enter)="hs.saveEditHighlightItem()"
-							(keydown.escape)="hs.cancelEditHighlightItem()"
-							class="edit-highlight-input"
-						/>
-					<button mat-icon-button color="primary" type="button" (click)="hs.saveEditHighlightItem()">
-						<mat-icon>check</mat-icon>
-					</button>
-					<button mat-icon-button type="button" (click)="hs.cancelEditHighlightItem()">
-						<mat-icon>close</mat-icon>
-					</button>
-					</ng-container>
-					<ng-template #displayMode>
-					<span (dblclick)="hs.startEditHighlightItem(i, j)">{{ item }}</span>
-					<button mat-icon-button color="primary" type="button" (click)="hs.startEditHighlightItem(i, j)">
-						<mat-icon>edit</mat-icon>
-					</button>
-					<button mat-icon-button color="warn" type="button" (click)="hs.removeHighlightItem(i, j)">
-						<mat-icon>close</mat-icon>
-					</button>
-					</ng-template>
-				</li>
-				</ul>
-				<div class="add-item" *ngIf="box.length < 4">
-				<input #newItem placeholder="Add item" (keyup.enter)="hs.addHighlightItem(i, newItem)">
-				<button mat-stroked-button type="button" (click)="hs.addHighlightItem(i, newItem)">Add</button>
-				</div>
-			</div>
-			<button mat-stroked-button type="button" *ngIf="hs.highlightBoxes().length < 3" (click)="hs.addHighlightBox()">
-				Add Highlight Box
-			</button>
-		</div>
-
-		<!-- Source Links (same) -->
-		<div formArrayName="sourceLinks">
-		<div *ngFor="let link of sourceLinks.controls; let i = index" style="display: flex; align-items: center; gap: 8px;">
+		<h2>Submit a Company to Boycott</h2>
+		<form [formGroup]="submitForm" >
+			<!-- Company Name -->
 			<mat-form-field appearance="fill" class="full-width">
-			<mat-label>Source Link {{ i + 1 }}</mat-label>
-			<input matInput [formControlName]="i" placeholder="https://...">
+				<mat-label>Company Name</mat-label>
+				<input matInput formControlName="companyName" required />
 			</mat-form-field>
-			<button mat-icon-button color="warn" type="button" (click)="removeLink(i)" *ngIf="sourceLinks.length > 1">
-			<mat-icon>delete</mat-icon>
-			</button>
-		</div>
-		<button mat-stroked-button type="button" (click)="addLink()">Add another link</button>
-		</div>
 
-		<button mat-raised-button color="primary" type="submit" [disabled]="submitForm.invalid">Submit Anonymously</button>
-	</form>
+			<!-- Category -->
+			<mat-form-field appearance="fill" class="full-width">
+				<mat-label>Category (e.g., Technology, Media, Online Shopping)</mat-label>
+				<input
+					matInput
+					formControlName="category"
+					[matAutocomplete]="categoryAuto"
+					placeholder="Enter or select a category"
+				/>
+				<mat-autocomplete #categoryAuto="matAutocomplete">
+					<mat-option *ngFor="let cat of allCategories" [value]="cat">
+						{{ cat }}
+					</mat-option>
+				</mat-autocomplete>
+			</mat-form-field>
+
+			<!-- Tags (same as before) -->
+			<mat-form-field appearance="fill" class="full-width">
+				<mat-label>Tags</mat-label>
+				<mat-chip-grid #chipGrid aria-label="Tag selection">
+					<mat-chip-row *ngFor="let tag of selectedTags" (removed)="removeTag(tag)">
+						{{ tag }}
+						<button matChipRemove><mat-icon>cancel</mat-icon></button>
+					</mat-chip-row>
+				</mat-chip-grid>
+				<input
+					#tagInput
+					placeholder="New tag..."
+					[matChipInputFor]="chipGrid"
+					[matAutocomplete]="auto"
+					(matChipInputTokenEnd)="addTag($event)"
+				/>
+				<mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedTag($event)">
+					<mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
+						{{ tag }}
+					</mat-option>
+				</mat-autocomplete>
+			</mat-form-field>
+
+			<!-- Description -->
+			<mat-form-field appearance="fill" class="full-width">
+				<mat-label>Description / Reason</mat-label>
+				<textarea matInput formControlName="description" rows="4" required></textarea>
+			</mat-form-field>
+
+			<!-- Highlights Section -->
+			<div class="highlights-section">
+				<h3>Highlights (up to 3 boxes, 4 items each)</h3>
+				<div *ngFor="let box of hs.highlightBoxes(); let i = index" class="highlight-box">
+					<div class="box-header">
+						<strong>Box {{ i + 1 }}</strong>
+						<button
+							mat-icon-button
+							color="warn"
+							type="button"
+							(click)="hs.removeHighlightBox(i)"
+						>
+							<mat-icon>delete</mat-icon>
+						</button>
+					</div>
+					<ul>
+						<li *ngFor="let item of box; let j = index">
+							<ng-container
+								*ngIf="
+									hs.editingHighlight()?.boxIndex === i &&
+										hs.editingHighlight()?.itemIndex === j;
+									else displayMode
+								"
+							>
+								<input
+									[id]="'highlight-input-' + i + '-' + j"
+									type="text"
+									[value]="hs.editingHighlight()?.value ?? ''"
+									(input)="
+										hs.updateHighlightValue($any($event.target)?.value ?? '')
+									"
+									(keydown.enter)="hs.saveEditHighlightItem()"
+									(keydown.escape)="hs.cancelEditHighlightItem()"
+									class="edit-highlight-input"
+								/>
+								<button
+									mat-icon-button
+									color="primary"
+									type="button"
+									(click)="hs.saveEditHighlightItem()"
+								>
+									<mat-icon>check</mat-icon>
+								</button>
+								<button
+									mat-icon-button
+									type="button"
+									(click)="hs.cancelEditHighlightItem()"
+								>
+									<mat-icon>close</mat-icon>
+								</button>
+							</ng-container>
+							<ng-template #displayMode>
+								<span (dblclick)="hs.startEditHighlightItem(i, j)">{{ item }}</span>
+								<button
+									mat-icon-button
+									color="primary"
+									type="button"
+									(click)="hs.startEditHighlightItem(i, j)"
+								>
+									<mat-icon>edit</mat-icon>
+								</button>
+								<button
+									mat-icon-button
+									color="warn"
+									type="button"
+									(click)="hs.removeHighlightItem(i, j)"
+								>
+									<mat-icon>close</mat-icon>
+								</button>
+							</ng-template>
+						</li>
+					</ul>
+					<div class="add-item" *ngIf="box.length < 4">
+						<input
+							#newItem
+							placeholder="Add item"
+							(keyup.enter)="hs.addHighlightItem(i, newItem)"
+						/>
+						<button
+							mat-stroked-button
+							type="button"
+							(click)="hs.addHighlightItem(i, newItem)"
+						>
+							Add
+						</button>
+					</div>
+				</div>
+				<button
+					mat-stroked-button
+					type="button"
+					*ngIf="hs.highlightBoxes().length < 3"
+					(click)="hs.addHighlightBox()"
+				>
+					Add Highlight Box
+				</button>
+			</div>
+
+			<!-- Source Links (same) -->
+			<div formArrayName="sourceLinks">
+				<div
+					*ngFor="let link of sourceLinks.controls; let i = index"
+					style="display: flex; align-items: center; gap: 8px"
+				>
+					<mat-form-field appearance="fill" class="full-width">
+						<mat-label>Source Link {{ i + 1 }}</mat-label>
+						<input matInput [formControlName]="i" placeholder="https://..." />
+					</mat-form-field>
+					<button
+						mat-icon-button
+						color="warn"
+						type="button"
+						(click)="removeLink(i)"
+						*ngIf="sourceLinks.length > 1"
+					>
+						<mat-icon>delete</mat-icon>
+					</button>
+				</div>
+				<button mat-stroked-button type="button" (click)="addLink()">
+					Add another link
+				</button>
+			</div>
+
+			<button mat-raised-button color="primary" type="button" [disabled]="submitForm.invalid" (click)="onSubmit()">
+				Submit Anonymously
+			</button>
+		</form>
 	</div>
 </div>
