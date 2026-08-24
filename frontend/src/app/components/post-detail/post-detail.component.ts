@@ -167,23 +167,18 @@ export class PostDetailComponent implements OnInit {
 		const url = window.location.href;
 
 		if (navigator.share) {
-			navigator
-				.share({
-					title: this.post()?.companyName || 'Boycott post',
-					text: this.post()?.description?.slice(0, 100) || '',
-					url,
-				})
-				.catch(() => {
-					// User cancelled – do nothing
-				});
+			navigator.share({ url }).catch(() => {
+				// User cancelled – do nothing
+			});
 		} else {
+			// Fallback: copy the URL only
 			navigator.clipboard
 				?.writeText(url)
 				.then(() => {
 					this.showBanner('success', 'Link copied to clipboard!');
 				})
 				.catch(() => {
-					// Fallback: use a temporary input
+					// Fallback if clipboard API fails
 					const input = document.createElement('input');
 					input.value = url;
 					document.body.appendChild(input);
