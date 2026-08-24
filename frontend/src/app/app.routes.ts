@@ -8,7 +8,7 @@ import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
 	{ path: '', component: PostListComponent },
-	{ path: 'posts', component: PostListComponent },
+  	{ path: 'posts', redirectTo: '', pathMatch: 'full' },
 	{ path: 'login', component: LoginComponent },
 	{ path: 'submit', component: SubmitFormComponent },
 	{ path: 'admin', component: AdminDashboardComponent, canActivate: [adminGuard] },

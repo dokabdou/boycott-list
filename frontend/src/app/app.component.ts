@@ -136,6 +136,21 @@ export class AppComponent implements OnInit {
     this.showScrollBtn.set(window.scrollY > 0);
   } */
 
+	onSearchEnter(event?: Event) {
+		event?.preventDefault();
+
+		// Save the term to the service for filtering
+		this.onSearchInput(this.searchTerm);
+
+		// Clear the input field (visual reset)
+		this.searchTerm = '';
+
+		// Navigate to home page if not already there
+		if (this.router.url !== '/') {
+			this.router.navigate(['/']);
+		}
+	}
+
 	onSearchInput(term: string) {
 		this.searchService.setSearchTerm(term);
 	}
