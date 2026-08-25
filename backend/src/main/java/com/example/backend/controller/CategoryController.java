@@ -28,9 +28,9 @@ public class CategoryController {
 	@GetMapping
 	@Operation(summary = "Get all approved categories")
 	public List<Category> getAllCategories() {
-		System.out.println("GET ALL CATEGORY :: ");
+		//System.out.println("GET ALL CATEGORY :: ");
 		List<Category> result = categoryService.getAll();
-		System.out.println("GET ALL CATEGORY :: " + result);
+		//System.out.println("GET ALL CATEGORY :: " + result);
 		return result;
 	}
 

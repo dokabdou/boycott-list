@@ -43,9 +43,9 @@ public class PublicPostController {
     @Operation(summary = "Get approved posts",
                description = "Retrieves all approved boycott posts.")
     public List<Post> getApprovedPosts() {
-		System.out.println("PublicPostController: Fetching approved posts");
+		//System.out.println("PublicPostController: Fetching approved posts");
 		List<Post> approvedPosts = postService.getApprovedPosts();
-		System.out.println("PublicPostController: Retrieved approved posts count: " + approvedPosts.size());
+		//System.out.println("PublicPostController: Retrieved approved posts count: " + approvedPosts.size());
         return approvedPosts;
     }
 

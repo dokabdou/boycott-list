@@ -8,6 +8,7 @@ export class LogoService {
 	/**
 	 * Known company display name → official domain mapping.
 	 * Add more entries as needed for complex or accented names.
+	 * https://www.logo.dev/dashboard/playground/search
 	 */
 	private readonly knownCompanies: Record<string, string> = {
 		thales: 'thalesgroup.com',

@@ -16,6 +16,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostTagService tagService;
     private final CategoryService categoryService;
+	private final NotificationService notificationService;
 
     private String generateId() {
         return UUID.randomUUID().toString();
@@ -23,11 +24,17 @@ public class PostService {
 
     public Post submitAnonymous(Post post) {
         post.setId(generateId());
-        post.setAnonymous(true);
-        post.setSubmittedBy("anonymous");
-        post.setStatus(Post.PostStatus.PENDING);
-        post.setCreatedAt(Instant.now());
-        return postRepository.save(post);
+		post.setAnonymous(true);
+		post.setSubmittedBy("anonymous");
+		post.setStatus(Post.PostStatus.PENDING);
+		post.setCreatedAt(Instant.now());
+
+		Post savedPost = postRepository.save(post);
+
+		// Send notifications (async)
+		notificationService.notifyAnonymousSubmission(savedPost);
+
+		return savedPost;
     }
 
     public Post submitByAdmin(Post post, String adminUsername) {

@@ -186,6 +186,16 @@ docker compose -f docker-compose-prod.yml up -d
 
 Then view the app on :: 10.10.10.13:4200 (the LXC IP address)(if the cloudflare + nginx url isnt set up yet)
 
+
+
+FORCE REBUILD :
+```
+docker compose down && docker compose up -d --build
+
+ docker compose down && docker compose -f docker-compose-prod.yml -d --build
+```
+
+
 Security ::
 - JWT stored in HttpOnly cookie – JavaScript cannot access the token, preventing XSS attacks.
 - The cookie is set with SameSite=Lax and (when on HTTPS) Secure.
@@ -206,6 +216,11 @@ Security ::
 | `docker-compose` `KeyError: 'ContainerConfig'` | Old docker-compose 1.29.2 bug | Run `docker-compose down && docker-compose up -d` to recreate containers from scratch. |
 | Local Maven compilation error | JDK 25 vs Lombok | Ignore it. Build only via Docker, which uses JDK 21. |
 | Can’t access `http://10.10.10.9:8080` from host | Containers are on isolated Docker network | Use iptables to forward ports, or access via the container’s IP on the Docker bridge (if on same host). For the LXC container, use `10.10.10.13:4200`. |
+
+---
+
+
+
 
 ---
 
