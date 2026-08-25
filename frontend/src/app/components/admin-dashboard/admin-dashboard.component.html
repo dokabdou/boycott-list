@@ -307,182 +307,194 @@
 		<!-- Manage Tab -->
 		<div *ngIf="activeTab === 'manage'" class="manage-container">
 			<h3>Manage Categories & Tags</h3>
-			<div class="management-section">
-				<!-- Categories Column -->
-				<div class="column">
-					<h4>Categories</h4>
-					<div class="add-row">
-						<mat-form-field appearance="fill" class="full-width">
-							<mat-label>New category</mat-label>
-							<input
-								matInput
-								[(ngModel)]="newCategoryName"
-								(keyup.enter)="addCategory()"
-							/>
-						</mat-form-field>
-						<button
-							mat-raised-button
-							color="primary"
-							(click)="addCategory()"
-							[disabled]="!newCategoryName.trim()"
-						>
-							<mat-icon>add</mat-icon>
-						</button>
-					</div>
-					<div class="list">
-						@for (cat of adminCategories(); track cat.id) {
-							<div class="list-item">
-								@if (editingCategoryId() === cat.id) {
-									<mat-form-field appearance="fill" class="edit-field">
-										<input
-											matInput
-											[(ngModel)]="editCategoryName"
-											(keyup.enter)="saveEditCategory(cat.id!)"
-										/>
-									</mat-form-field>
-									<button
-										mat-icon-button
-										color="primary"
-										(click)="saveEditCategory(cat.id!)"
-									>
-										<mat-icon>check</mat-icon>
-									</button>
-									<button mat-icon-button (click)="cancelEditCategory()">
-										<mat-icon>close</mat-icon>
-									</button>
-								} @else {
-									<span>{{ cat.name }}</span>
-									<div class="item-actions">
-										<button mat-icon-button (click)="startEditCategory(cat)">
-											<mat-icon>edit</mat-icon>
-										</button>
-										<button
-											mat-icon-button
-											color="warn"
-											(click)="deleteCategory(cat.id!)"
-										>
-											<mat-icon>delete</mat-icon>
-										</button>
-									</div>
-								}
-							</div>
-						}
-					</div>
-				</div>
 
-				<!-- Tags Column -->
-				<div class="column">
-					<h4>Tags</h4>
-					<div class="add-row">
-						<mat-form-field appearance="fill" class="full-width">
-							<mat-label>New tag</mat-label>
-							<input
-								matInput
-								[(ngModel)]="newTagName"
-								(keyup.enter)="addTagAdmin()"
-							/>
-						</mat-form-field>
-						<button
-							mat-raised-button
-							color="primary"
-							(click)="addTagAdmin()"
-							[disabled]="!newTagName.trim()"
-						>
-							<mat-icon>add</mat-icon>
-						</button>
-					</div>
-					<div class="list">
-						@for (tag of adminTags(); track tag.id) {
-							<div class="list-item">
-								@if (editingTagId() === tag.id) {
-									<mat-form-field appearance="fill" class="edit-field">
-										<input
-											matInput
-											[(ngModel)]="editTagName"
-											(keyup.enter)="saveEditTag(tag.id!)"
-										/>
-									</mat-form-field>
-									<button
-										mat-icon-button
-										color="primary"
-										(click)="saveEditTag(tag.id!)"
-									>
-										<mat-icon>check</mat-icon>
-									</button>
-									<button mat-icon-button (click)="cancelEditTag()">
-										<mat-icon>close</mat-icon>
-									</button>
-								} @else {
-									<span>{{ tag.name }}</span>
-									<div class="item-actions">
-										<button mat-icon-button (click)="startEditTag(tag)">
-											<mat-icon>edit</mat-icon>
-										</button>
-										<button
-											mat-icon-button
-											color="warn"
-											(click)="deleteTag(tag.id!)"
-										>
-											<mat-icon>delete</mat-icon>
-										</button>
-									</div>
-								}
-							</div>
-						}
-					</div>
-				</div>
-				<!-- Post import/export -->
-				<div class="column">
-					<h4>Data Management</h4>
-					<div class="data-mng-buttons">
-						<button mat-raised-button color="primary" (click)="exportAllPosts()">
-							<mat-icon>download</mat-icon> Export All Posts
-						</button>
-						<button mat-raised-button (click)="triggerImport()">
-							<mat-icon>upload</mat-icon> Import Posts
-						</button>
-					</div>
-					<input
-						#fileInput
-						type="file"
-						accept=".json"
-						multiple
-						style="display: none"
-						(change)="onFileSelected($event)"
-					/>
-					<div class="bulk-delete-section">
-						<div class="bulk-delete-header">
-						<h5>All Posts ({{ allPosts().length }})</h5>
-						<button mat-button type="button" (click)="toggleSelectAll()">
-							{{ selectedPostIds().length === allPosts().length ? 'Deselect All' : 'Select All' }}
-						</button>
-						</div>
-
-						<div class="post-checkbox-list">
-						@for (post of allPosts(); track post.id) {
-							<div class="post-checkbox-item">
-							<input
-								type="checkbox"
-								[checked]="selectedPostIds().includes(post.id!)"
-								(change)="togglePostSelection(post.id!)"
-							/>
-							<span>{{ post.companyName }}</span>
-							</div>
-						}
-						</div>
-
-						<button
-						mat-raised-button
-						color="warn"
-						[disabled]="selectedPostIds().length === 0"
-						(click)="bulkDeleteSelected()"
-						>
-						<mat-icon>delete</mat-icon>
-						Delete Selected ({{ selectedPostIds().length }})
-						</button>
-					</div>
-				</div>
+			<!-- Nested tab bar -->
+			<div class="manage-tab-buttons">
+				<button
+				[class.active]="manageTab() === 'categories'"
+				(click)="switchManageTab('categories')"
+				>
+				Categories
+				</button>
+				<button
+				[class.active]="manageTab() === 'tags'"
+				(click)="switchManageTab('tags')"
+				>
+				Tags
+				</button>
+				<button
+				[class.active]="manageTab() === 'data'"
+				(click)="switchManageTab('data')"
+				>
+				Data Management
+				</button>
 			</div>
+
+			<!-- Categories -->
+			@if (manageTab() === 'categories') {
+				<div class="manage-panel">
+				<h4>Categories</h4>
+				<div class="add-row">
+					<mat-form-field appearance="fill" class="full-width">
+					<mat-label>New category</mat-label>
+					<input
+						matInput
+						[(ngModel)]="newCategoryName"
+						(keyup.enter)="addCategory()"
+					/>
+					</mat-form-field>
+					<button
+					mat-raised-button
+					color="primary"
+					(click)="addCategory()"
+					[disabled]="!newCategoryName.trim()"
+					>
+					<mat-icon>add</mat-icon>
+					</button>
+				</div>
+				<div class="list">
+					@for (cat of adminCategories(); track cat.id) {
+					<div class="list-item">
+						@if (editingCategoryId() === cat.id) {
+						<mat-form-field appearance="fill" class="edit-field">
+							<input
+							matInput
+							[(ngModel)]="editCategoryName"
+							(keyup.enter)="saveEditCategory(cat.id!)"
+							/>
+						</mat-form-field>
+						<button mat-icon-button color="primary" (click)="saveEditCategory(cat.id!)">
+							<mat-icon>check</mat-icon>
+						</button>
+						<button mat-icon-button (click)="cancelEditCategory()">
+							<mat-icon>close</mat-icon>
+						</button>
+						} @else {
+						<span>{{ cat.name }}</span>
+						<div class="item-actions">
+							<button mat-icon-button (click)="startEditCategory(cat)">
+							<mat-icon>edit</mat-icon>
+							</button>
+							<button mat-icon-button color="warn" (click)="deleteCategory(cat.id!)">
+							<mat-icon>delete</mat-icon>
+							</button>
+						</div>
+						}
+					</div>
+					}
+				</div>
+				</div>
+			}
+
+			<!-- Tags -->
+			@if (manageTab() === 'tags') {
+				<div class="manage-panel">
+				<h4>Tags</h4>
+				<div class="add-row">
+					<mat-form-field appearance="fill" class="full-width">
+					<mat-label>New tag</mat-label>
+					<input
+						matInput
+						[(ngModel)]="newTagName"
+						(keyup.enter)="addTagAdmin()"
+					/>
+					</mat-form-field>
+					<button
+					mat-raised-button
+					color="primary"
+					(click)="addTagAdmin()"
+					[disabled]="!newTagName.trim()"
+					>
+					<mat-icon>add</mat-icon>
+					</button>
+				</div>
+				<div class="list">
+					@for (tag of adminTags(); track tag.id) {
+					<div class="list-item">
+						@if (editingTagId() === tag.id) {
+						<mat-form-field appearance="fill" class="edit-field">
+							<input
+							matInput
+							[(ngModel)]="editTagName"
+							(keyup.enter)="saveEditTag(tag.id!)"
+							/>
+						</mat-form-field>
+						<button mat-icon-button color="primary" (click)="saveEditTag(tag.id!)">
+							<mat-icon>check</mat-icon>
+						</button>
+						<button mat-icon-button (click)="cancelEditTag()">
+							<mat-icon>close</mat-icon>
+						</button>
+						} @else {
+						<span>{{ tag.name }}</span>
+						<div class="item-actions">
+							<button mat-icon-button (click)="startEditTag(tag)">
+							<mat-icon>edit</mat-icon>
+							</button>
+							<button mat-icon-button color="warn" (click)="deleteTag(tag.id!)">
+							<mat-icon>delete</mat-icon>
+							</button>
+						</div>
+						}
+					</div>
+					}
+				</div>
+				</div>
+			}
+
+			<!-- Data Management -->
+			@if (manageTab() === 'data') {
+				<div class="manage-panel">
+				<h4>Data Management</h4>
+				<div class="data-mng-buttons">
+					<button mat-raised-button color="primary" (click)="exportAllPosts()">
+					<mat-icon>download</mat-icon> Export All Posts
+					</button>
+					<button mat-raised-button (click)="triggerImport()">
+					<mat-icon>upload</mat-icon> Import Posts
+					</button>
+				</div>
+				<input
+					#fileInput
+					type="file"
+					accept=".json"
+					multiple
+					style="display: none"
+					(change)="onFileSelected($event)"
+				/>
+				<div class="bulk-delete-section">
+					<div class="bulk-delete-header">
+					<h5>All Posts ({{ allPosts().length }})</h5>
+					<button mat-button type="button" (click)="toggleSelectAll()">
+						{{ selectedPostIds().length === allPosts().length ? 'Deselect All' : 'Select All' }}
+					</button>
+					</div>
+
+					<div class="post-checkbox-list">
+					@for (post of allPosts(); track post.id) {
+						<div class="post-checkbox-item">
+						<input
+							type="checkbox"
+							[checked]="selectedPostIds().includes(post.id!)"
+							(change)="togglePostSelection(post.id!)"
+						/>
+						<span>{{ post.companyName }}</span>
+						</div>
+					}
+					</div>
+
+					<button
+					mat-raised-button
+					color="warn"
+					[disabled]="selectedPostIds().length === 0"
+					(click)="bulkDeleteSelected()"
+					>
+					<mat-icon>delete</mat-icon>
+					Delete Selected ({{ selectedPostIds().length }})
+					</button>
+				</div>
+				</div>
+			}
 		</div>
 	</div>
 </div>

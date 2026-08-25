@@ -78,7 +78,7 @@ app.use((req, res, next) => {
     ); */
 			secureResponse.headers.set(
 				'Content-Security-Policy',
-				`default-src 'self'; script-src 'self' 'nonce-${nonce}' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';`,
+				`default-src 'self'; script-src 'self' 'nonce-${nonce}' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://img.logo.dev; connect-src 'self' https://api.logo.dev;`,
 			);
 
 			//  Let Angular's built-in helper send the secure response to the browser!

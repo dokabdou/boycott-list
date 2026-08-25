@@ -1,76 +1,208 @@
-/* .container {
-  padding-top: 30px;
+/* ============================================================
+   Post List Component – Full Width Grid
+   ============================================================ */
+
+/* Override global .container (which sets max-width: 700px) */
+.container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px 16px;      /* some horizontal padding for breathing room */
+  box-sizing: border-box;
+}
+
+/* Headings */
+h1 {
+  font-size: 2.5rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 60px 20px 40px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  border-radius: var(--radius);
+  margin-bottom: 40px;
+}
+
+.hero h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: white;
+}
+
+.hero .highlight {
+  color: var(--accent);
+}
+
+/* About Toggle */
+.intro-toggle {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  background: var(--surface);
+  transition: box-shadow 0.2s;
+}
+
+.intro-toggle:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.toggle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+
+.arrow {
+  font-size: 14px;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.toggle-body {
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+
+.toggle-body.collapsed {
+  max-height: 0;
+  padding-top: 0;
+  margin-top: 0;
+  border-top: none;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state .emoji {
+  font-size: 2.5rem;
+}
+
+/* Posts Grid – full width */
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);   /* 3 columns by default */
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.card-header {
+  position: relative;
+  padding-right: 56px;   /* space for the logo */
+}
+
+.header-text {
+  flex: 1;
+}
+
+.company-logo-small {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: white;
+}
+
+/* Post Card */
+.post-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  border-left: 6px solid var(--accent);
   background: var(--surface);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
-  padding: 32px;
-  max-width: 700px;
-  margin: 40px auto;
-} */
-
-h1 {
-	font-size: 2.5rem;
-	font-weight: 500;
-	margin-bottom: 1.5rem;
-	text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
-.post-card {
-	border-left: 6px solid var(--accent);
-	background: var(--surface);
-	border-radius: var(--radius);
-	box-shadow: var(--shadow-sm);
-	margin-bottom: 32px;
-	transition:
-		transform var(--transition),
-		box-shadow var(--transition);
-	cursor: pointer;
-	transition:
-		transform 0.2s ease,
-		box-shadow 0.2s ease;
-}
 .post-card:hover {
-	transform: translateY(-4px);
-	box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
-mat-card-footer {
-	padding: 10px 16px;
-	background-color: var(--surface-alt);
-	border-top: 1px solid var(--border);
-	font-style: italic;
-	color: var(--text-secondary);
+/* Card content should expand to fill */
+.post-card mat-card-content {
+  flex: 1;
 }
 
-.edit-actions {
-	display: flex;
-	gap: 8px;
-	margin-top: 16px;
-}
-
+/* Category Badge */
 .category-badge {
-	background: var(--accent-warning);
-	color: #000;
-	font-weight: 600;
-	border-radius: 20px;
-	padding: 4px 12px;
-	font-size: 0.75rem;
-	text-transform: uppercase;
+  background: var(--accent-warning);
+  color: #000;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin-right: 8px;
 }
 
-.hero {
-	text-align: center;
-	padding: 60px 20px 40px;
-	background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-	color: white;
-	border-radius: var(--radius);
-	margin-bottom: 40px;
+/* Card Footer */
+mat-card-footer {
+  padding: 10px 16px;
+  background-color: var(--surface-alt);
+  border-top: 1px solid var(--border);
+  font-style: italic;
+  color: var(--text-secondary);
 }
-.hero h1 {
-	font-size: 2.8rem;
-	font-weight: 700;
-	color: white;
+
+/* Edit Actions (if needed) */
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
 }
-.hero .highlight {
-	color: var(--accent);
+
+/* Tablet – 2 columns */
+@media (max-width: 1000px) {
+  .posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Phone – 1 column */
+@media (max-width: 768px) {
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 40px 16px 30px;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .container {
+    padding: 10px;
+  }
 }

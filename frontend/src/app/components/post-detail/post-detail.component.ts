@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { PostService } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
+import { LogoService } from '../../services/logo.service';
 import { Post } from '../../models/post.model';
 import { CommentSectionComponent } from '../comment-section/comment-section.component';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -47,12 +48,14 @@ export class PostDetailComponent implements OnInit {
 	postId: string = '';
 	editingPostId: WritableSignal<string | null> = signal(null);
 	editForm: FormGroup | null = null;
+	logoUrl: string = '';
 	banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
 
 	constructor(
 		private route: ActivatedRoute,
 		private postService: PostService,
 		private authService: AuthService,
+		private logoService: LogoService,
 		private fb: FormBuilder,
 		private router: Router,
 		public hs: HighlightService,
@@ -66,7 +69,15 @@ export class PostDetailComponent implements OnInit {
 	loadPost() {
 		this.postService.getPostById(this.postId).subscribe((post) => {
 			this.post.set(post);
+			if (post.companyName) {
+				this.logoUrl = this.logoService.getLogoUrl(post.companyName, 128);
+			}
 		});
+	}
+
+	onImgError(event: Event) {
+		const img = event.target as HTMLImageElement;
+		img.style.display = 'none';
 	}
 
 	isLoggedIn(): boolean {

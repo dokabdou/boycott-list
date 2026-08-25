@@ -4,13 +4,34 @@
 	padding: 20px;
 }
 
+
+.company-header {
+  display: flex;
+  align-items: center;          /* vertical center */
+  justify-content: center;      /* horizontal center */
+  gap: 16px;
+  border-bottom: 3px solid var(--accent);
+  padding-bottom: 12px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.company-logo-large {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: white;
+  flex-shrink: 0;               /* logo doesn't shrink */
+}
+
 .company-name {
-	font-size: 3rem;
-	font-weight: 700;
-	text-align: left;
-	border-bottom: 3px solid var(--accent);
-	padding-bottom: 12px;
-	margin-bottom: 24px;
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;           /* center text */
+  border-bottom: none;
+  padding-bottom: 0;            /* remove extra padding */
 }
 
 .tags {
@@ -154,6 +175,23 @@
   gap: 8px;
   justify-content: flex-end;
   margin-bottom: 16px;
+}
+
+
+@media (max-width: 768px) {
+  .company-header {
+    gap: 8px;
+    flex-wrap: wrap; /* allow name to wrap under logo if needed */
+  }
+
+  .company-logo-large {
+    width: 40px;
+    height: 40px;
+  }
+
+  .company-name {
+    font-size: 2rem; /* reduce font to match logo */
+  }
 }
 
 

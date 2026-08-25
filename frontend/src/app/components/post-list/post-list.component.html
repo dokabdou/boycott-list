@@ -10,12 +10,16 @@
 			<button class="close-btn" (click)="banner.set(null)">✕</button>
 		</div>
 	}
+
 	<div class="container">
+		<!-- Hero Section -->
 		<div class="hero">
 			<h1>Companies that harm <span class="highlight">our world.</span></h1>
 			<p>Let's stay informed, make conscious choices, and raise awareness together.</p>
 			<button mat-raised-button color="accent" routerLink="/submit">Add a Company</button>
 		</div>
+
+		<!-- About Toggle -->
 		<div class="intro-toggle" (click)="toggleDescription()">
 			<div class="toggle-header">
 				<span>About this list</span>
@@ -23,10 +27,12 @@
 			</div>
 			<div class="toggle-body" [class.collapsed]="!showDescription()">
 				<p>
-					Welcome to The Boycott List! I got this idea because I always see and hear about
-					companies that are doing harm to the environment or society. I sometimes forget
-					which companies are on the list and why, so I created this simple tool to keep
-					track of them. I will add the companies as I find them, and you can contribute
+					<b>Welcome to The Boycott List! </b>
+					<br>
+					<br>
+					I got this idea because I always see and hear about
+					companies that are doing harm to the environment and or society. I sometimes forget
+					which companies are on the list and why, so I created this simple tool to keep track of them. I will add the companies as I find them, and you can contribute
 					as well! I provide information about companies that are engaging in unethical
 					practices. <u>I also provide sources of course</u>. Some of the things on this
 					list will be hard to boycott because we might not be able to properly live
@@ -36,123 +42,61 @@
 			</div>
 		</div>
 
+		<!-- Empty State -->
 		<div class="empty-state" *ngIf="filteredPosts().length === 0">
 			<span class="emoji">🔍</span>
 			<h3>No companies match your search</h3>
 			<p>Try different keywords or browse all.</p>
 		</div>
 
-		<mat-card
-			*ngFor="let post of filteredPosts()"
-			class="post-card"
-			(click)="openPost(post.id, $event)"
-		>
-			<mat-card-header>
-				<mat-card-title>
-					<a
-						*ngIf="editingPostId() !== post.id"
-						[routerLink]="['/post', post.id]"
-						style="color: inherit; text-decoration: none"
-					>
-						{{ post.companyName }}
-					</a>
-					<span *ngIf="editingPostId() === post.id">Editing: {{ post.companyName }}</span>
-				</mat-card-title>
-				<mat-card-subtitle>
-					<span class="category-badge" *ngIf="post.category">📂 {{ post.category }}</span>
-					<mat-chip-listbox *ngIf="editingPostId() !== post.id">
-						<mat-chip *ngFor="let tag of post.tags">{{ tag }}</mat-chip>
-					</mat-chip-listbox>
-				</mat-card-subtitle>
-			</mat-card-header>
+		<!-- Posts Grid -->
+		<section class="posts-grid">
+			<mat-card
+				*ngFor="let post of filteredPosts()"
+				class="post-card"
+				(click)="openPost(post.id, $event)"
+				>
+				<mat-card-header class="card-header">
+					<div class="header-text">
+						<mat-card-title>
+						<a
+							*ngIf="editingPostId() !== post.id"
+							[routerLink]="['/post', post.id]"
+							style="color: inherit; text-decoration: none"
+						>
+							{{ post.companyName }}
+						</a>
+						<span *ngIf="editingPostId() === post.id">Editing: {{ post.companyName }}</span>
+						</mat-card-title>
 
-			<mat-card-content>
-				<!-- DISPLAY MODE -->
-				<div *ngIf="editingPostId() !== post.id">
-					<p>{{ post.description }}</p>
-					<div *ngIf="post.sourceLinks?.length">
-						<strong>Sources:</strong>
-						<ul>
-							<li *ngFor="let link of post.sourceLinks">
-								<a [href]="link" target="_blank">{{ link }}</a>
-							</li>
-						</ul>
+						<mat-card-subtitle>
+						<span class="category-badge" *ngIf="post.category">📂 {{ post.category }}</span>
+						<mat-chip-listbox *ngIf="editingPostId() !== post.id && post.tags.length">
+							<mat-chip *ngFor="let tag of post.tags">{{ tag }}</mat-chip>
+						</mat-chip-listbox>
+						</mat-card-subtitle>
 					</div>
-				</div>
 
-				<!-- EDIT MODE -->
-				<!--        <div *ngIf="editingPostId() === post.id && editForm">
-          <form [formGroup]="editForm">
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Company Name</mat-label>
-              <input matInput formControlName="companyName" required>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Category</mat-label>
-              <input matInput formControlName="category">
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Description</mat-label>
-              <textarea matInput formControlName="description" rows="3" required></textarea>
-            </mat-form-field>
-
-            <div formArrayName="sourceLinks">
-              <div *ngFor="let link of sourceLinksArray.controls; let i = index"
-                   style="display: flex; align-items: center; gap: 8px;">
-                <mat-form-field appearance="fill" class="full-width">
-                  <mat-label>Source Link {{ i + 1 }}</mat-label>
-                  <input matInput [formControlName]="i" placeholder="https://...">
-                </mat-form-field>
-                <button mat-icon-button color="warn" type="button"
-                        (click)="removeLink(i)"
-                        *ngIf="sourceLinksArray.length > 1">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-              <button mat-stroked-button type="button" (click)="addLink()" style="margin-bottom: 5px;">Add link</button>
-            </div>
-
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Tags (comma separated)</mat-label>
-              <input matInput formControlName="tags" placeholder="environment, labor, ...">
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="full-width">
-              <mat-label>Highlights</mat-label>
-              <textarea matInput formControlName="highlights" rows="4"
-                        placeholder="Each line = one box, items separated by |&#10;e.g.&#10;Item 1|Item 2|Item 3&#10;Other|Box items"></textarea>
-            </mat-form-field>
-
-            <div class="edit-actions">
-              <button mat-raised-button color="primary" (click)="saveEdit(post.id!)">Save</button>
-              <button mat-button (click)="cancelEdit()">Cancel</button>
-            </div>
-          </form>
-        </div> -->
-			</mat-card-content>
-
-			<!-- Admin buttons (only for logged‑in admins, only when not editing) -->
-			<!-- <mat-card-actions *ngIf="isLoggedIn() && editingPostId() !== post.id">
-        <button mat-button color="primary" (click)="startEdit(post)">
-          <mat-icon>edit</mat-icon> Edit
-        </button>
-        <button mat-button color="warn" (click)="deletePost(post.id!)">
-          <mat-icon>delete</mat-icon> Delete
-        </button>
-      </mat-card-actions> -->
-
-			<mat-card-footer
-				*ngIf="post.submittedBy && !post.anonymous && editingPostId() !== post.id"
-			>
-				<small>Posted by {{ post.submittedBy }}</small>
-			</mat-card-footer>
-			<mat-card-footer
-				*ngIf="post.submittedBy && post.anonymous && editingPostId() !== post.id"
-			>
-				<small>Posted by anonymous</small>
-			</mat-card-footer>
-		</mat-card>
+					<img
+						[src]="logoUrls[post.id!]"
+						alt="company logo"
+						class="company-logo-small"
+						width="64"
+						height="64"
+						(error)="onImgError($event)"
+					/>
+				</mat-card-header>
+				<mat-card-footer
+					*ngIf="post.submittedBy && !post.anonymous && editingPostId() !== post.id"
+				>
+					<small>Posted by {{ post.submittedBy }}</small>
+				</mat-card-footer>
+				<mat-card-footer
+					*ngIf="post.submittedBy && post.anonymous && editingPostId() !== post.id"
+				>
+					<small>Posted by anonymous</small>
+				</mat-card-footer>
+			</mat-card>
+		</section>
 	</div>
 </div>

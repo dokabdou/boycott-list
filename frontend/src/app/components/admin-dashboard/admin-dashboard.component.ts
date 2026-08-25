@@ -87,6 +87,8 @@ export class AdminDashboardComponent implements OnInit {
 
 	banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
 
+	manageTab: WritableSignal<'categories' | 'tags' | 'data'> = signal('categories');
+
 	@ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
 	@ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -133,6 +135,10 @@ export class AdminDashboardComponent implements OnInit {
 			this.loadAdminTags();
 			this.loadAllPosts();
 		}
+	}
+
+	switchManageTab(tab: 'categories' | 'tags' | 'data') {
+		this.manageTab.set(tab);
 	}
 
 	loadAllPosts() {

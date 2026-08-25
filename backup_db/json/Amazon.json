@@ -1,0 +1,26 @@
+{
+  "anonymous": false,
+  "category": "Technology",
+  "companyName": "Amazon",
+  "createdAt": "2026-08-25T08:51:34.822094Z",
+  "description": "Like Google, Amazon won the $1.2 billion Project Nimbus contract to provide cloud services to the Israeli government, including the defense establishment(from Google post). israel uses the cloud services provided by Google and Amazon in order to continue their Palestinian genecide.\n\nBDS Movement :\n\"\nAmazon provides cloud infrastructure for Israel’s genocide against Palestinians in Gaza and occupation though Project Nimbus in partnership with Google. Amazon’s tech has enabled the displacement of 2M Palestinians in Gaza and Israel’s war crimes, bombing hospitals and refugee camps. \n\"\n\nIn addition to aiding in the Palestinian genocide, Amazon also provides services to ICE in the US.\nBDS Movement :\n\"\nAmazon stores and processes the data ICE uses to identify people as targets, manage ICE detention centers, and coordinate raids on families and neighbors. This surveillance is not exclusive to immigrants. \n\"",
+  "highlights": [],
+  "id": "bac389b6-47be-43a2-914a-031c1c6d927f",
+  "reviewedAt": "2026-08-25T08:51:34.822095Z",
+  "reviewedBy": "dokabdou",
+  "sourceLinks": [
+    "https://www.reuters.com/technology/amazon-invest-72-bln-israel-launches-aws-cloud-region-2023-08-01/",
+    "https://letsdatascience.com/news/project-nimbus-establishes-israel-google-amazon-cloud-deal-4c32f5a6",
+    "https://bdsmovement.net/news/palestinians-call-increased-pressure-tech-companies-powering-israel%E2%80%99s-occupation-and-gaza",
+    "https://www.theguardian.com/commentisfree/2021/oct/12/google-amazon-workers-condemn-project-nimbus-israeli-military-contract"
+  ],
+  "status": "APPROVED",
+  "submittedBy": "dokabdou",
+  "tags": [
+    "Amazon",
+    "israel",
+    "ai",
+    "ice",
+    "Technology"
+  ]
+}

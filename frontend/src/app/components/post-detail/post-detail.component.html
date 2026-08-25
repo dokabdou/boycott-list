@@ -32,7 +32,16 @@
 
 		<!-- Display mode -->
 		<div *ngIf="editingPostId() !== p.id">
-			<h1 class="company-name">{{ p.companyName }}</h1>
+			<div class="company-header">
+				<h1 class="company-name">{{ p.companyName }}</h1>
+				<img
+					[src]="logoUrl"
+					alt="Company logo"
+					class="company-logo-large"
+					(error)="onImgError($event)"
+				/>
+				
+			</div>
 			<div class="category-chip" *ngIf="p.category">
 				<mat-chip class="category-chip-item">{{ p.category }}</mat-chip>
 			</div>

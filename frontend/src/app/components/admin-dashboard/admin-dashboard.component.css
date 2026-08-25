@@ -119,6 +119,38 @@ button[mat-raised-button][type='submit'] {
 	margin-bottom: 0;
 }
 
+.manage-tab-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.manage-tab-buttons button {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.manage-tab-buttons button.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 500;
+}
+
+.manage-panel {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
 .list-item {
 	display: flex;
 	align-items: center;
@@ -185,4 +217,111 @@ button[mat-raised-button][type='submit'] {
 
 .post-checkbox-item input[type='checkbox'] {
   cursor: pointer;
+}
+
+
+/* ============================================================
+   Mobile Responsive – Manage & Data Management
+   ============================================================ */
+@media (max-width: 768px) {
+  .management-section {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .column {
+    width: 100%;
+    flex: none;
+  }
+
+  .add-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .add-row mat-form-field {
+    width: 100%;
+  }
+
+  .add-row button {
+    width: 100%;
+    min-height: 48px;           /* touch-friendly */
+  }
+
+  .list-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  .list-item span {
+    font-size: 1rem;
+  }
+
+  .item-actions {
+    justify-content: flex-end;
+  }
+
+  .item-actions button {
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .data-mng-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .data-mng-buttons button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .bulk-delete-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .post-checkbox-list {
+    max-height: 50vh;            /* better use of space */
+  }
+
+  .post-checkbox-item {
+    padding: 10px 0;
+    font-size: 1rem;
+  }
+
+  .post-checkbox-item input[type='checkbox'] {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+  }
+
+  .bulk-delete-section button[mat-raised-button] {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .manage-tab-buttons {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .manage-tab-buttons button {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .manage-tab-buttons button.active {
+    border-left: 4px solid var(--primary);
+    border-bottom-color: transparent;
+  }
+
+  .manage-panel {
+    padding: 16px;
+  }
 }

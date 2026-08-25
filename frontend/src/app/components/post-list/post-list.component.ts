@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { PostService } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
+import { LogoService } from '../../services/logo.service';
 import { Post } from '../../models/post.model';
 import { RouterLink } from '@angular/router';
 import { SearchService } from '../../services/search.service';
@@ -36,6 +37,7 @@ export class PostListComponent implements OnInit {
 	editingPostId: WritableSignal<string | null> = signal(null);
 	editForm: FormGroup | null = null;
 	showDescription: WritableSignal<boolean> = signal(true);
+	logoUrls: Record<string, string> = {};
 
 	// Banner signal
 	banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -44,12 +46,18 @@ export class PostListComponent implements OnInit {
 		private postService: PostService,
 		private authService: AuthService,
 		private searchService: SearchService,
+		private logoService: LogoService,
 		private fb: FormBuilder,
 		private router: Router,
 	) {}
 
 	ngOnInit(): void {
 		this.loadPosts();
+	}
+
+	onImgError(event: Event) {
+		const img = event.target as HTMLImageElement;
+		img.style.display = 'none';
 	}
 
 	filteredPosts = computed(() => {
@@ -74,6 +82,12 @@ export class PostListComponent implements OnInit {
 				return dateB - dateA;
 			});
 			this.posts.set(sorted);
+
+			sorted.forEach((post) => {
+				if (post.id) {
+					this.logoUrls[post.id!] = this.logoService.getLogoUrl(post.companyName);
+				}
+			});
 		});
 	}
 
