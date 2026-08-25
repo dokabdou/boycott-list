@@ -115,7 +115,12 @@ export class AppComponent implements OnInit {
 	}
 
 	startDrag(event: MouseEvent | TouchEvent) {
-		event.preventDefault();
+		// Only prevent default for mouse to avoid text selection.
+		// For touch, we rely on CSS `touch-action: none` to prevent scrolling.
+		if (event instanceof MouseEvent) {
+			event.preventDefault();
+		}
+
 		const clientX = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
 		const clientY = event instanceof MouseEvent ? event.clientY : event.touches[0].clientY;
 

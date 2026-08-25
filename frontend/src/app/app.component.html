@@ -46,6 +46,7 @@
   [class.dragging]="isDragging()"
   (click)="scrollToTop()"
   (mousedown)="startDrag($event)"
+  (touchstart)="startDrag($event)"
   [style.left.px]="btnX()"
   [style.top.px]="btnY()"
   title="Back to top (drag to move)"
