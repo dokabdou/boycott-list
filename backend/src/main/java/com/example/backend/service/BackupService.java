@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -23,6 +25,22 @@ public class BackupService {
 
     @Value("${backup.directory:/backups}")
     private String backupDirectory;
+
+    /**
+     * Automatic backup every day at 23:00 – only exports on the last day of the month.
+     */
+    @Scheduled(cron = "0 0 23 * * ?")
+    public void scheduledMonthlyBackup() {
+        LocalDate today = LocalDate.now();
+        int lastDay = YearMonth.from(today).lengthOfMonth();
+
+        if (today.getDayOfMonth() == lastDay) {
+            log.info("Last day of month detected – running automatic monthly backup.");
+            exportMonthlyBackup();
+        } else {
+            log.info("Not the last day of the month – skipping automatic backup.");
+        }
+    }
 
     public String exportImmediateBackup() {
         log.info("Creating immediate backup...");
