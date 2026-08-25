@@ -178,6 +178,28 @@ export class AdminDashboardComponent implements OnInit {
 		}
 	}
 
+	createNowBackup() {
+		this.postService.createNowBackup().subscribe({
+			next: (res) => {
+				this.showBanner('success', `Backup created: ${res.path}`);
+			},
+			error: () => {
+				this.showBanner('error', 'Backup failed.');
+			},
+		});
+	}
+
+	createMonthlyBackup() {
+		this.postService.createMonthlyBackup().subscribe({
+			next: (res) => {
+				this.showBanner('success', `Backup created: ${res.path}`);
+			},
+			error: () => {
+				this.showBanner('error', 'Backup failed.');
+			},
+		});
+	}
+
 	// ---------- Manage tab data ----------
 	loadAdminCategories() {
 		this.categoryService

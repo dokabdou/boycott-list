@@ -448,10 +448,16 @@
 				<h4>Data Management</h4>
 				<div class="data-mng-buttons">
 					<button mat-raised-button color="primary" (click)="exportAllPosts()">
-					<mat-icon>download</mat-icon> Export All Posts
+						<mat-icon>download</mat-icon> Export All Posts
 					</button>
 					<button mat-raised-button (click)="triggerImport()">
-					<mat-icon>upload</mat-icon> Import Posts
+						<mat-icon>upload</mat-icon> Import Posts
+					</button>
+					<button mat-raised-button color="primary" (click)="createNowBackup()">
+						<mat-icon>save</mat-icon> Backup Now
+					</button>
+					<button mat-raised-button color="accent" (click)="createMonthlyBackup()">
+						<mat-icon>archive</mat-icon> Monthly Backup
 					</button>
 				</div>
 				<input

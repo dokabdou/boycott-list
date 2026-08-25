@@ -21,6 +21,15 @@ import java.util.Map;
 @Slf4j
 public class NotificationService {
 
+	/*
+	* Discord webhook :https://support.discord.com/hc/fr/articles/228383668-Intro-aux-Webhooks
+	GMAIL : https://myaccount.google.com/u/1/?pli=1&nlr=1&pageId=none
+	=> How you sign in to Google
+	=> click App passwords
+	=> Added "Boycott-List-Notifications"
+	=> pw with no spaces : tfosdszjmvpjxxiz
+	*/
+
     private final RestTemplate restTemplate;
     private final JavaMailSender mailSender;
 

@@ -159,4 +159,15 @@ export class PostService {
 	importBulkPosts(posts: Post[]): Observable<Post[]> {
 		return this.http.post<Post[]>(`${this.adminUrl}/import/bulk`, posts);
 	}
+
+	createNowBackup(): Observable<{ message: string; path: string }> {
+		return this.http.post<{ message: string; path: string }>(`${this.adminUrl}/backup/now`, {});
+	}
+
+	createMonthlyBackup(): Observable<{ message: string; path: string }> {
+		return this.http.post<{ message: string; path: string }>(
+			`${this.adminUrl}/backup/monthly`,
+			{},
+		);
+	}
 }

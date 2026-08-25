@@ -11,6 +11,7 @@ import com.example.backend.service.PostService;
 import com.example.backend.service.SuggestionService;
 import com.example.backend.service.CommentService;
 import com.example.backend.service.PostTagService;
+import com.example.backend.service.BackupService;
 import com.example.backend.service.CategoryService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class AdminController {
     private final CommentService commentService;
 	private final PostTagService postTagService;
 	private final CategoryService categoryService;
+	private final BackupService backupService;
 	
 
 	// Post management endpoints for admins
@@ -281,5 +283,21 @@ public class AdminController {
 	@PostMapping("/import/bulk")
 	public List<Post> importBulkPosts(@RequestBody List<Post> posts) {
 		return postService.importPosts(posts);
+	}
+
+	@PostMapping("/backup/now")
+	@Operation(summary = "Create backup now",
+			description = "Exports all posts to a timestamped JSON file in backup_db/monthly_backups.")
+	public ResponseEntity<?> createNowBackup() {
+		String path = backupService.exportImmediateBackup();
+		return ResponseEntity.ok(Map.of("message", "Backup created successfully", "path", path));
+	}
+
+	@PostMapping("/backup/monthly")
+	@Operation(summary = "Create monthly backup",
+			description = "Exports all posts to backup_db/monthly_backups.")
+	public ResponseEntity<?> createMonthlyBackup() {
+		String path = backupService.exportMonthlyBackup();
+		return ResponseEntity.ok(Map.of("message", "Backup created successfully", "path", path));
 	}
 }

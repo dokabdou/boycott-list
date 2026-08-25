@@ -22,6 +22,7 @@ services:
     volumes:
       - ./backend:/app
       - ~/.m2:/root/.m2
+      - ./backups:/backups
     env_file:
       - .env
     environment:

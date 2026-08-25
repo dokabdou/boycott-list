@@ -130,8 +130,9 @@ The first `/opt/boycott-list/docker-compose.yml` is the source on the host and t
 
 Then enter that container :: `pct enter 113` and `cd /opt/boycott-list`
 
-AND ON PROXMOX TOO : `cd /opt/boycott-list` to re-run the images
+## AND ON PROXMOX TOO : `cd /opt/boycott-list` to re-run the images
 
+to edit .env file I must be on web proxmox not via ssh
 
 Create the .env file (required for PostgreSQL and JWT):
 `nano .env`
@@ -143,8 +144,17 @@ DB_USERNAME=dev
 DB_PASSWORD=dev
 APP_SECURITY_COOKIE_SECURE=false
 JWT_SECRET=<long-random-secret>
+
+DISCORD_WEBHOOK_URL=xxxxxx
+NOTIFICATION_EMAIL_TO=doctor.games235@gmail.com
+SPRING_MAIL_HOST=smtp.gmail.com
+SPRING_MAIL_PORT=587
+SPRING_MAIL_USERNAME=doctor.games235@gmail.com
+SPRING_MAIL_PASSWORD=<pass-word>
+SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
 ```
-(run in terminal for token: openssl rand -base64 64)
+(run in terminal for secret token: openssl rand -base64 64)
 
 
 Now in the LXC, laod the images and use them. ::
