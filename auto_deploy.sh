@@ -1,34 +1,63 @@
 #!/bin/bash
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+set -e  # stop on any error
 
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+# ------------------------------------------------------------------
+# CONFIGURATION
+# ------------------------------------------------------------------
+PROXMOX_HOST="root@192.168.1.55"
+LXC_ID="113"
+REMOTE_DIR="/opt/boycott-list"
 
-cd ~/boycott-list || exit
+# ------------------------------------------------------------------
+# Step 1: Build & transfer frontend image
+# ------------------------------------------------------------------
+echo "🛠  Building frontend image..."
+cd frontend
+docker build -t boycott-list-frontend:latest .
+docker save boycott-list-frontend:latest -o frontend.tar
+echo "📤 Uploading frontend.tar to Proxmox host..."
+scp frontend.tar ${PROXMOX_HOST}:${REMOTE_DIR}/
+cd ..
 
-git fetch origin
+# ------------------------------------------------------------------
+# Step 2: Build & transfer backend image
+# ------------------------------------------------------------------
+echo "🛠  Building backend image..."
+cd backend
+docker build -t boycott-list-backend:latest .
+docker save boycott-list-backend:latest -o backend.tar
+echo "📤 Uploading backend.tar to Proxmox host..."
+scp backend.tar ${PROXMOX_HOST}:${REMOTE_DIR}/
+cd ..
 
-# Compare the local code hash with the GitHub code hash
-LOCAL=$(git rev-parse HEAD)
-REMOTE=$(git rev-parse origin/main)
+# ------------------------------------------------------------------
+# Step 3: Copy Docker Compose files
+# ------------------------------------------------------------------
+echo "📄 Copying docker-compose files..."
+scp docker-compose-prod.yml ${PROXMOX_HOST}:${REMOTE_DIR}/
 
-if [ "$LOCAL" != "$REMOTE" ]; then
-    echo "$(date): New code found! Pulling and rebuilding..." >> ~/deploy.log
-    
-    # Pull the new code
-    git pull origin main
+# ------------------------------------------------------------------
+# Step 4: Push files from Proxmox host to LXC container
+# ------------------------------------------------------------------
+echo "🚚 Pushing files into LXC ${LXC_ID}..."
+ssh ${PROXMOX_HOST} <<EOF
+  pct push ${LXC_ID} ${REMOTE_DIR}/backend.tar ${REMOTE_DIR}/backend.tar
+  pct push ${LXC_ID} ${REMOTE_DIR}/frontend.tar ${REMOTE_DIR}/frontend.tar
+  pct push ${LXC_ID} ${REMOTE_DIR}/docker-compose.yml ${REMOTE_DIR}/docker-compose.yml
+  pct push ${LXC_ID} ${REMOTE_DIR}/docker-compose-prod.yml ${REMOTE_DIR}/docker-compose-prod.yml
+EOF
 
-	# OVERWRITE MONGODB ENV FOR PROXMOX (Adjust IP if necessary)
-    export MONGO_URI="mongodb://10.10.10.13:27017/grocery"
-    
-    # Rebuild and restart the Docker containers in the background
-    docker-compose up -d --build >> ~/deploy.log 2>&1
-    
-    # Clean up old, unused Docker images so the server's hard drive doesn't fill up!
-    docker image prune -f >> ~/deploy.log 2>&1
-    
-    echo "$(date): Deployment complete." >> ~/deploy.log
-else
-    # Uncomment the line below for a log entry every single day, even when nothing happens
-    echo "$(date): No new code. Skipping deployment." >> ~/deploy.log
-    true
-fi
+# ------------------------------------------------------------------
+# Step 5: Deploy inside LXC
+# ------------------------------------------------------------------
+echo "🚀 Deploying new images inside LXC ${LXC_ID}..."
+ssh ${PROXMOX_HOST} "pct exec ${LXC_ID} -- bash -c '
+  cd ${REMOTE_DIR}
+  docker-compose -f docker-compose-prod.yml down
+  docker load -i frontend.tar
+  docker-compose -f docker-compose-prod.yml up -d frontend
+  docker load -i backend.tar
+  docker-compose -f docker-compose-prod.yml up -d backend
+'"
+
+echo "✅ Redeployment complete!"

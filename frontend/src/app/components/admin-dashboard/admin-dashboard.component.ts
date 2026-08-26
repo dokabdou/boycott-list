@@ -38,7 +38,6 @@ import { Tag } from '../../models/tag.model';
 import { Category } from '../../models/category.model';
 import { HighlightService } from '../../services/highlight.service';
 import { HomeDescriptionService } from '../../services/home-description.service';
-import { NgxEditorComponent, Editor } from 'ngx-editor';
 
 @Component({
 	selector: 'app-admin-dashboard',
@@ -54,7 +53,6 @@ import { NgxEditorComponent, Editor } from 'ngx-editor';
 		MatAutocompleteModule,
 		MatIconModule,
 		MatExpansionModule,
-		NgxEditorComponent,
 	],
 	templateUrl: './admin-dashboard.component.html',
 	styleUrls: ['./admin-dashboard.component.css', '../../../styles.css'],
@@ -100,7 +98,6 @@ export class AdminDashboardComponent implements OnInit {
 	homeDescription = signal('');
 	editHomeDescription = '';
 
-	editor!: Editor;
 
 	constructor(
 		private suggestionService: SuggestionService,
@@ -138,13 +135,6 @@ export class AdminDashboardComponent implements OnInit {
 		this.loadAdminTags();
 		this.loadHomeDescription();
 
-		this.editor = new Editor();
-	}
-
-	ngOnDestroy() {
-		if (this.editor) {
-			this.editor.destroy();
-		}
 	}
 
 	switchTab(tab: 'post' | 'manage') {
