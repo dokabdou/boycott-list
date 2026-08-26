@@ -10,31 +10,11 @@ chmod +x auto_deploy.sh && ./auto_deploy.sh
 sh auto_deploy.sh
 ```
 
-It will prompt the proxmox password when the frontend, backend and docker files are sent. 
+It will prompt the proxmox password when the frontend, backend and docker files are sent. So it will prompt the password 3 times.
 
-## On Proxmox : if the .env file was modified, go to web version proxmox LXC
+Then prompt the password for the the ssh into proxmox.
 
-to edit .env file I must be on web proxmox not via ssh
-
-
-nano `.env` to edit the file
-```dotenv
-DB_NAME=devdb
-DB_USERNAME=dev
-DB_PASSWORD=dev
-APP_SECURITY_COOKIE_SECURE=false
-JWT_SECRET=<long-random-secret>
-
-DISCORD_WEBHOOK_URL=xxxxxx
-NOTIFICATION_EMAIL_TO=doctor.games235@gmail.com
-SPRING_MAIL_HOST=smtp.gmail.com
-SPRING_MAIL_PORT=587
-SPRING_MAIL_USERNAME=doctor.games235@gmail.com
-SPRING_MAIL_PASSWORD=<pass-word>
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
-```
-
+the .env file is pushed on github and should be pull on proxmox. Or copy it over manually !!
 
 
 # IF I want to deploy manually one by one :  OPEN 5 cmdr TERMINALS : steps to redeploy
