@@ -1,6 +1,6 @@
 # RUN THE auto_deploy.sh for fast deployment
 
-```
+```bash
 # give access to the auto_deploy file
 chmod +x auto_deploy.sh && ./auto_deploy.sh
 ```
@@ -18,7 +18,7 @@ to edit .env file I must be on web proxmox not via ssh
 
 
 nano `.env` to edit the file
-```
+```dotenv
 DB_NAME=devdb
 DB_USERNAME=dev
 DB_PASSWORD=dev
@@ -40,22 +40,22 @@ SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
 # IF I want to deploy manually one by one :  OPEN 5 cmdr TERMINALS : steps to redeploy
 
 ## FIRST : frontend
-```
+```bash
 docker build -t boycott-list-frontend:latest . && docker save boycott-list-frontend:latest -o frontend.tar && scp frontend.tar root@192.168.1.55:/opt/boycott-list/
 ```
 
 ## SECOND : backend
-```
+```bash
 docker build -t boycott-list-backend:latest . && docker save boycott-list-backend:latest -o backend.tar && scp backend.tar root@192.168.1.55:/opt/boycott-list/
 ```
 
 ## THIRD : open a terminal at the root of the project, to send the docker compose
-```
+```bash
 scp docker-compose-prod.yml root@192.168.1.55:/opt/boycott-list/
 ```
 
 ## FOURTH : ssh into dialloPavillion `ssh root@192.168.1.55`
-```
+```bash
 pct push 113 /opt/boycott-list/backend.tar /opt/boycott-list/backend.tar && pct push 113 /opt/boycott-list/frontend.tar /opt/boycott-list/frontend.tar && pct push 113 /opt/boycott-list/docker-compose.yml /opt/boycott-list/docker-compose.yml && pct push 113 /opt/boycott-list/docker-compose-prod.yml /opt/boycott-list/docker-compose-prod.yml
 ```
 
@@ -65,7 +65,7 @@ to edit .env file I must be on web proxmox not via ssh
 
 
 nano `.env` to edit the file
-```
+```dotenv
 DB_NAME=devdb
 DB_USERNAME=dev
 DB_PASSWORD=dev
@@ -83,7 +83,7 @@ SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
 ```
 
 ## FIFTH : ssh into the boycott list container, when on ssh dialloPavillion `ssh root@192.168.1.55`
-```
+```bash
 pct enter 113
 cd /opt/boycott-list
 
@@ -94,13 +94,13 @@ docker-compose down && docker load -i frontend.tar && docker compose -f docker-c
 ```
 
 If there are issue, then force rebuild :
-```
+```bash
 docker compose up -d --force-recreate backend
 docker compose down && docker compose -f docker-compose-prod.yml -d --build
 ```
 
 Check logs :
-```
+```bash
 # check that all is running
 docker ps
 
