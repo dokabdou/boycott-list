@@ -48,6 +48,9 @@ SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
 pct enter 113
 cd /opt/boycott-list
 
+# to delete the volumes and really strip clean everything :
+docker compose down -v
+
 docker-compose down && docker load -i frontend.tar && docker compose -f docker-compose-prod.yml up -d frontend && docker load -i backend.tar && docker compose -f docker-compose-prod.yml up -d backend
 ```
 
