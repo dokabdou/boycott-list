@@ -14,6 +14,7 @@ import { Post } from '../../models/post.model';
 import { RouterLink } from '@angular/router';
 import { SearchService } from '../../services/search.service';
 import { Router } from '@angular/router';
+import { HomeDescriptionService } from '../../services/home-description.service';
 
 @Component({
 	selector: 'app-post-list',
@@ -38,6 +39,7 @@ export class PostListComponent implements OnInit {
 	editForm: FormGroup | null = null;
 	showDescription: WritableSignal<boolean> = signal(true);
 	logoUrls: Record<string, string> = {};
+	homeDescription = signal('');
 
 	// Banner signal
 	banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -47,17 +49,29 @@ export class PostListComponent implements OnInit {
 		private authService: AuthService,
 		private searchService: SearchService,
 		private logoService: LogoService,
+		private homeDescriptionService: HomeDescriptionService,
 		private fb: FormBuilder,
 		private router: Router,
 	) {}
 
 	ngOnInit(): void {
 		this.loadPosts();
+		this.loadHomeDescription();
 	}
 
 	onImgError(event: Event) {
 		const img = event.target as HTMLImageElement;
 		img.style.display = 'none';
+	}
+
+	loadHomeDescription() {
+		this.homeDescriptionService.getHomeDescription().subscribe((res) => {
+			this.homeDescription.set(res.content);
+		});
+	}
+
+	formatDescription(desc: string): string {
+		return desc ? desc.replace(/\n/g, '<br>') : '';
 	}
 
 	filteredPosts = computed(() => {

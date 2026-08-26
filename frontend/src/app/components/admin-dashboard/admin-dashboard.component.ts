@@ -37,6 +37,8 @@ import { CategoryService } from '../../services/category.service';
 import { Tag } from '../../models/tag.model';
 import { Category } from '../../models/category.model';
 import { HighlightService } from '../../services/highlight.service';
+import { HomeDescriptionService } from '../../services/home-description.service';
+import { NgxEditorComponent, Editor } from 'ngx-editor';
 
 @Component({
 	selector: 'app-admin-dashboard',
@@ -52,6 +54,7 @@ import { HighlightService } from '../../services/highlight.service';
 		MatAutocompleteModule,
 		MatIconModule,
 		MatExpansionModule,
+		NgxEditorComponent,
 	],
 	templateUrl: './admin-dashboard.component.html',
 	styleUrls: ['./admin-dashboard.component.css', '../../../styles.css'],
@@ -87,17 +90,24 @@ export class AdminDashboardComponent implements OnInit {
 
 	banner = signal<{ type: 'success' | 'error'; message: string } | null>(null);
 
-	manageTab: WritableSignal<'categories' | 'tags' | 'data'> = signal('categories');
+	manageTab: WritableSignal<'categories' | 'tags' | 'data' | 'description'> =
+		signal('categories');
 
 	@ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
 	@ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
+	homeDescription = signal('');
+	editHomeDescription = '';
+
+	editor!: Editor;
 
 	constructor(
 		private suggestionService: SuggestionService,
 		private postService: PostService,
 		private tagService: TagService,
 		private categoryService: CategoryService,
+		private homeDescriptionService: HomeDescriptionService,
 		private fb: FormBuilder,
 		public hs: HighlightService,
 	) {}
@@ -126,19 +136,50 @@ export class AdminDashboardComponent implements OnInit {
 		// Preload manage tab data
 		this.loadAdminCategories();
 		this.loadAdminTags();
+		this.loadHomeDescription();
+
+		this.editor = new Editor();
+	}
+
+	ngOnDestroy() {
+		if (this.editor) {
+			this.editor.destroy();
+		}
 	}
 
 	switchTab(tab: 'post' | 'manage') {
 		this.activeTab = tab;
 		if (tab === 'manage') {
-			this.loadAdminCategories();
-			this.loadAdminTags();
-			this.loadAllPosts();
+			this.loadData();
 		}
 	}
 
-	switchManageTab(tab: 'categories' | 'tags' | 'data') {
+	loadData() {
+		this.loadAdminCategories();
+		this.loadAdminTags();
+		this.loadAllPosts();
+	}
+
+	switchManageTab(tab: 'categories' | 'tags' | 'data' | 'description') {
 		this.manageTab.set(tab);
+	}
+
+	loadHomeDescription() {
+		this.homeDescriptionService.getHomeDescription().subscribe((res) => {
+			this.homeDescription.set(res.content);
+			this.editHomeDescription = res.content;
+		});
+	}
+
+	saveHomeDescription() {
+		if (this.editHomeDescription.trim()) {
+			this.homeDescriptionService
+				.updateHomeDescription(this.editHomeDescription)
+				.subscribe((res) => {
+					this.homeDescription.set(res.content);
+					this.showBanner('success', 'Home description updated.');
+				});
+		}
 	}
 
 	loadAllPosts() {
@@ -500,6 +541,7 @@ export class AdminDashboardComponent implements OnInit {
 					// Multiple posts (bulk import)
 					this.postService.importBulkPosts(posts).subscribe(() => {
 						this.loadPendingPosts();
+						this.loadData();
 						this.showBanner(
 							'success',
 							`Bulk import successful (${posts.length} posts)`,

@@ -1,5 +1,8 @@
-FROM node:22-alpine
+FROM node:22-alpine3.20
 WORKDIR /app
+
+# Update the Alpine base image to ensure the OS packages are patched
+RUN apk update && apk upgrade --no-cache && rm -rf /var/cache/apk/*
 
 # Copy package files and install dependencies
 COPY package*.json ./

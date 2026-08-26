@@ -9,6 +9,8 @@
 
 h2 {
 	margin-bottom: 24px;
+	align-items: center; 
+	justify-content: center;
 }
 
 button[mat-raised-button] {

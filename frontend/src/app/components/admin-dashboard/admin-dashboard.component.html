@@ -311,20 +311,26 @@
 			<!-- Nested tab bar -->
 			<div class="manage-tab-buttons">
 				<button
-				[class.active]="manageTab() === 'categories'"
-				(click)="switchManageTab('categories')"
+					[class.active]="manageTab() === 'categories'"
+					(click)="switchManageTab('categories')"
 				>
-				Categories
+					Categories
 				</button>
 				<button
-				[class.active]="manageTab() === 'tags'"
-				(click)="switchManageTab('tags')"
+					[class.active]="manageTab() === 'description'"
+					(click)="switchManageTab('description')"
 				>
-				Tags
+					Description
 				</button>
 				<button
-				[class.active]="manageTab() === 'data'"
-				(click)="switchManageTab('data')"
+					[class.active]="manageTab() === 'tags'"
+					(click)="switchManageTab('tags')"
+				>
+					Tags
+				</button>
+				<button
+					[class.active]="manageTab() === 'data'"
+					(click)="switchManageTab('data')"
 				>
 				Data Management
 				</button>
@@ -386,6 +392,29 @@
 				</div>
 			}
 
+			<!-- Description -->
+			@if (manageTab() === 'description') {
+				<div class="manage-panel">
+					<h4>Home Page Description</h4>
+					<mat-form-field appearance="fill" class="full-width">
+					<mat-label>Description</mat-label>
+					<textarea
+						matInput
+						rows="8"
+						[(ngModel)]="editHomeDescription"
+						placeholder="Enter the description shown on the home page..."
+					></textarea>
+					</mat-form-field>
+					<button
+					mat-raised-button
+					color="primary"
+					(click)="saveHomeDescription()"
+					[disabled]="!editHomeDescription.trim()"
+					>
+					<mat-icon>save</mat-icon> Save Description
+					</button>
+				</div>
+			}
 			<!-- Tags -->
 			@if (manageTab() === 'tags') {
 				<div class="manage-panel">
